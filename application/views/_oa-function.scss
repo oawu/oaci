@@ -1,0 +1,20 @@
+
+@mixin font-smoothing ($val: antialiased) {
+  -webkit-font-smoothing: $val;
+  -moz-font-smoothing: $val;
+  -ms-font-smoothing: $val;
+  -o-font-smoothing: $val;
+  -moz-osx-font-smoothing: $val;
+}
+
+@mixin overflow-docx3 () {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin overflow-break () {
+  overflow: hidden;
+  word-wrap: break-word; 
+  word-break: normal; 
+}

@@ -1,0 +1,303 @@
+@import "_oa";
+
+@include font-face("Blooming Grove Bold", font-files("/resource/font/bloominggrove/bgroveb.ttf", "/resource/font/bloominggrove/bgroveb.otf"));
+@include font-face("Monaco", font-files("/resource/font/monaco/monaco.ttf", "/resource/font/monaco/monaco.otf"));
+@include font-face("Pistara", font-files("/resource/font/pistara/pistara.otf"));
+@include font-face("Opificio Neue", font-files("/resource/font/opificio_neue/opificio_neue.ttf"));
+@include font-face("Sabandija", font-files("/resource/font/sabandija/sabandija.ttf", "/resource/font/sabandija/sabandija.otf"));
+@include font-face("Streetvertising", font-files("/resource/font/streetvertising/streetvertising_medium.ttf"));
+@include font-face("My Angle", font-files("/resource/font/my_angle/my_angle.ttf"));
+@include font-face("Dersu Uzala Brush", font-files("/resource/font/dersu_uzala_brush/dersu_uzala_brush.ttf"));
+@include font-face("Josefin Sans", font-files("/resource/font/josefin_sans/JosefinSans-Bold.ttf"));
+@include font-face("Comic Sans MS", font-files("/resource/font/comic_sans_ms/comic_sans_ms.ttf"));
+@include font-face("tch2", font-files("/resource/font/tchs/tch2.ttf"));
+@include font-face("Lato", font-files("/resource/font/fonts-lato/Lato-Regular.ttf"));
+
+* {
+  vertical-align: top;
+  @include selection(rgba(150, 180, 230, 1.0000), rgba(237, 239, 244, 1.0000));
+
+  &, &:after, &:before {
+    @include box-sizing(border-box);
+  }
+}
+
+html {
+  height: 100%;
+  * {
+    @include font-smoothing(antialiased);
+  }
+  
+  body {
+    margin: 0;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-y: visible;
+    font: 15px/20px normal Helvetica, Arial, sans-serif;
+
+    color: #000;
+    background-color: rgba(233, 234, 237, 1.00);
+    font-family: "微軟正黑體", "Josefin Sans", Lato, "Monaco", "Streetvertising", "Opificio Neue", "Blooming Grove Bold", Monaco, "lucida grande", tahoma, verdana, arial, sans-serif;
+
+    @include font-smoothing(antialiased);
+    @include box-shadow(none);
+
+    &:before {
+      content: "";
+      position: fixed;
+      top: -10px;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      z-index: 100;
+    }
+  }
+}
+
+*.clearfix {
+  *zoom: 1;
+
+  &:after {
+    display: table;
+    content: "";
+    line-height: 0;
+    clear: both;
+  }
+}
+*.divider {
+  width: 100%;
+  height: 2px;
+  background: url(data:image/gif;base64,R0lGODlhAgACAIAAAP///8nJySH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4zLWMwMTEgNjYuMTQ1NjYxLCAyMDEyLzAyLzA2LTE0OjU2OjI3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo0MjhCMDc2ODA2RDgxMUUyQTMzM0ExMUI2QUUxMTc4NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo0MjhCMDc2OTA2RDgxMUUyQTMzM0ExMUI2QUUxMTc4NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjQyOEIwNzY2MDZEODExRTJBMzMzQTExQjZBRTExNzg3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjQyOEIwNzY3MDZEODExRTJBMzMzQTExQjZBRTExNzg3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAAAAAAAsAAAAAAIAAgAAAgNMAAUAOw==) repeat-x center center;
+}
+a {
+  color: rgba(59, 89, 152, 1);
+  outline: none;
+  
+  &:focus {
+    outline: none;
+  }
+}
+
+*.loading {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin: auto;
+  margin-top: 5px;
+  
+  @include border-radius(50%);
+  @include box-shadow(inset 0 0 5px rgba(68, 68, 68, 0.7), 0 0 5px rgba(255, 255, 255, 0.475));
+
+  &:before {
+    content: "";
+    position: absolute;
+    display: inline-block;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+
+    @include border-radius(50%);
+    @include animation (spin .5s infinite linear);
+    @include background-image(linear-gradient(transparent 60%, rgba(0, 0, 0, 0.3) 100%));
+  }
+  &:after {
+    content: "";
+    position: absolute;
+    display: inline-block;
+    margin: auto;
+    width: 34px;
+    height: 34px;
+    top: 3px;
+    left: 3px;
+    background: $mainBackground;
+
+    @include border-radius(50%);
+    @include box-shadow(0 0 5px rgba(68, 68, 68, 0.7), inset 0 0 5px rgba(255, 255, 255, 0.475));
+  }
+}
+@include keyframes(spin) {
+  to {
+    @include rotate(360deg);
+  }
+}
+.paper {
+  position: relative;
+
+  &:before, &:after {
+    z-index: -1;
+    position: absolute;
+    display: inline-block;
+    content: "";
+    bottom: 15px;
+    left: 10px;
+    width: 50%;
+    max-width:300px;
+    background: #777;
+    max-height: 100px;
+    min-height: 10px;
+    
+    @include transform(rotate(-3deg));
+    @include box-shadow(0 15px 10px #777);
+  }
+  &:after {
+    right: 10px;
+    left: auto;
+
+    @include transform(rotate(3deg));
+  }
+}
+*.piled_paper {
+  position: relative;
+
+  &:before, &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -1px;
+    display: block;
+    visibility: visible;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 1);
+
+    @include border-radius(2px);
+    @include box-shadow(0 0 1px 1px rgba(0,0,0,.1));
+  }
+  &:before {
+    z-index: -2;
+
+    @include rotate(-1.2deg);
+  }
+  &:after {
+    z-index: -1;
+    clear: both;
+
+    @include rotate(1.2deg);
+  }
+}
+
+*.little_red_point {
+  position: absolute;
+  display: inline-block;
+  text-align: center;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  line-height: 18px;
+  padding-left: 2px;
+  background-color: rgba(255, 50, 50, 1.00);
+  border: 1px solid rgba(212, 63, 58, 1.00);
+  cursor: pointer;
+
+  @include border-radius(50%);
+  @include box-shadow(1px 1px 3px 1px rgba(0, 0, 0, 0.3), inset 1px 1px 1px rgba(255, 255, 255, 0.4));
+
+  &:hover {
+    @include box-shadow(1px 1px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 1px rgba(255, 255, 255, 0.6))
+  }
+  &:active {
+    @include box-shadow(1px 1px 2px 1px rgba(0, 0, 0, 0.5), inset 1px 1px 1px rgba(0, 0, 0, 0.4))
+  }
+}
+
+*.jGrowl {
+  padding: 10px 20px;
+  text-align: center;
+  width: 280px;
+
+  .growl, .jGrowl-closer {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    border: 1px solid rgba(105, 105, 105, 0.6);
+    background: rgba(233, 234, 237, 0.9);
+    padding: 8px;
+    min-height: 0;
+    font-family: "微軟正黑體", Lato, "Josefin Sans", "Monaco", "Streetvertising", "Opificio Neue", "Blooming Grove Bold", Monaco, "lucida grande", tahoma, verdana, arial, sans-serif;
+    margin: 10px auto;
+    color: rgba(45, 45, 45, 1);
+
+    @include overflow-break();
+    @include border-radius(3px);
+    @include box-sizing(border-box);
+    @include box-shadow(0 0 4px 1px rgba(160, 149, 147, 0.6), inset -1px -1px 3px rgba(10, 10, 10, 0.3), inset 1px 1px 3px rgba(245, 245, 245, 0.7));
+    @include opacity(1);
+    overflow: visible;
+
+    .jGrowl-close {
+      float: none;
+    }
+    .jGrowl-header {
+      color: rgba(25, 25, 25, 1);
+      background: url(data:image/gif;base64,R0lGODlhAgACAIAAAP///8nJySH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4zLWMwMTEgNjYuMTQ1NjYxLCAyMDEyLzAyLzA2LTE0OjU2OjI3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo0MjhCMDc2ODA2RDgxMUUyQTMzM0ExMUI2QUUxMTc4NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo0MjhCMDc2OTA2RDgxMUUyQTMzM0ExMUI2QUUxMTc4NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjQyOEIwNzY2MDZEODExRTJBMzMzQTExQjZBRTExNzg3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjQyOEIwNzY3MDZEODExRTJBMzMzQTExQjZBRTExNzg3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAAAAAAAsAAAAAAIAAgAAAgNMAAUAOw==) repeat-x bottom center;
+      padding-bottom: 3px;
+      margin-bottom: 3px;
+    }
+    .jGrowl-message {
+      padding: 3px;
+    }
+  }
+  .jGrowl-closer{
+    &:hover {
+      background: rgba(223, 224, 227, 1);
+    }
+  } 
+}
+
+ul.pagination {
+  margin: 0;
+  
+  li {
+    &+li {
+      a {
+        margin-left: 2px;
+      }
+    }
+    &, &:first-child, &:last-child, &.active {
+      a {
+        padding: 0 5px;
+        min-width: 30px;
+        line-height: 28px;
+
+        @include border-radius(20px);
+      }
+    }
+    a {
+      color: rgba(95, 95, 95, 1);
+      background-color: rgba(255, 255, 255, 1);
+      border: 1px solid rgba(193, 194, 198, 1);
+      font-size: 14px;
+      font-family: 'Comic Sans MS', Monaco, "lucida grande", "Blooming Grove Bold", tahoma, verdana, arial, sans-serif;
+      
+      @include box-shadow(1px 1px 3px 1px rgba(153, 153, 153, 0.3));
+      
+    
+      &:hover {
+        border: 1px solid rgba(193, 194, 198, 1) !important;
+        background-color: rgba(238, 238, 238, 1) !important;
+      }
+    }
+    &.active {
+      a {
+        color: rgba(233, 234, 237, 1);
+        background-color: rgba(86, 86, 86, 0.4);
+        border: 1px solid rgba(163, 164, 168, 1);
+        font-weight: bold;
+        
+        @include text-shadow(1px 1px 2px rgba(0, 0, 0, 0.375));
+        @include box-shadow(inset 1px 2px 4px rgba(100, 100, 100, 0.3), 0 1px 2px rgba(255, 255, 255, 0.5));
+
+        &:hover {
+          color: rgba(233, 234, 237, 1) !important;
+          border: 1px solid rgba(163, 164, 168, 1) !important;
+          background-color: rgba(86, 86, 86, 0.5) !important;
+        }
+      }
+    }
+  }
+}

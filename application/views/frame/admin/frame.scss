@@ -1,0 +1,26 @@
+@import "_oa";
+
+$bodyWidth: $mainWidth;
+$headerHeight: 45px;
+$containerMarginTop: 20px;
+$searchBarDefaultWidth: 200px;
+$searchBarHoverWidth: 300px;
+$subTitleHeight: 15px;
+
+$linkGroupWidth: floor($mainWidth / 4) - 10px;
+$linkGroupMarginLeft: 5px;
+$linkGroupMarginRight: 5px;
+
+$linkGroupMarginTop: 10px;
+$linkGroupMarginBottom: 5px;
+$headerTransparency: 0.9;
+$headerBaseColor: 45;
+$bigTitleWidth: 220px;
+
+html {
+  body {
+    text-align: center;
+    background: $mainBackground;
+
+  }
+}
