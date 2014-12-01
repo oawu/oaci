@@ -1,3 +1,8 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2014 OA Wu Design
+ */
+
 var showAlert = function (title, content, action, isShow) {
   if (!($dialog = $('body').children ('#_alert')).length) $dialog = $('<div />').attr ('id', '_alert').appendTo ($('body')).OA_Dialog ({ openEffect: 'explode', closeEffect: 'explode'});
 

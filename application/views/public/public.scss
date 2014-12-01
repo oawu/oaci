@@ -1,17 +1,11 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2014 OA Wu Design
+ */
+
 @import "_oa";
 
-@include font-face("Blooming Grove Bold", font-files("/resource/font/bloominggrove/bgroveb.ttf", "/resource/font/bloominggrove/bgroveb.otf"));
 @include font-face("Monaco", font-files("/resource/font/monaco/monaco.ttf", "/resource/font/monaco/monaco.otf"));
-@include font-face("Pistara", font-files("/resource/font/pistara/pistara.otf"));
-@include font-face("Opificio Neue", font-files("/resource/font/opificio_neue/opificio_neue.ttf"));
-@include font-face("Sabandija", font-files("/resource/font/sabandija/sabandija.ttf", "/resource/font/sabandija/sabandija.otf"));
-@include font-face("Streetvertising", font-files("/resource/font/streetvertising/streetvertising_medium.ttf"));
-@include font-face("My Angle", font-files("/resource/font/my_angle/my_angle.ttf"));
-@include font-face("Dersu Uzala Brush", font-files("/resource/font/dersu_uzala_brush/dersu_uzala_brush.ttf"));
-@include font-face("Josefin Sans", font-files("/resource/font/josefin_sans/JosefinSans-Bold.ttf"));
-@include font-face("Comic Sans MS", font-files("/resource/font/comic_sans_ms/comic_sans_ms.ttf"));
-@include font-face("tch2", font-files("/resource/font/tchs/tch2.ttf"));
-@include font-face("Lato", font-files("/resource/font/fonts-lato/Lato-Regular.ttf"));
 
 * {
   vertical-align: top;
@@ -38,7 +32,7 @@ html {
 
     color: #000;
     background-color: rgba(233, 234, 237, 1.00);
-    font-family: "微軟正黑體", "Josefin Sans", Lato, "Monaco", "Streetvertising", "Opificio Neue", "Blooming Grove Bold", Monaco, "lucida grande", tahoma, verdana, arial, sans-serif;
+    font-family: Monaco, tahoma, verdana, arial, sans-serif;
 
     @include font-smoothing(antialiased);
     @include box-shadow(none);
