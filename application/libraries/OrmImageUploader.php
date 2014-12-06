@@ -210,7 +210,7 @@ class OrmImageUploader {
       if (delete_files ($path, true)) {
         if ($isAutoSave) {
           $column_name = $this->column_name;
-          $this->orm->$column_name = $this->column_value;
+          $this->orm->$column_name = '';
           $this->orm->save ();
         }
         return true;
