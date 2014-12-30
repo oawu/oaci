@@ -2,7 +2,7 @@
 /*
  * Set timezone to Asia taipei.
  */
-	date_default_timezone_set('Asia/Taipei');
+	date_default_timezone_set ('Asia/Taipei');
 
 /*
  *---------------------------------------------------------------
@@ -22,7 +22,7 @@
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
-	// define('ENVIRONMENT', 'development');
+	define ('ENVIRONMENT', 'development');
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
@@ -32,22 +32,21 @@
  * By default development will show errors but testing and live will hide them.
  */
 
-if (defined('ENVIRONMENT'))
-{
-	switch (ENVIRONMENT)
-	{
-		case 'test':
-			error_reporting(E_ALL);
+if (defined('ENVIRONMENT')) {
+	switch (ENVIRONMENT) {
+		case 'development':
+		case 'staging':
+			error_reporting (E_ALL);
       ini_set ('display_errors', 1);
 		break;
 	
-		case 'server':
-			error_reporting(0);
+		case 'production':
+			error_reporting (0);
       ini_set ('display_errors', 0);
 		break;
 
 		default:
-			exit('The application environment is not set correctly.');
+			exit ('The application environment is not set correctly.');
 	}
 }
 
