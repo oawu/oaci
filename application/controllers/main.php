@@ -2,9 +2,11 @@
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
- * @copyright   Copyright (c) 2014 OA Wu Design
+ * @copyright   Copyright (c) 2015 OA Wu Design
  */
+
 class Main extends Site_controller {
+
   public function __construct () {
     parent::__construct ();
   }

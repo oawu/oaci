@@ -2,32 +2,33 @@
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
- * @copyright   Copyright (c) 2014 OA Wu Design
+ * @copyright   Copyright (c) 2015 OA Wu Design
  */
+
 class Oa_controller extends Root_controller {
-  private $componemt_path = array ();
-  private $frame_path     = array ();
-  private $content_path   = array ();
-  private $public_path    = array ();
-
-  private $title = '';
-
   private $component_lists = array ();
+  private $componemt_path  = array ();
+  private $frame_path      = array ();
+  private $content_path    = array ();
+  private $public_path     = array ();
+  private $title           = '';
 
   public function __construct () {
     parent::__construct ();
 
     $this->init_component_lists ('meta', 'css', 'javascript', 'hidden')
-         ->add_meta (array ('http-equiv' => 'Content-type', "content" => "text/html; charset=utf-8"));
+         ->add_meta (array ('http-equiv' => 'Content-type', 'content' => 'text/html; charset=utf-8'));
   }
 
   protected function init_component_lists () {
     if (!$this->component_lists)
       $this->component_lists = array ();
+
     if ($components = func_get_args ())
       foreach ($components as $component)
         if (!isset ($this->component_lists[$component]))
           $this->component_lists[$component] = array ();
+
     return $this;
   }
 
@@ -43,6 +44,16 @@ class Oa_controller extends Root_controller {
     return $this;
   }
 
+  protected function set_frame_path () {
+    $this->frame_path = array_filter (func_get_args ());
+    return $this;
+  }
+  
+  protected function set_content_path () {
+    $this->content_path = array_filter (func_get_args ());
+    return $this;
+  }
+
   protected function set_public_path () {
     $this->public_path = array_filter (func_get_args ());
     return $this;
@@ -55,10 +66,8 @@ class Oa_controller extends Root_controller {
 
   protected function add_component_list ($key, $value, $my_key = null) {
     if (isset ($this->component_lists[$key]))
-      if ($my_key)
-        $this->component_lists[$key][$my_key][] = $value;
-      else
-        array_push ($this->component_lists[$key], $value);
+      if ($my_key) $this->component_lists[$key][$my_key][] = $value;
+      else array_push ($this->component_lists[$key], $value);
     return $this;
   }
 
@@ -86,15 +95,16 @@ class Oa_controller extends Root_controller {
     return $this;
   }
 
-  protected function add_footer ($title, $sub_items = array ()) {
-    if (($args = func_get_args ()) && ($title = array_shift ($args)) && ($sub_itemss = $args))
-      foreach ($sub_itemss  as $sub_items)
-        $this->add_component_list ('footer', $sub_items, $title);
-    return $this;
-  }
-
   public function get_componemt_path () {
     return $this->componemt_path;
+  }
+
+  public function get_frame_path () {
+    return $this->frame_path; 
+  }
+
+  public function get_content_path () {
+    return $this->content_path;
   }
 
   public function get_public_path () {
@@ -132,29 +142,26 @@ class Oa_controller extends Root_controller {
   }
 
   protected function load_view ($data = '', $return = false, $cache_time = 0) {
-    if (is_readable ($abs_path = utilitySameLevelPath (FCPATH . APPPATH . DIRECTORY_SEPARATOR . implode (DIRECTORY_SEPARATOR, $this->get_views_path ()) . DIRECTORY_SEPARATOR . ($path = utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_frame_path (), array ('frame.php')))))))) {
-      if ($this->get_class () && $this->get_method ()) {
+    if (!is_readable ($abs_path = utilitySameLevelPath (FCPATH . APPPATH . DIRECTORY_SEPARATOR . implode (DIRECTORY_SEPARATOR, $this->get_views_path ()) . DIRECTORY_SEPARATOR . ($path = utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_frame_path (), array ('frame.php'))))))))
+      return show_error ('Can not find frame file. path: ' . $abs_path);
 
-        $this->add_css (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_public_path (), array ('public.css'))))))
-             ->add_css (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_frame_path (), array ('frame.css'))))))
-             ->add_css (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.css'))))))
+    if (!($this->get_class () && $this->get_method ()))
+      return show_error ('The controller lack of necessary resources!!  Please confirm your program again.');
 
-             ->add_javascript (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_public_path (), array ('public.js'))))))
-             ->add_javascript (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_frame_path (), array ('frame.js'))))))
-             ->add_javascript (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.js'))))));
-        
-        $frame_data = array ();
-        $frame_data = array_merge ($frame_data, $this->load_components ());
-        $frame_data['title']   = $this->get_title ();
-        $frame_data['content'] = $this->load_content ($data, true);
+    $this->add_css (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_public_path (), array ('public.css'))))))
+         ->add_css (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_frame_path (), array ('frame.css'))))))
+         ->add_css (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.css'))))))
 
-        if ($return) return $this->load->view ($path, $frame_data, $return);
-        else $this->load->view ($path, $frame_data, $return)->cache ($cache_time);
-      } else {
-        show_error ('The controller lack of necessary resources!!  Please confirm your program again.');
-      }
-    } else {
-      show_error ('Can not find frame file. path: ' . $abs_path);
-    }
+         ->add_javascript (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_public_path (), array ('public.js'))))))
+         ->add_javascript (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_frame_path (), array ('frame.js'))))))
+         ->add_javascript (base_url (utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge (array (APPPATH), $this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.js'))))));
+
+    $frame_data = array ();
+    $frame_data = array_merge ($frame_data, $this->load_components ());
+    $frame_data['title']   = $this->get_title ();
+    $frame_data['content'] = $this->load_content ($data, true);
+
+    if ($return) return $this->load->view ($path, $frame_data, $return);
+    else $this->load->view ($path, $frame_data, $return)->cache ($cache_time);
   }
 }

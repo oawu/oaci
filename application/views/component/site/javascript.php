@@ -2,9 +2,7 @@
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
- * @copyright   Copyright (c) 2014 OA Wu Design
+ * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-if ($javascript_list)
-  foreach ($javascript_list as $javascript)
-    echo script_tag ($javascript);
+if ($javascript_list) foreach ($javascript_list as $javascript) echo script_tag ($javascript);

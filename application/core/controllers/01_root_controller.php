@@ -2,8 +2,9 @@
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
- * @copyright   Copyright (c) 2014 OA Wu Design
+ * @copyright   Copyright (c) 2015 OA Wu Design
  */
+
 class Root_controller extends CI_Controller {
   private $class  = '';
   private $method = '';
@@ -25,7 +26,7 @@ class Root_controller extends CI_Controller {
     $this->load->helper ('oa');
     $this->load->helper ('upload_file');
     $this->load->helper ('cell');
-    $this->load->library ("cfg");
+    $this->load->library ('cfg');
 
     $this->set_controllers_path ('controllers')
          ->set_libraries_path ('libraries')
@@ -59,16 +60,6 @@ class Root_controller extends CI_Controller {
     return $this;
   }
 
-  protected function set_content_path () {
-    $this->content_path = array_filter (func_get_args ());
-    return $this;
-  }
-
-  protected function set_frame_path () {
-    $this->frame_path = array_filter (func_get_args ());
-    return $this;
-  }
-
   public function get_class () {
     return $this->class;
   }
@@ -89,14 +80,6 @@ class Root_controller extends CI_Controller {
     return $this->views_path;
   }
 
-  public function get_frame_path () {
-    return $this->frame_path; 
-  }
-
-  public function get_content_path () {
-    return $this->content_path;
-  }
-
   protected function input_get ($index = null, $xss_clean = true) {
     return $index = trim ($index) && ($gets = $this->input->get ()) && isset ($gets[$index]) ? $xss_clean ? $this->security->xss_clean ($gets[$index]) : $gets[$index] : null;
   }
@@ -106,19 +89,16 @@ class Root_controller extends CI_Controller {
   }
 
   private function _getPostFiles ($index) {
-    if ($index && $_FILES) {
-      preg_match_all ('/^(?P<var>\w+)(\s?\[\s?\]\s?)$/', $index, $matches);
-      return ($matches = $matches['var'] ? $matches['var'][0] : null) ? get_upload_file ($matches) : get_upload_file ($index, 'one');
-    } else {
-      return null;
-    }
+    if (!($index && $_FILES)) return null;
+    preg_match_all ('/^(?P<var>\w+)(\s?\[\s?\]\s?)$/', $index, $matches);
+    return ($matches = $matches['var'] ? $matches['var'][0] : null) ? get_upload_file ($matches) : get_upload_file ($index, 'one');
   }
 
   protected function load_content ($data = '', $return = false) {
-    if (is_readable ($abs_path = utilitySameLevelPath (FCPATH . APPPATH . DIRECTORY_SEPARATOR . implode (DIRECTORY_SEPARATOR, $this->get_views_path ()) . DIRECTORY_SEPARATOR . ($path = utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.php'))))))))
-      if ($return) return $this->load->view ($path, $data, $return);
-      else $this->load->view ($path, $data, $return);
-    else
-      show_error ('Can not find content file. path: ' . $abs_path);
+    if (!is_readable ($abs_path = utilitySameLevelPath (FCPATH . APPPATH . DIRECTORY_SEPARATOR . implode (DIRECTORY_SEPARATOR, $this->get_views_path ()) . DIRECTORY_SEPARATOR . ($path = utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.php'))))))))
+      return show_error ('Can not find content file. path: ' . $abs_path);
+
+    if ($return) return $this->load->view ($path, $data, $return);
+    else $this->load->view ($path, $data, $return);
   }
 }
