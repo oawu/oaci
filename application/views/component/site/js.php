@@ -5,4 +5,4 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-if ($javascript_list) foreach ($javascript_list as $javascript) echo script_tag ($javascript);
+if ($js_list) foreach ($js_list as $js) echo script_tag ($js);

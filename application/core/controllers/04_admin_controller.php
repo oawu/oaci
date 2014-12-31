@@ -21,7 +21,7 @@ class Admin_controller extends Oa_controller {
 
          ->_add_meta ()
          ->_add_css ()
-         ->_add_javascript ()
+         ->_add_js ()
          ;
   }
 
@@ -33,8 +33,8 @@ class Admin_controller extends Oa_controller {
     return $this;
   }
 
-  private function _add_javascript () {
-    return $this->add_javascript (base_url (utilitySameLevelPath (REL_PATH_JS, 'jquery_v1.10.2', 'jquery-1.10.2.min.js')))
+  private function _add_js () {
+    return $this->add_js (base_url (utilitySameLevelPath (REL_PATH_JS, 'jquery_v1.10.2', 'jquery-1.10.2.min.js')))
                 ;
   }
 }

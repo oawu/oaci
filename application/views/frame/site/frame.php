@@ -5,7 +5,7 @@
     <title><?php echo isset ($title) ? $title : ''; ?></title>
 
     <?php echo isset ($css) ? $css:''; ?>
-    <?php echo isset ($javascript) ? $javascript:''; ?>
+    <?php echo isset ($js) ? $js:''; ?>
   </head>
   <body lang="zh-tw">
     <?php echo isset ($hidden) ? $hidden:'';?>
