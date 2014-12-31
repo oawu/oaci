@@ -153,8 +153,11 @@ class Oa_controller extends Root_controller {
     if ($component_lists = array_map (function ($component_list) { return array_filter ($component_list, function ($component) { return preg_match ("|^(" . preg_quote (base_url ()) . ")|", $component); }); }, array_intersect_key ($this->get_component_lists (), array_flip (Cfg::system ('static', 'allow_keys'))))) {
       foreach ($component_lists as $key => $component_list) {
 
-        if (Cfg::system ('static', 'enable') && is_readable ($path = implode (DIRECTORY_SEPARATOR, array ($folder_path, Cfg::system ('static', 'file_prefix') . $this->get_class () . '_' . $this->get_method () . '.' . $key))))
+        if (Cfg::system ('static', 'enable') && is_readable ($path = implode (DIRECTORY_SEPARATOR, array ($folder_path, Cfg::system ('static', 'file_prefix') . $this->get_class () . '_' . $this->get_method () . '.' . $key)))) {
+          $this->component_lists[$key] = array_diff ($this->component_lists[$key], $component_list);
+          array_push ($this->component_lists[$key], base_url (array (implode ('/', Cfg::system ('static', 'assets_folder')), Cfg::system ('static', 'file_prefix') . $this->get_class () . '_' . $this->get_method () . '.' . $key)));
           continue;
+        }
 
         $data = Cfg::system ('static', 'minify') ? $this->minify->$key->min (implode ('', array_map (function ($component) { return read_file (FCPATH . preg_replace ("|^(" . preg_quote (base_url ()) . ")|", '', $component)); }, $component_list))) : implode ('', array_map (function ($component) { return read_file (FCPATH . preg_replace ("|^(" . preg_quote (base_url ()) . ")|", '', $component)); }, $component_list));
         $path = implode (DIRECTORY_SEPARATOR, array ($folder_path, Cfg::system ('static', 'file_prefix') . $this->get_class () . '_' . $this->get_method () . '.' . $key));

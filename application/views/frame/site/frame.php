@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <?php echo isset ($meta) ? $meta:''; ?>
-    <title><?php echo isset ($title) ? $title : ''; ?></title>
+    <?php echo isset ($meta) ? $meta:'';?>
 
-    <?php echo isset ($css) ? $css:''; ?>
-    <?php echo isset ($js) ? $js:''; ?>
+    <title><?php echo isset ($title) ? $title : '';?></title>
+
+<?php echo isset ($css) ? $css : '';?>
+
+<?php echo isset ($js) ? $js : '';?>
+
   </head>
   <body lang="zh-tw">
-    <?php echo isset ($hidden) ? $hidden:'';?>
+    <?php echo isset ($hidden) ? $hidden : '';?>
 
     <?php echo isset ($content) ? $content : '';?>
   </body>

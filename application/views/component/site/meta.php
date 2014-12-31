@@ -5,4 +5,4 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-if ($meta_list) foreach ($meta_list as $meta) echo oa_meta ($meta);
+if ($meta_list) foreach ($meta_list as $meta) echo oa_meta ($meta) . (ENVIRONMENT !== 'production' ? "\n" : '');

@@ -9,5 +9,5 @@ $static['allow_keys'] = array ('css', 'js');
 $static['assets_folder'] = array ('assets');
 $static['file_prefix'] = 'static_';
 
-$static['enable'] = false;  // sec
-$static['minify'] = true;  // sec
+$static['enable'] = true;
+$static['minify'] = true;
