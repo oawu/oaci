@@ -11,5 +11,7 @@ class Main extends Delay_controller {
   }
 
   public function index () {
+    $sec = $this->input_post ('sec');
+    sleep ($sec);
   }
 }

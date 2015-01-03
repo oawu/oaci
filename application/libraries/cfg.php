@@ -9,10 +9,11 @@ class Cfg {
   }
 
   public static function __callStatic ($name, $arguments) {
-    if (!function_exists ('config') && ($CI =& get_instance ())) {
-      $CI->load->helper ('oa');      
-    }
-    
-    return config ($arguments, $name);
+    if (!function_exists ('config') && ($CI =& get_instance ()))
+      $CI->load->helper ('oa');
+
+    $is_cache = preg_match ("|^(_)|", $name) && ($name = preg_replace ("|^(_)|", '', $name)) ? false : true;
+
+    return config ($arguments, $name, $is_cache);
   }
 }

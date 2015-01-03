@@ -468,9 +468,10 @@ class CI_Output {
 	 */
 	function _write_cache($output)
 	{
-    if (($CI =& get_instance ()) && !isset ($CI->cfg))
-      $CI->load->library ('cfg');
-		$path = Cfg::system ('output', 'cache_folder');
+    	if (($CI =& get_instance ()) && !isset ($CI->cfg))
+      		$CI->load->library ('cfg');
+
+		$path = Cfg::system ('cache', 'output');
 
 		$ori_path = ($path == '') ? APPPATH.'cache/' : $path;
 		$cache_path = $ori_path . ($this->cache_append_path == null ? '' : $this->cache_append_path);
@@ -531,8 +532,10 @@ class CI_Output {
 	{
 		// require_once (FCPATH . APPPATH . 'helpers' . DIRECTORY_SEPARATOR . 'config_helper.php');
 		// $path = Cfg::system ('output', 'cache_folder');
-		require_once (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'output.php');
-		$path = $output['cache_folder'];
+		// require_once (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'output.php');
+		// $path = $output['cache_folder'];
+		require_once (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'cache.php');
+		$path = $cache['output'];
 
 		$ori_path = ($path == '') ? APPPATH.'cache/' : $path;
 		$cache_path = $ori_path . ($this->cache_append_path == null ? '' : $this->cache_append_path);

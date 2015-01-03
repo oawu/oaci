@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class MY_Output extends CI_Output {
- 
+
  /**
   * Deletes an output cache file from a given uri
   *
@@ -13,8 +13,9 @@ class MY_Output extends CI_Output {
  {
   if (($CI =& get_instance ()) && !isset ($CI->cfg))
     $CI->load->library ('cfg');
-  $path = Cfg::system ('output', 'cache_folder');
-  
+
+  $path = Cfg::system ('cache', 'output');
+
   $cache_path = (($path == '') ? APPPATH.'cache/' : $path) . ($cache_append_path == null ? '' : $cache_append_path);
 
   $uri = $CI->config->item('base_url').
@@ -45,8 +46,9 @@ class MY_Output extends CI_Output {
 
   if (($CI =& get_instance ()) && !isset ($CI->cfg))
     $CI->load->library ('cfg');
-  $path = Cfg::system ('output', 'cache_folder');
-  
+
+  $path = Cfg::system ('cache', 'output');
+
   $cache_path = (($path == '') ? APPPATH.'cache/' : $path);
 
   $CI->load->helper ('directory');
@@ -56,4 +58,4 @@ class MY_Output extends CI_Output {
 // END MY Output Class
 
 /* End of file MY_Output.php */
-/* Location: ./application/core/MY_Output.php */ 
+/* Location: ./application/core/MY_Output.php */

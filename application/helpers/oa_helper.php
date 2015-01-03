@@ -17,18 +17,18 @@ if (!function_exists ('_config_recursive')) {
 }
 
 if (!function_exists ('config')) {
-  function config ($arguments, $forder = 'setting') {
+  function config ($arguments, $forder = 'setting', $is_cache = true) {
     $data = null;
     if ($levels = array_filter ($arguments)) {
       $key = '_config_' . $forder . '_|_' . implode ('_|_', $levels);
 
-      if (($CI =& get_instance ()) && !isset ($CI->cache))
+      if ($is_cache && ($CI =& get_instance ()) && !isset ($CI->cache))
         $CI->load->driver ('cache', array ('adapter' => 'apc', 'backup' => 'file'));
 
-      if (!($data = $CI->cache->file->get ($key)) && ($config_name = array_shift ($levels)) && is_readable ($path = utilitySameLevelPath (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . $forder . DIRECTORY_SEPARATOR . $config_name . EXT))) {
+      if ((!$is_cache || !($data = $CI->cache->file->get ($key))) && ($config_name = array_shift ($levels)) && is_readable ($path = utilitySameLevelPath (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . $forder . DIRECTORY_SEPARATOR . $config_name . EXT))) {
         include $path;
         $data = ($config_name = $$config_name) ? _config_recursive ($levels, $config_name) : null;
-        $CI->cache->file->save ($key, $data, 60 * 60);
+        $is_cache && $CI->cache->file->save ($key, $data, 60 * 60);
       }
     }
     return $data;
