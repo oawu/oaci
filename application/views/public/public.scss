@@ -17,27 +17,6 @@
   }
 }
 
-a {
-  color: rgba(42, 90, 149, 0.7);
-  font-weight: bold;
-  @include transition(all .3s);
-
-  &:hover {
-    color: rgba(12, 65, 109, .85);
-  }
-}
-
-*.clearfix {
-  *zoom: 1;
-
-  &:after {
-    display: table;
-    content: "";
-    line-height: 0;
-    clear: both;
-  }
-}
-
 html {
   height: 100%;
 

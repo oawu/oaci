@@ -1,0 +1,14 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 OA Wu Design
+ */
+
+@mixin a () {
+  color: rgba(42, 90, 149, 0.7);
+  font-weight: bold;
+  @include transition(all .3s);
+
+  &:hover {
+    color: rgba(12, 65, 109, .85);
+  }
+}
