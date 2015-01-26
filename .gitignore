@@ -17,6 +17,8 @@ temp/*
 
 upload/*
 
+assets/*
+
 compass/.sass-cache/*
 
 gulp/node_modules/*
