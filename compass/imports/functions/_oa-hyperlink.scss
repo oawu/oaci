@@ -3,12 +3,16 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-@mixin a () {
-  color: rgba(42, 90, 149, 0.7);
+@mixin a ($color: rgba(42, 90, 149, 0.7), $hoverColor: rgba(12, 65, 109, .85)) {
+  display: inline-block;
+  color: $color;
   font-weight: bold;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
   @include transition(all .3s);
 
   &:hover {
-    color: rgba(12, 65, 109, .85);
+    color: $hoverColor;
+    border-bottom: 1px solid $hoverColor;
   }
 }
