@@ -53,13 +53,13 @@ class PHPActiveRecord {
                 // This connection is the default for all models
                 $cfg->set_default_connection($active_group);
 
-                // To enable logging and profiling, install the Log library 
-                // from pear, create phpar.log inside of your application/logs 
+                // To enable logging and profiling, install the Log library
+                // from pear, create phpar.log inside of your application/logs
                 // directory, then uncomment the following block:
 
                 $log_file = APPPATH . 'logs/query-log.log';
                 include_once (FCPATH . 'Log.php');
-                $logger = Log::singleton ('file', $log_file, 'ident', array('mode' => 0664, 'timeFormat' => '%Y-%m-%d %H:%M:%S')); 
+                $logger = Log::singleton ('file', $log_file, 'ident', array('mode' => 0664, 'timeFormat' => '%Y-%m-%d %H:%M:%S'));
                 $cfg->set_logging (true);
                 $cfg->set_logger ($logger);
 
@@ -68,7 +68,7 @@ class PHPActiveRecord {
 
                 if (file_exists($log_file) and is_writable($log_file)) {
                     include 'Log.php';
-                    $logger = Log::singleton('file', $log_file ,'ident',array('mode' => 0664, 'timeFormat' =>  '%Y-%m-%d %H:%M:%S')); 
+                    $logger = Log::singleton('file', $log_file ,'ident',array('mode' => 0664, 'timeFormat' =>  '%Y-%m-%d %H:%M:%S'));
                     $cfg->set_logging(true);
                     $cfg->set_logger($logger);
                 } else {

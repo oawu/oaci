@@ -242,12 +242,15 @@ class Config extends Singleton
 	 */
 	public function get_model_directorise()
 	{
-		if (count ($this->model_directories))
-			foreach ($this->model_directories as $model_directory)
-				if (!file_exists($model_directory))
-					throw new ConfigException('Invalid or non-existent directory: '.$model_directory);
+		return array_filter (array_map (function ($model_directory) {
+			return file_exists($model_directory) ? $model_directory : null;
+		}, $this->model_directories));
+		// if ($this->model_directories)
+		// 	foreach ($this->model_directories as $model_directory)
+		// 		if (!file_exists($model_directory))
+		// 			throw new ConfigException('Invalid or non-existent directory: '.$model_directory);
 
-		return $this->model_directories;
+		// return $this->model_directories;
 	}
 
 	/**
