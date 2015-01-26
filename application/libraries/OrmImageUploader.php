@@ -24,7 +24,7 @@ class OrmImageUploader {
       $this->error = null;
     }
   }
-  
+
   public function getColumnValue ($column_name) {
     return isset ($this->orm->$column_name) ? $this->orm->$column_name : '';
   }
@@ -61,25 +61,25 @@ class OrmImageUploader {
     if (Cfg::system ('model', 'uploader', 'bucket', 'type') == 'local') {
       if (!(is_string ($key) && is_array ($version)))
         show_error ("The key and version format error!<br/>Please confirm your program again.");
-      
+
       if (!($versions = $this->getVersions ()) && !($versions = Cfg::system ('model', 'uploader', 'default_version')))
         show_error ("The versions format error!<br/>Please confirm your program again.");
 
       if (in_array ($key, array_keys ($versions)))
         return is_readable ($path = utilitySameLevelPath (FCPATH . DIRECTORY_SEPARATOR .Cfg::system ('model', 'uploader', 'bucket', 'local', 'base_directory') . DIRECTORY_SEPARATOR . $this->getSavePath () . DIRECTORY_SEPARATOR . $key . Cfg::system ('model', 'uploader', 'file_name', 'separate_symbol') . (string)$this)) ? $path : '';
-      
+
       foreach ($versions as $ori_key => $ori_version)
         if (!($path = '') && is_readable ($path = utilitySameLevelPath (FCPATH . DIRECTORY_SEPARATOR .Cfg::system ('model', 'uploader', 'bucket', 'local', 'base_directory') . DIRECTORY_SEPARATOR . $this->getSavePath () . DIRECTORY_SEPARATOR . $ori_key . Cfg::system ('model', 'uploader', 'file_name', 'separate_symbol') . ($fileName = (string)$this))))
           break;
 
       if (!$path)
         show_error ("There is not file can be used!<br/>Please confirm your program again.");
-      
+
       $separate_symbol = Cfg::system ('model', 'uploader', 'file_name', 'separate_symbol');
 
       $this->CI->load->library ('ImageUtility');
       $image = ImageUtility::create ($path, null, array ('resizeUp' => false));
-      
+
       try {
         if (!is_writable ($path = utilitySameLevelPath (FCPATH . DIRECTORY_SEPARATOR . Cfg::system ('model', 'uploader', 'bucket', 'local', 'base_directory') . DIRECTORY_SEPARATOR)))
           show_error ("The save base directory can not be 'write'!<br/>Directory : " . $path . "<br/>Please confirm your program again.");
@@ -125,7 +125,7 @@ class OrmImageUploader {
         return false;
       $separate_symbol = Cfg::system ('model', 'uploader', 'file_name', 'separate_symbol');
       $directory = FCPATH . DIRECTORY_SEPARATOR . Cfg::system ('model', 'uploader', 'bucket', 'local', 'base_directory') . DIRECTORY_SEPARATOR . $this->getSavePath () . DIRECTORY_SEPARATOR;
-      
+
       $result = true;
       foreach ($versions as $version)
         if (file_exists ($path = utilitySameLevelPath ($directory . DIRECTORY_SEPARATOR . $version . $separate_symbol . $this->column_value)))
@@ -240,7 +240,6 @@ class OrmImageUploader {
   }
 
   public static function bind ($column_name, $instance_class_name = null) {
-    $trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT);
     if (($trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)) && (count ($trace) > 1) && isset ($trace[1]) && isset ($trace[1]['object']) && is_object ($orm = $trace[1]['object']) && $column_name && strlen ($column_name)) {
 
       $CI =& get_instance ();
@@ -253,7 +252,7 @@ class OrmImageUploader {
         require_once $path;
       else
         $instance_class_name = get_called_class ();
-      
+
       $object = new $instance_class_name ($orm, $column_name);
     } else {
       show_error ("The create ModelUploader object happen unknown error...<br/>Please confirm your program again.");
