@@ -4,6 +4,7 @@
 * method 加上前綴字 **\_cache_**[^2] 即可開啟 cache 的功能
 * view 格式為 `controller_name/method_name.php`
 * cache 預設格式為 `_cell_|_controller_name_|_method_name`，預設前綴字格式為 **_cell**[^3]
+* 所有的 cell 相關設定接在	 `application/config/system/cell.php`，Library 則是 `application/libraries/cell.php`，在使用 `application/helpers/cell_helper.php` 讓其功能可被任意位置使用。
 
 
 ## Sample

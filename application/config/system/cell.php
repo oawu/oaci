@@ -4,6 +4,7 @@
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
+
 $cell['is_enabled'] = true;
 
 $cell['cache_folder']      = APPPATH . 'cell' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
