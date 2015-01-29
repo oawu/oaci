@@ -6,6 +6,8 @@
 @import "functions/_oa-input";
 @import "functions/_oa-button";
 @import "functions/_oa-hyperlink";
+@import "functions/_oa-alert";
+@import "functions/_oa-load";
 
 @mixin font-smoothing ($val: antialiased) {
   -moz-osx-font-smoothing: $val;
