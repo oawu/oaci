@@ -9,17 +9,18 @@ class Migrate extends CI_Controller {
 
   function __construct () {
     parent::__construct ();
-    $this->load->library ('migration');    
+    $this->load->library ('migration');
   }
 
   public function update () {
     if (!$this->migration->latest ())
-      if (!$this->migration->current ()) 
+      if (!$this->migration->current ())
         show_error ($this->migration->error_string ());
   }
 
   public function rollback ($version) {
-    if (!$this->migration->version ($version))
-      show_error ($this->migration->error_string ());
+    $this->migration->version ($version);
+    // if (!$this->migration->version ($version))
+    //   show_error ($this->migration->error_string ());
   }
 }

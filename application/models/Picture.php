@@ -8,6 +8,10 @@ class Picture extends OaModel {
 
   static $table_name = 'pictures';
 
+  static $belongs_to = array (
+    array ('user', 'class_name' => 'User')
+  );
+
   static $has_many = array (
   );
 
