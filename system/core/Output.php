@@ -449,8 +449,7 @@ class CI_Output {
 		}
 		else
 		{
-    	// echo preg_replace (array ('/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s'), array ('>', '<', '\\1'), $output);
-			echo $output;  // Send it to the browser!
+			echo ENVIRONMENT !== 'production' ? $output : preg_replace (array ('/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s'), array ('>', '<', '\\1'), $output);  // Send it to the browser!
 		}
 
 		log_message('debug', "Final output sent to browser");
