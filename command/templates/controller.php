@@ -15,6 +15,7 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   public function <?php echo $method;?> () {
     $this->load_view (null);
   }
+
 <?php
     }
   } ?>
