@@ -48,3 +48,16 @@ if (!function_exists ('delete_model')) {
     @unlink ($model_path);
   }
 }
+
+if (!function_exists ('delete_cell')) {
+  function delete_cell ($name) {
+    $name = strtolower ($name);
+    $class_suffix  = '_cells';
+
+    $controller_path = FCPATH . 'application/cell/controllers/' . $name . $class_suffix . EXT;
+    $views_path = FCPATH . 'application/cell/views/' . $name . $class_suffix . '/';
+
+    @directory_delete ($views_path);
+    @unlink ($controller_path);
+  }
+}

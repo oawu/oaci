@@ -34,11 +34,11 @@ include 'functions/create.php';
       break;
 
     case 'migration':
-      create_migration ($name, $action);
+      $results = create_migration ($name, $action);
       break;
 
     case 'cell':
-      create_cell ($name, array_merge (array ($action), $argv));
+      $results = create_cell ($name, array_merge (array ($action), $argv));
       break;
   }
 

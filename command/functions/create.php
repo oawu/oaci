@@ -104,6 +104,7 @@ if (!function_exists ('create_model')) {
 
 if (!function_exists ('create_migration')) {
   function create_migration ($name, $action) {
+    $results = array ();
     $name = strtolower ($name);
     $action = ($action == '-e') || ($action == '-edit') ? 'edit' : 'add';
 
@@ -124,11 +125,15 @@ if (!function_exists ('create_migration')) {
 
     if (!write_file ($migrations_path . $file_name, $date))
       console_error ("寫檔失敗!");
+
+    array_push ($results, $migrations_path . $file_name);
+    return $results;
   }
 }
 
 if (!function_exists ('create_cell')) {
   function create_cell ($name, $methods = array ()) {
+    $results = array ();
     $name = strtolower ($name);
     $methods = array_filter ($methods);
 
@@ -152,6 +157,8 @@ if (!function_exists ('create_cell')) {
     if (!write_file ($controller_path = $controllers_path . $file_name . EXT, $date))
       console_error ("新增 controller 失敗!");
 
+    array_push ($results, $controller_path);
+
     $oldmask = umask (0);
     @mkdir ($view_path = $views_path . $file_name . '/', 0777, true);
     umask ($oldmask);
@@ -161,10 +168,11 @@ if (!function_exists ('create_cell')) {
       console_error ("新增 controller 失敗!");
     }
 
-    if (!array_filter (array_map (function ($method) use ($view_path) { return write_file ($view_path . $method . EXT, ''); }, $methods)) && $methods) {
+    if (!array_filter (array_map (function ($method) use ($view_path, &$results) { return write_file ($method_path = $view_path . $method . EXT, '') ? array_push ($results, $method_path) : null; }, $methods)) && $methods) {
       @directory_delete ($view_path);
       @unlink ($controller_path);
       console_error ("新增 view 失敗!");
     }
+    return $results;
   }
 }

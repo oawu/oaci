@@ -32,12 +32,8 @@ include 'functions/delete.php';
       delete_model ($name);
       break;
 
-    case 'migration':
-      // create_migration ($name, $action);
-      break;
-
     case 'cell':
-      // create_cell ($name, array_merge (array ($action), $argv));
+      delete_cell ($name);
       break;
   }
   // success ('新增成功!');
