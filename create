@@ -1,4 +1,2 @@
 <?php
-
-exec ('cd command && php ' . implode(' ', $argv));
-
+  include 'command/create.php';

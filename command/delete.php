@@ -5,11 +5,11 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-define ('EXT', '.php');
-define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));
-define ('FCPATH', dirname (str_replace (SELF, '', __FILE__)) . '/');
+  define ('EXT', '.php');
+  define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));
+  define ('FCPATH', dirname (str_replace (SELF, '', __FILE__)) . '/');
 
-include 'functions/delete.php';
+  include 'functions/delete.php';
 
   //       file     type         name              action
   // =============================================================
@@ -21,7 +21,6 @@ include 'functions/delete.php';
   $type   = array_shift ($argv);
   $name   = array_shift ($argv);
   $action = array_shift ($argv);
-
 
   switch ($type) {
     case 'controller':
