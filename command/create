@@ -13,8 +13,8 @@ include 'functions/create.php';
 
   //       file     type         name              action
   // =============================================================
-  // php   create   controller   controller_name   [site|admin|delay]
-  // php   create   model        name              [-pic column_name]
+  // php   create   controller   controller_name   [site | admin | delay]
+  // php   create   model        model_name        [-p column_name1, column_name2...]
   // php   create   migration    table_name        [add|edit]
 
   $file   = array_shift ($argv);
@@ -24,12 +24,13 @@ include 'functions/create.php';
 
   switch ($type) {
     case 'controller':
-      if ($action) create_controller ($name, $action);
-      else echo "參數錯誤!\n";
+      create_controller ($name, $action);
       break;
-    case 'model':
 
+    case 'model':
+      create_model ($name, (($action == '-p') || ($action == '-pic')) && $argv ? $argv : array ());
       break;
+
     case 'migration':
 
       break;

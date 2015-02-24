@@ -21,10 +21,10 @@ if (!function_exists ('create_controller')) {
       console_log ("名稱重複!");
 
     if (!is_writable ($controllers_path) || !is_writable ($contents_path))
-      echo "無法有寫入的權限!\n";
+      console_log ("無法有寫入的權限!");
 
     $methods = array ('index');
-    $date = "<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');\n\n" . load_view ('templates/controller.php', array ('name' => $name, 'action' => $action, 'methods' => $methods));
+    $date = "<?php" . load_view ('templates/controller.php', array ('name' => $name, 'action' => $action, 'methods' => $methods));
 
     if (write_file ($name_controller_path = $controllers_path . $name . EXT, $date)) {
       $oldmask = umask (0);
@@ -53,7 +53,39 @@ if (!function_exists ('create_controller')) {
         @unlink ($name_controller_path);
       }
     } else {
-      echo "新增 controller 失敗!\n";
+      console_log ("新增 controller 失敗!");
     }
+  }
+}
+
+if (!function_exists ('create_model')) {
+  function create_model ($name, $columns) {
+    $name = singularize ($name);
+
+    $models_path = FCPATH . 'application/models/';
+    $models = array_map (function ($t) { return basename ($t, EXT); }, directory_map ($models_path, 1));
+
+    if ($models && in_array (ucfirst ($name), $models))
+      console_log ("名稱重複!");
+
+    if (!is_writable ($models_path))
+      console_log ("無法有寫入的權限!");
+
+    $uploaders_path = FCPATH . 'application/third_party/orm_image_uploaders/';
+    $uploaders = array_map (function ($t) { return basename ($t, EXT); }, directory_map ($uploaders_path, 1));
+
+    if (!is_writable ($uploaders_path))
+      console_log ("Uploader 無法有寫入的權限!");
+
+    $columns = array_filter (array_map (function ($column) use ($name, $uploaders_path, $uploaders) {
+      $uploader = ucfirst (camelize ($name)) . ucfirst ($column) . 'Uploader';
+      if (!in_array ($uploader, $uploaders) && write_file ($uploaders_path . $uploader . EXT, "<?php" . load_view ('templates/uploader.php', array ('name' => $uploader))))
+        return $column;
+      return null;
+    }, $columns));
+
+    $date = "<?php" . load_view ('templates/model.php', array ('name' => $name, 'columns' => $columns));
+    if (!write_file ($models_path . ucfirst (camelize ($name)) . EXT, $date))
+      array_map (function ($column) use ($name, $uploaders_path) { @unlink ($uploaders_path . ucfirst (camelize ($name)) . ucfirst ($column) . 'Uploader' . EXT); }, $columns);
   }
 }
