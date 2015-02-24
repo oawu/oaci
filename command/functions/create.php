@@ -73,7 +73,7 @@ if (!function_exists ('create_model')) {
     if (!is_writable ($uploaders_path))
       console_log ("Uploader 無法有寫入的權限!");
 
-    $columns = array_filter (array_map (function ($column) use ($name, $uploaders_path, $uploaders) {
+    $columns = array_filter (array_map (function ($column) use ($name, $uploaders_path, $uploaders, $uploader_class_suffix) {
       $column = strtolower ($column);
       $uploader = ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix;
 
@@ -84,7 +84,7 @@ if (!function_exists ('create_model')) {
 
     $date = "<?php" . load_view ('templates/model.php', array ('name' => $name, 'columns' => $columns));
     if (!write_file ($models_path . ucfirst (camelize ($name)) . EXT, $date))
-      array_map (function ($column) use ($name, $uploaders_path) { @unlink ($uploaders_path . $uploader . EXT); }, $columns);
+      array_map (function ($column) use ($name, $uploaders_path, $uploader_class_suffix) { @unlink ($uploaders_path . ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix . EXT); }, $columns);
   }
 }
 
