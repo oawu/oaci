@@ -8,7 +8,7 @@
 include 'functions.php';
 
 if (!function_exists ('create_controller')) {
-  function create_controller ($name, $action) {
+  function create_controller ($name, $action, $methods = array ('index')) {
     $action = $action ? $action : 'site';
 
     $controllers_path = FCPATH . 'application/controllers/' . ($action != 'site' ? $action . '/': '');
@@ -23,7 +23,6 @@ if (!function_exists ('create_controller')) {
     if (!is_writable ($controllers_path) || !is_writable ($contents_path))
       console_log ("無法有寫入的權限!");
 
-    $methods = array ('index');
     $date = "<?php" . load_view ('templates/controller.php', array ('name' => $name, 'action' => $action, 'methods' => $methods));
 
     if (write_file ($name_controller_path = $controllers_path . $name . EXT, $date)) {
