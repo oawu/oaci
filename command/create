@@ -23,6 +23,7 @@ include 'functions/create.php';
   $name   = array_shift ($argv);
   $action = array_shift ($argv);
 
+
   switch ($type) {
     case 'controller':
       create_controller ($name, $action);
@@ -40,3 +41,4 @@ include 'functions/create.php';
       create_cell ($name, array_merge (array ($action), $argv));
       break;
   }
+  success ('新增成功!');

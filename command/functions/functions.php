@@ -36,17 +36,14 @@ if (!function_exists ('directory_delete')) {
     if (!$current_dir = @opendir ($dir))
       return false;
 
-    while (false !== ($filename = @readdir ($current_dir))) {
-      if (($filename != '.') and ($filename != '..')) {
+    while (false !== ($filename = @readdir ($current_dir)))
+      if (($filename != '.') and ($filename != '..'))
         if (is_dir ($dir . DIRECTORY_SEPARATOR . $filename)) {
-          if (substr ($filename, 0, 1) != '.') {
+          if (substr ($filename, 0, 1) != '.')
             directory_delete ($dir . DIRECTORY_SEPARATOR . $filename);
-          }
         } else {
           @unlink ($dir . DIRECTORY_SEPARATOR . $filename);
         }
-      }
-    }
     @closedir ($current_dir);
 
     return $is_root ? @rmdir ($dir) : false;
@@ -147,6 +144,24 @@ if (!function_exists ('color')) {
   }
 }
 
+if (!function_exists ('console_error')) {
+  function console_error () {
+    $messages = array_filter (func_get_args ());
+    $db_line = color (str_repeat ('=', 70), 'N') . "\n";
+    $line = color (str_repeat ('-', 70), 'w') . "\n";
+
+    echo "\n" .
+          $db_line .
+          color ('  ERROR!', 'r') . color (" - ", 'R') . color (array_shift ($messages), 'W') . "\n" .
+          $db_line;
+          $messages = implode ("", array_map (function ($message) {
+                                    return color ('  ' . $message, 'w') . "\n";
+                                  }, $messages));
+    echo $messages ? $messages . $db_line : '';
+    echo "\n";
+    exit ();
+  }
+}
 if (!function_exists ('console_log')) {
   function console_log () {
     $messages = array_filter (func_get_args ());
@@ -155,7 +170,7 @@ if (!function_exists ('console_log')) {
 
     echo "\n" .
           $db_line .
-          color ('  ERROR!', 'r') . color (" - ", 'R') . color (array_shift ($messages), 'W') . "\n" .
+          color ('  Success!', 'G') . color (" - ", 'R') . color (array_shift ($messages), 'W') . "\n" .
           $db_line;
           $messages = implode ("", array_map (function ($message) {
                                     return color ('  ' . $message, 'w') . "\n";
