@@ -37,6 +37,6 @@ include 'functions/create.php';
       break;
 
     case 'cell':
-
+      create_cell ($name, array_merge (array ($action), $argv));
       break;
   }

@@ -9,6 +9,7 @@ include 'functions.php';
 
 if (!function_exists ('create_controller')) {
   function create_controller ($name, $action, $methods = array ('index')) {
+    $name = strtolower ($name);
     $action = $action ? $action : 'site';
 
     $controllers_path = FCPATH . 'application/controllers/' . ($action != 'site' ? $action . '/': '');
@@ -25,34 +26,37 @@ if (!function_exists ('create_controller')) {
 
     $date = "<?php" . load_view ('templates/controller.php', array ('name' => $name, 'action' => $action, 'methods' => $methods));
 
-    if (write_file ($name_controller_path = $controllers_path . $name . EXT, $date)) {
+    if (!write_file ($controller_path = $controllers_path . $name . EXT, $date))
+      console_log ("新增 controller 失敗!");
+
+    $oldmask = umask (0);
+    @mkdir ($view_path = $contents_path . $name . '/', 0777, true);
+    umask ($oldmask);
+
+    if (!is_writable ($view_path)) {
+      @unlink ($controller_path);
+      console_log ("新增 view 失敗!");
+    }
+
+    array_map (function ($method) use ($view_path) {
       $oldmask = umask (0);
-      @mkdir ($name_view_path = $contents_path . $name . '/', 0777, true);
+      @mkdir ($view_path . $method . '/', 0777, true);
       umask ($oldmask);
 
-      if (!is_writable ($name_view_path))
-        return @unlink ($name_controller_path);
+      if (!is_writable ($view_path . $method . '/'))
+        return null;
 
-      array_map (function ($method) use ($name_view_path) {
-        $oldmask = umask (0);
-        @mkdir ($name_view_path . $method . '/', 0777, true);
-        umask ($oldmask);
-
-        if (!is_writable ($name_view_path . $method . '/'))
-          return null;
-
-        $files = array ('content.css', 'content.scss', 'content.js', 'content.php');
-        array_map (function ($file) use ($name_view_path, $method) { write_file ($name_view_path . $method . '/' . $file, load_view ('templates/' . $file)); }, $files);
-      }, $methods);
-    } else {
-      console_log ("新增 controller 失敗!");
-    }
+      $files = array ('content.css', 'content.scss', 'content.js', 'content.php');
+      array_map (function ($file) use ($view_path, $method) { write_file ($view_path . $method . '/' . $file, load_view ('templates/' . $file)); }, $files);
+    }, $methods);
   }
 }
 
 if (!function_exists ('create_model')) {
   function create_model ($name, $columns) {
     $name = singularize ($name);
+
+    $uploader_class_suffix = 'Uploader';
 
     $models_path = FCPATH . 'application/models/';
     $models = array_map (function ($t) { return basename ($t, EXT); }, directory_map ($models_path, 1));
@@ -71,7 +75,7 @@ if (!function_exists ('create_model')) {
 
     $columns = array_filter (array_map (function ($column) use ($name, $uploaders_path, $uploaders) {
       $column = strtolower ($column);
-      $uploader = ucfirst (camelize ($name)) . ucfirst ($column) . 'Uploader';
+      $uploader = ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix;
 
       if (!in_array ($uploader, $uploaders) && write_file ($uploaders_path . $uploader . EXT, "<?php" . load_view ('templates/uploader.php', array ('name' => $uploader))))
         return $column;
@@ -80,12 +84,13 @@ if (!function_exists ('create_model')) {
 
     $date = "<?php" . load_view ('templates/model.php', array ('name' => $name, 'columns' => $columns));
     if (!write_file ($models_path . ucfirst (camelize ($name)) . EXT, $date))
-      array_map (function ($column) use ($name, $uploaders_path) { @unlink ($uploaders_path . ucfirst (camelize ($name)) . ucfirst ($column) . 'Uploader' . EXT); }, $columns);
+      array_map (function ($column) use ($name, $uploaders_path) { @unlink ($uploaders_path . $uploader . EXT); }, $columns);
   }
 }
 
 if (!function_exists ('create_migration')) {
   function create_migration ($name, $action) {
+    $name = strtolower ($name);
     $action = ($action == '-e') || ($action == '-edit') ? 'edit' : 'add';
 
     $migrations_path = FCPATH . 'application/migrations/';
@@ -105,5 +110,47 @@ if (!function_exists ('create_migration')) {
 
     if (!write_file ($migrations_path . $file_name, $date))
       console_log ("寫檔失敗!");
+  }
+}
+
+if (!function_exists ('create_cell')) {
+  function create_cell ($name, $methods = array ()) {
+    $name = strtolower ($name);
+    $methods = array_filter ($methods);
+
+    $class_suffix  = '_cells';
+    $method_prefix = '_cache_';
+
+    $controllers_path = FCPATH . 'application/cell/controllers/';
+    $views_path = FCPATH . 'application/cell/views/';
+
+    $controllers = array_map (function ($t) { return basename ($t, EXT); }, directory_map ($controllers_path, 1));
+    $views = directory_map ($views_path, 1);
+
+    if (!is_writable ($controllers_path) || !is_writable ($views_path))
+      console_log ("無法有寫入的權限!");
+
+    if (($controllers && in_array ($file_name = $name . $class_suffix, $controllers)) || ($views && in_array ($file_name, $views)))
+      console_log ("名稱錯誤!");
+
+    $date = "<?php" . load_view ('templates/cell.php', array ('file_name' => $file_name, 'name' => $name, 'methods' => $methods, 'method_prefix' => $method_prefix));
+
+    if (!write_file ($controller_path = $controllers_path . $file_name . EXT, $date))
+      console_log ("新增 controller 失敗!");
+
+    $oldmask = umask (0);
+    @mkdir ($view_path = $views_path . $file_name . '/', 0777, true);
+    umask ($oldmask);
+
+    if (!is_writable ($view_path)) {
+      @unlink ($controller_path);
+      console_log ("新增 controller 失敗!");
+    }
+
+    if (!array_filter (array_map (function ($method) use ($view_path) { return write_file ($view_path . $method . EXT, ''); }, $methods)) && $methods) {
+      @directory_delete ($view_path);
+      @unlink ($controller_path);
+      console_log ("新增 view 失敗!");
+    }
   }
 }

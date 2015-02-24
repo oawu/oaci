@@ -29,6 +29,29 @@ if (!function_exists ('directory_map')) {
   }
 }
 
+if (!function_exists ('directory_delete')) {
+  function directory_delete ($dir, $is_root = true) {
+    $dir = rtrim ($dir, DIRECTORY_SEPARATOR);
+
+    if (!$current_dir = @opendir ($dir))
+      return false;
+
+    while (false !== ($filename = @readdir ($current_dir))) {
+      if (($filename != '.') and ($filename != '..')) {
+        if (is_dir ($dir . DIRECTORY_SEPARATOR . $filename)) {
+          if (substr ($filename, 0, 1) != '.') {
+            directory_delete ($dir . DIRECTORY_SEPARATOR . $filename);
+          }
+        } else {
+          @unlink ($dir . DIRECTORY_SEPARATOR . $filename);
+        }
+      }
+    }
+    @closedir ($current_dir);
+
+    return $is_root ? @rmdir ($dir) : false;
+  }
+}
 if (!function_exists ('read_file')) {
   function read_file ($file) {
     if (!file_exists ($file)) return false;
