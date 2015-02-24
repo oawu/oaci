@@ -111,7 +111,7 @@ if (!function_exists ('create_migration')) {
       case '-e': case '-edit':
         $action = 'edit'; break;
 
-      case '-d': case '-delete': case '-drop':
+      case '-d': case '-delete': case '-del': case '-drop':
         $action = 'drop'; break;
 
       default:
