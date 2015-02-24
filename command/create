@@ -14,8 +14,9 @@ include 'functions/create.php';
   //       file     type         name              action
   // =============================================================
   // php   create   controller   controller_name   [site | admin | delay]
-  // php   create   model        model_name        [-p column_name1, column_name2...]
-  // php   create   migration    table_name        [add|edit]
+  // php   create   model        model_name        [(-p | -pic) column_name1, column_name2...]
+  // php   create   migration    table_name        [(-a | -add) | (-e | -edit)]
+  // php   create   cell         cell_name         [method_name1, method_name2...]
 
   $file   = array_shift ($argv);
   $type   = array_shift ($argv);
@@ -32,6 +33,10 @@ include 'functions/create.php';
       break;
 
     case 'migration':
+      create_migration ($name, $action);
+      break;
+
+    case 'cell':
 
       break;
   }
