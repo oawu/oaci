@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 OA Wu Design
+ */
+
+define ('EXT', '.php');
+define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));
+define ('FCPATH', dirname (str_replace (SELF, '', __FILE__)) . '/');
+
+include 'functions/delete.php';
+
+  //       file     type         name              action
+  // =============================================================
+  // php   delete   controller   controller_name   [site | admin | delay]
+  // php   delete   model        model_name
+  // php   delete   cell         cell_name
+
+  $file   = array_shift ($argv);
+  $type   = array_shift ($argv);
+  $name   = array_shift ($argv);
+  $action = array_shift ($argv);
+
+
+  switch ($type) {
+    case 'controller':
+      $result = delete_controller ($name, $action);
+      break;
+
+    case 'model':
+      delete_model ($name);
+      break;
+
+    case 'migration':
+      // create_migration ($name, $action);
+      break;
+
+    case 'cell':
+      // create_cell ($name, array_merge (array ($action), $argv));
+      break;
+  }
+  // success ('新增成功!');

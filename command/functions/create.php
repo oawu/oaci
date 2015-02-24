@@ -9,6 +9,7 @@ include 'functions.php';
 
 if (!function_exists ('create_controller')) {
   function create_controller ($name, $action, $methods = array ('index')) {
+    $results = array ();
     $name = strtolower ($name);
     $action = $action ? $action : 'site';
 
@@ -29,6 +30,8 @@ if (!function_exists ('create_controller')) {
     if (!write_file ($controller_path = $controllers_path . $name . EXT, $date))
       console_error ("新增 controller 失敗!");
 
+    array_push ($results, $controller_path);
+
     $oldmask = umask (0);
     @mkdir ($view_path = $contents_path . $name . '/', 0777, true);
     umask ($oldmask);
@@ -38,7 +41,7 @@ if (!function_exists ('create_controller')) {
       console_error ("新增 view 失敗!");
     }
 
-    array_map (function ($method) use ($view_path) {
+    array_map (function ($method) use ($view_path, &$results) {
       $oldmask = umask (0);
       @mkdir ($view_path . $method . '/', 0777, true);
       umask ($oldmask);
@@ -47,8 +50,13 @@ if (!function_exists ('create_controller')) {
         return null;
 
       $files = array ('content.css', 'content.scss', 'content.js', 'content.php');
-      array_map (function ($file) use ($view_path, $method) { write_file ($view_path . $method . '/' . $file, load_view ('templates/' . $file)); }, $files);
+      array_map (function ($file) use ($view_path, $method, &$results) {
+        if (write_file ($view_path . $method . '/' . $file, load_view ('templates/' . $file)))
+          array_push ($results, $view_path . $method . '/' . $file);
+      }, $files);
     }, $methods);
+
+    return $results;
   }
 }
 
@@ -154,9 +162,3 @@ if (!function_exists ('create_cell')) {
     }
   }
 }
-if (!function_exists ('success')) {
-  function success () {
-    call_user_func_array ('console_log', func_get_args ());
-  }
-}
-// console_log ('asd', 'dsad');
