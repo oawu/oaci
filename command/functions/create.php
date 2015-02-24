@@ -62,6 +62,7 @@ if (!function_exists ('create_controller')) {
 
 if (!function_exists ('create_model')) {
   function create_model ($name, $columns) {
+    $results = array ();
     $name = singularize ($name);
 
     $uploader_class_suffix = 'Uploader';
@@ -81,18 +82,23 @@ if (!function_exists ('create_model')) {
     if (!is_writable ($uploaders_path))
       console_error ("Uploader 無法有寫入的權限!");
 
-    $columns = array_filter (array_map (function ($column) use ($name, $uploaders_path, $uploaders, $uploader_class_suffix) {
+    $columns = array_filter (array_map (function ($column) use ($name, $uploaders_path, $uploaders, $uploader_class_suffix, &$results) {
       $column = strtolower ($column);
       $uploader = ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix;
 
-      if (!in_array ($uploader, $uploaders) && write_file ($uploaders_path . $uploader . EXT, "<?php" . load_view ('templates/uploader.php', array ('name' => $uploader))))
+      if (!in_array ($uploader, $uploaders) && write_file ($uploader_path = $uploaders_path . $uploader . EXT, "<?php" . load_view ('templates/uploader.php', array ('name' => $uploader))) && array_push ($results, $uploader_path))
         return $column;
       return null;
     }, $columns));
 
     $date = "<?php" . load_view ('templates/model.php', array ('name' => $name, 'columns' => $columns));
-    if (!write_file ($models_path . ucfirst (camelize ($name)) . EXT, $date))
+    if (!write_file ($model_path = $models_path . ucfirst (camelize ($name)) . EXT, $date)) {
       array_map (function ($column) use ($name, $uploaders_path, $uploader_class_suffix) { @unlink ($uploaders_path . ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix . EXT); }, $columns);
+      console_error ("新增 model 失敗!");
+    }
+
+    array_push ($results, $model_path);
+    return $results;
   }
 }
 

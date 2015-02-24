@@ -26,17 +26,25 @@ if (!function_exists ('delete_model')) {
 
     $uploader_class_suffix = 'Uploader';
 
-    $model_path = FCPATH . 'application/models/' . $name;
-    echo $model_path;
+    $model_path = FCPATH . 'application/models/' . ucfirst (camelize ($name)) . EXT;
+    $content = read_file ($model_path);
 
+    preg_match_all ('/OrmImageUploader::bind\s*\((?P<k>.*)\);/', $content, $uploaders);
 
-    // $name = strtolower ($name);
-    // $action = $action ? $action : 'site';
+    $uploaders = array_map (function ($uploader) use ($name, $uploader_class_suffix) {
+      return isset ($uploader[1]) ? $uploader[1] : ucfirst (camelize ($name)) . $uploader_class_suffix;
+    }, array_map (function ($uploader) {
+      $pattern = '/(["\'])(?P<kv>(?>[^"\'\\\]++|\\\.|(?!\1)["\'])*)\1?/';
+      preg_match_all ($pattern, $uploader, $uploaders);
+      return $uploaders['kv'];
+    }, $uploaders['k']));
 
-    // $controller_path = FCPATH . 'application/controllers/' . ($action != 'site' ? $action . '/': '') . $name . EXT;
-    // $contents_path = FCPATH . 'application/views/content/' . $action . '/' . $name . '/';
+    $uploaders_path = FCPATH . 'application/third_party/orm_image_uploaders/';
 
-    // @directory_delete ($contents_path);
-    // @unlink ($controller_path);
+    array_map (function ($uploader) use ($uploaders_path) {
+      @unlink ($uploaders_path . $uploader . EXT);
+    }, $uploaders);
+
+    @unlink ($model_path);
   }
 }
