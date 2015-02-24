@@ -25,15 +25,20 @@ include 'functions/delete.php';
 
   switch ($type) {
     case 'controller':
-      $result = delete_controller ($name, $action);
+      $results = delete_controller ($name, $action);
       break;
 
     case 'model':
-      delete_model ($name);
+      $results = delete_model ($name);
       break;
 
     case 'cell':
-      delete_cell ($name);
+      $results = delete_cell ($name);
       break;
   }
-  // success ('新增成功!');
+
+  $results = array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, $results);
+
+  array_unshift ($results, '刪除成功!');
+  call_user_func_array ('console_log', $results);
+

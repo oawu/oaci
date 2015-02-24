@@ -37,7 +37,7 @@ if (!function_exists ('create_controller')) {
     umask ($oldmask);
 
     if (!is_writable ($view_path)) {
-      @unlink ($controller_path);
+      delete_file ($controller_path);
       console_error ("新增 view 失敗!");
     }
 
@@ -93,7 +93,7 @@ if (!function_exists ('create_model')) {
 
     $date = "<?php" . load_view ('templates/model.php', array ('name' => $name, 'columns' => $columns));
     if (!write_file ($model_path = $models_path . ucfirst (camelize ($name)) . EXT, $date)) {
-      array_map (function ($column) use ($name, $uploaders_path, $uploader_class_suffix) { @unlink ($uploaders_path . ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix . EXT); }, $columns);
+      array_map (function ($column) use ($name, $uploaders_path, $uploader_class_suffix) { delete_file ($uploaders_path . ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix . EXT); }, $columns);
       console_error ("新增 model 失敗!");
     }
 
@@ -106,7 +106,17 @@ if (!function_exists ('create_migration')) {
   function create_migration ($name, $action) {
     $results = array ();
     $name = strtolower ($name);
-    $action = ($action == '-e') || ($action == '-edit') ? 'edit' : 'add';
+
+    switch ($action) {
+      case '-e': case '-edit':
+        $action = 'edit'; break;
+
+      case '-d': case '-delete': case '-drop':
+        $action = 'drop'; break;
+
+      default:
+        $action = 'add'; break;
+    }
 
     $migrations_path = FCPATH . 'application/migrations/';
     $migrations = array_filter (array_map (function ($t) { return '.' . pathinfo ($t, PATHINFO_EXTENSION) == EXT ? basename ($t, EXT) : null; }, directory_map ($migrations_path, 1)));
@@ -164,13 +174,13 @@ if (!function_exists ('create_cell')) {
     umask ($oldmask);
 
     if (!is_writable ($view_path)) {
-      @unlink ($controller_path);
+      delete_file ($controller_path);
       console_error ("新增 controller 失敗!");
     }
 
     if (!array_filter (array_map (function ($method) use ($view_path, &$results) { return write_file ($method_path = $view_path . $method . EXT, '') ? array_push ($results, $method_path) : null; }, $methods)) && $methods) {
       @directory_delete ($view_path);
-      @unlink ($controller_path);
+      delete_file ($controller_path);
       console_error ("新增 view 失敗!");
     }
     return $results;

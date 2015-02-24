@@ -29,8 +29,16 @@ if (!function_exists ('directory_map')) {
   }
 }
 
+if (!function_exists ('delete_file')) {
+  function delete_file ($file_path) {
+    $temp = file_exists ($file_path);
+    @unlink ($file_path);
+    return $temp && !file_exists ($file_path);
+  }
+}
+
 if (!function_exists ('directory_delete')) {
-  function directory_delete ($dir, $is_root = true) {
+  function directory_delete ($dir, $is_root = true, &$path = null) {
     $dir = rtrim ($dir, DIRECTORY_SEPARATOR);
 
     if (!$current_dir = @opendir ($dir))
@@ -40,9 +48,10 @@ if (!function_exists ('directory_delete')) {
       if (($filename != '.') and ($filename != '..'))
         if (is_dir ($dir . DIRECTORY_SEPARATOR . $filename)) {
           if (substr ($filename, 0, 1) != '.')
-            directory_delete ($dir . DIRECTORY_SEPARATOR . $filename);
+            directory_delete ($dir . DIRECTORY_SEPARATOR . $filename, true, $path);
         } else {
-          @unlink ($dir . DIRECTORY_SEPARATOR . $filename);
+          if (delete_file ($p = $dir . DIRECTORY_SEPARATOR . $filename))
+            array_push ($path, $p);
         }
     @closedir ($current_dir);
 
@@ -155,7 +164,7 @@ if (!function_exists ('console_error')) {
           color ('  ERROR!', 'r') . color (" - ", 'R') . color (array_shift ($messages), 'W') . "\n" .
           $db_line;
           $messages = implode ("", array_map (function ($message) {
-                                    return color ('  ' . $message, 'w') . "\n";
+                                    return '  ' . color ('Message: ', 'R') . color ($message, 'w') . "\n";
                                   }, $messages));
     echo $messages ? $messages . $db_line : '';
     echo "\n";
@@ -170,7 +179,7 @@ if (!function_exists ('console_log')) {
 
     echo "\n" .
           $db_line .
-          color ('  Success!', 'G') . color (" - ", 'R') . color (array_shift ($messages), 'W') . "\n" .
+          color ('  Success!', 'C') . color (" - ", 'R') . color (array_shift ($messages), 'W') . "\n" .
           $db_line;
           $messages = implode ("", array_map (function ($message) {
                                     return color ('  ' . $message, 'w') . "\n";
