@@ -4,3 +4,12 @@
  */
 
 @import "_oa";
+
+.container {
+  width: $mainWidth;
+  margin: 0 auto;
+
+  .list {
+    @include table-list();
+  }
+}

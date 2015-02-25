@@ -8,6 +8,7 @@
 @import "functions/_oa-hyperlink";
 @import "functions/_oa-alert";
 @import "functions/_oa-load";
+@import "functions/_oa-table";
 
 @mixin font-smoothing ($val: antialiased) {
   -moz-osx-font-smoothing: $val;
