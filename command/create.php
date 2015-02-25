@@ -8,7 +8,6 @@
   define ('EXT', '.php');
   define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));
   define ('FCPATH', dirname (str_replace (SELF, '', __FILE__)) . '/');
-  define ('TEMP_PATH', FCPATH . 'command/templates/');
 
   include 'functions/create.php';
 
@@ -23,22 +22,23 @@
   $type   = array_shift ($argv);
   $name   = array_shift ($argv);
   $action = array_shift ($argv);
+  $temp_path = FCPATH . 'command/templates/create/';
 
   switch ($type) {
     case 'controller':
-      $results = create_controller ($name, $action);
+      $results = create_controller ($temp_path, $name, $action);
       break;
 
     case 'model':
-      $results = create_model ($name, (($action == '-p') || ($action == '-pic')) && $argv ? $argv : array ());
+      $results = create_model ($temp_path, $name, (($action == '-p') || ($action == '-pic')) && $argv ? $argv : array ());
       break;
 
     case 'migration':
-      $results = create_migration ($name, $action);
+      $results = create_migration ($temp_path, $name, $action);
       break;
 
     case 'cell':
-      $results = create_cell ($name, array_merge (array ($action), $argv));
+      $results = create_cell ($temp_path, $name, array_merge (array ($action), $argv));
       break;
   }
 
