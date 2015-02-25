@@ -10,10 +10,11 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
   static $table_name = '<?php echo pluralize ($name);?>';
 
   static $has_one = array (
+    array ('last_article', 'class_name' => 'Article', 'order' => 'id DESC'),
   );
 
   static $has_many = array (
-    array ('articles', 'class_name' => 'Article'),
+    array ('articles', 'class_name' => 'Article')
   );
 
   static $belongs_to = array (

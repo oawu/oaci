@@ -38,10 +38,43 @@
 
 
 
-  // $temp_path = FCPATH . 'command/templates/demo/user/';
-  // $name = 'user';
-  // $action = array ('avatar');
-  // create_model ($temp_path, $name, $action);
+
+  $temp_path = FCPATH . 'command/templates/demo/user/';
+  $name = 'user';
+  $action = array ('avatar');
+  create_model ($temp_path, $name, $action);
+
+  $temp_path = FCPATH . 'command/templates/demo/article/';
+  $name = 'article';
+  $action = array ();
+  create_model ($temp_path, $name, $action);
+
+  $temp_path = FCPATH . 'command/templates/demo/tag/';
+  $name = 'tag';
+  $action = array ();
+  create_model ($temp_path, $name, $action);
+
+  $temp_path = FCPATH . 'command/templates/demo/tag_article_map/';
+  $name = 'tag_article_map';
+  $action = array ();
+  create_model ($temp_path, $name, $action);
+
+  $temp_path = FCPATH . 'command/templates/demo/comment/';
+  $name = 'comment';
+  $action = array ();
+  create_model ($temp_path, $name, $action);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

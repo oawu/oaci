@@ -13,6 +13,9 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
   );
 
   static $has_many = array (
+    array ('tag_article_maps', 'class_name' => 'TagArticleMap'),
+
+    array ('articles', 'class_name' => 'Article', 'through' => 'tag_article_maps')
   );
 
   static $belongs_to = array (
