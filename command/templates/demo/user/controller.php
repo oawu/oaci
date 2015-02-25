@@ -10,14 +10,33 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   public function __construct () {
     parent::__construct ();
   }
-<?php
-  if ($methods) {
-    foreach ($methods as $method) { ?>
 
-  public function <?php echo $method;?> () {
+  public function index () {
+    $users = User::all ();
+    $this->load_view (array ('users' => $users));
+  }
+
+  public function show () {
     $this->load_view (null);
   }
-<?php
-    }
-  } ?>
+
+  public function add () {
+    $this->load_view (null);
+  }
+
+  public function create () {
+    $this->load_view (null);
+  }
+
+  public function edit () {
+    $this->load_view (null);
+  }
+
+  public function update () {
+    $this->load_view (null);
+  }
+
+  public function destroy () {
+    $this->load_view (null);
+  }
 }

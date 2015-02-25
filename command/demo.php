@@ -11,6 +11,18 @@
 
   include 'functions/create.php';
 
+// Tag
+// TagEventMap
+// Event
+// Attendee
+
+
+
+
+
+
+
+
   // $temp_path = FCPATH . 'command/templates/demo/user/';
   // $name = 'user';
   // $action = 'add';
@@ -68,12 +80,15 @@
 
 
 
+  // $temp_path = FCPATH . 'command/templates/demo/user/';
+  // $name = 'user';
+  // $action = 'site';
+  // $results = create_controller ($temp_path, $name, $action, array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy'));
+
   $temp_path = FCPATH . 'command/templates/demo/user/';
-  $name = 'user';
-  $action = 'site';
-  $results = create_controller ($temp_path, $name, $action, array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy'));
-
-
+  $name = 'demo';
+  $action = array ('main_menu');
+  create_cell ($temp_path, $name, $action);
 
 
 
