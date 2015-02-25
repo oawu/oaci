@@ -8,6 +8,7 @@
   define ('EXT', '.php');
   define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));
   define ('FCPATH', dirname (str_replace (SELF, '', __FILE__)) . '/');
+  define ('TEMP_PATH', FCPATH . 'command/templates/');
 
   include 'functions/delete.php';
 

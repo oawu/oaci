@@ -25,7 +25,7 @@ if (!function_exists ('create_controller')) {
     if (!is_writable ($controllers_path) || !is_writable ($contents_path))
       console_error ("無法有寫入的權限!");
 
-    $date = "<?php" . load_view ('templates/controller.php', array ('name' => $name, 'action' => $action, 'methods' => $methods));
+    $date = "<?php" . load_view (TEMP_PATH . 'controller.php', array ('name' => $name, 'action' => $action, 'methods' => $methods));
 
     if (!write_file ($controller_path = $controllers_path . $name . EXT, $date))
       console_error ("新增 controller 失敗!");
@@ -51,7 +51,7 @@ if (!function_exists ('create_controller')) {
 
       $files = array ('content.css', 'content.scss', 'content.js', 'content.php');
       array_map (function ($file) use ($view_path, $method, &$results) {
-        if (write_file ($view_path . $method . '/' . $file, load_view ('templates/' . $file)))
+        if (write_file ($view_path . $method . '/' . $file, load_view (TEMP_PATH . $file)))
           array_push ($results, $view_path . $method . '/' . $file);
       }, $files);
     }, $methods);
@@ -86,12 +86,12 @@ if (!function_exists ('create_model')) {
       $column = strtolower ($column);
       $uploader = ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix;
 
-      if (!in_array ($uploader, $uploaders) && write_file ($uploader_path = $uploaders_path . $uploader . EXT, "<?php" . load_view ('templates/uploader.php', array ('name' => $uploader))) && array_push ($results, $uploader_path))
+      if (!in_array ($uploader, $uploaders) && write_file ($uploader_path = $uploaders_path . $uploader . EXT, "<?php" . load_view (TEMP_PATH . 'uploader.php', array ('name' => $uploader))) && array_push ($results, $uploader_path))
         return $column;
       return null;
     }, $columns));
 
-    $date = "<?php" . load_view ('templates/model.php', array ('name' => $name, 'columns' => $columns));
+    $date = "<?php" . load_view (TEMP_PATH . 'model.php', array ('name' => $name, 'columns' => $columns));
     if (!write_file ($model_path = $models_path . ucfirst (camelize ($name)) . EXT, $date)) {
       array_map (function ($column) use ($name, $uploaders_path, $uploader_class_suffix) { delete_file ($uploaders_path . ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix . EXT); }, $columns);
       console_error ("新增 model 失敗!");
@@ -131,7 +131,7 @@ if (!function_exists ('create_migration')) {
     else
       $file_name .= EXT;
 
-    $date = "<?php" . load_view ('templates/migration.php', array ('name' => $name, 'action' => $action));
+    $date = "<?php" . load_view (TEMP_PATH . 'migration.php', array ('name' => $name, 'action' => $action));
 
     if (!write_file ($migrations_path . $file_name, $date))
       console_error ("寫檔失敗!");
@@ -162,7 +162,7 @@ if (!function_exists ('create_cell')) {
     if (($controllers && in_array ($file_name = $name . $class_suffix, $controllers)) || ($views && in_array ($file_name, $views)))
       console_error ("名稱錯誤!");
 
-    $date = "<?php" . load_view ('templates/cell.php', array ('file_name' => $file_name, 'name' => $name, 'methods' => $methods, 'method_prefix' => $method_prefix));
+    $date = "<?php" . load_view (TEMP_PATH . 'cell.php', array ('file_name' => $file_name, 'name' => $name, 'methods' => $methods, 'method_prefix' => $method_prefix));
 
     if (!write_file ($controller_path = $controllers_path . $file_name . EXT, $date))
       console_error ("新增 controller 失敗!");
