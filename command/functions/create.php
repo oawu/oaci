@@ -124,12 +124,13 @@ if (!function_exists ('create_migration')) {
     if (!is_writable ($migrations_path))
       console_error ("無法有寫入的權限!");
 
-    $count = sprintf ("%03d", max (array_map (function ($migration) { return substr ($migration, 0, strpos ($migration, '_')); }, $migrations)) + 1);
+    $temp = array_map (function ($migration) { return substr ($migration, 0, strpos ($migration, '_')); }, $migrations);
+    $count = sprintf ("%03d", ($temp ? max ($temp) : 0) + 1);
 
-    if ($migrations && in_array ($file_name = $count . '_' . $action . '_' . pluralize ($name), $migrations))
+    if ($migrations && in_array ($count . '_' . $action . '_' . pluralize ($name), $migrations))
       console_error ("名稱錯誤!");
     else
-      $file_name .= EXT;
+      $file_name = $count . '_' . $action . '_' . pluralize ($name) . EXT;
 
     $date = "<?php" . load_view ($temp_path . 'migration.php', array ('name' => $name, 'action' => $action));
 
