@@ -13,7 +13,6 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
   );
 
   static $has_many = array (
-    array ('articles', 'class_name' => 'Article'),
   );
 
   static $belongs_to = array (
