@@ -9,6 +9,8 @@
 @import "functions/_oa-alert";
 @import "functions/_oa-load";
 @import "functions/_oa-table";
+@import "functions/_oa-textarea";
+@import "functions/_oa-paper";
 
 @mixin font-smoothing ($val: antialiased) {
   -moz-osx-font-smoothing: $val;

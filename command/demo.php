@@ -10,7 +10,7 @@
   define ('FCPATH', dirname (str_replace (SELF, '', __FILE__)) . '/');
 
   include 'functions/create.php';
-// echo pluralize('attendee');
+
 // Tag
 // TagEventMap
 // Event
@@ -59,6 +59,8 @@
   // create_model ($temp_path, $name, $action);
 
 
+// ------------------------------------------------------------------------------------------------------------
+
 
   // $temp_path = FCPATH . 'command/templates/demo/cell/';
   // $name = 'demo';
@@ -66,13 +68,15 @@
   // create_cell ($temp_path, $name, $action);
 
 
+// ------------------------------------------------------------------------------------------------------------
+
 
   // $temp_path = FCPATH . 'command/templates/demo/event/';
   // $name = 'event';
   // $action = 'site';
   // $results = create_controller ($temp_path, $name, $action, array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy'));
 
-  // $temp_path = FCPATH . 'command/templates/demo/event/';
+  // $temp_path = FCPATH . 'command/templates/demo/event/cell/';
   // $name = 'event';
   // $action = array ('main_menu');
   // create_cell ($temp_path, $name, $action);

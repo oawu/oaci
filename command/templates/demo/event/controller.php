@@ -12,8 +12,9 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   }
 
   public function index () {
+    $message = identity ()->get_session ('_flash_message', true);
     $events = Event::all ();
-    $this->load_view (array ('events' => $events));
+    $this->load_view (array ('events' => $events, 'message' => $message));
   }
 
   public function show () {
@@ -21,11 +22,22 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   }
 
   public function add () {
-    $this->load_view (null);
+    $message = identity ()->get_session ('_flash_message', true);
+    $this->load_view (array ('message' => $message));
   }
 
   public function create () {
-    $this->load_view (null);
+    $title = trim ($this->input_post ('title'));
+    $info  = trim ($this->input_post ('info'));
+    $cover = $this->input_post ('cover', true, true);
+
+    if (verifyCreateOrm ($event = Event::create (array ('title' => $title, 'info' => $info, 'cover' => ''))) && $event->cover->put ($cover)) {
+      identity ()->set_session ('_flash_message', '新增成功!', true);
+      redirect (array ($this->get_class (), 'index'), 'refresh');
+    } else {
+      identity ()->set_session ('_flash_message', '新增失敗!', true);
+      redirect (array ($this->get_class (), 'add'), 'refresh');
+    }
   }
 
   public function edit () {
