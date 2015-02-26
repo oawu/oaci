@@ -182,9 +182,8 @@ if (!function_exists ('create_cell')) {
       console_error ("新增 controller 失敗!");
     }
 
-    $date = is_readable ($temp_path . 'cell_content.php') ? load_view ($temp_path . 'cell_content.php', array ()) : '';
 
-    if (!array_filter (array_map (function ($method) use ($view_path, &$results) { return write_file ($method_path = $view_path . $method . EXT, $date) ? array_push ($results, $method_path) : null; }, $methods)) && $methods) {
+    if (!array_filter (array_map (function ($method) use ($view_path, $temp_path, &$results) { return write_file ($method_path = $view_path . $method . EXT, is_readable ($path = $temp_path . $method . '/content.php') ? load_view ($path) : '') ? array_push ($results, $method_path) : null; }, $methods)) && $methods) {
       @directory_delete ($view_path);
       delete_file ($controller_path);
       console_error ("新增 view 失敗!");

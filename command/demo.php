@@ -67,15 +67,15 @@
 
 
 
-  $temp_path = FCPATH . 'command/templates/demo/event/';
-  $name = 'event';
-  $action = 'site';
-  $results = create_controller ($temp_path, $name, $action, array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy'));
+  // $temp_path = FCPATH . 'command/templates/demo/event/';
+  // $name = 'event';
+  // $action = 'site';
+  // $results = create_controller ($temp_path, $name, $action, array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy'));
 
-  $temp_path = FCPATH . 'command/templates/demo/event/';
-  $name = 'event';
-  $action = array ('main_menu');
-  create_cell ($temp_path, $name, $action);
+  // $temp_path = FCPATH . 'command/templates/demo/event/';
+  // $name = 'event';
+  // $action = array ('main_menu');
+  // create_cell ($temp_path, $name, $action);
 
 
 
