@@ -10,7 +10,7 @@ include 'functions.php';
 if (!function_exists ('delete_controller')) {
   function delete_controller ($name, $action) {
     $results = array ();
-    $name = strtolower ($name);
+    $name = pluralize (strtolower ($name));
     $action = $action ? $action : 'site';
 
     $controller_path = FCPATH . 'application/controllers/' . ($action != 'site' ? $action . '/': '') . $name . EXT;
