@@ -84,7 +84,7 @@ class Root_controller extends CI_Controller {
     return $index = trim ($index) && ($gets = $this->input->get ()) && isset ($gets[$index]) ? $xss_clean ? $this->security->xss_clean ($gets[$index]) : $gets[$index] : null;
   }
 
-  protected function input_post ($index = null, $xss_clean = true, $is_files = false) {
+  protected function input_post ($index = null, $is_files = false, $xss_clean = true) {
     return !$is_files ? $index = trim ($index) && ($posts = $this->input->post ()) && isset ($posts[$index]) ? $xss_clean ? $this->security->xss_clean ($posts[$index]) : $posts[$index] : null : $this->_getPostFiles (trim ($index));
   }
 
