@@ -9,13 +9,16 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
 
   static $table_name = '<?php echo pluralize ($name);?>';
 
+  static $validates_uniqueness_of = array (
+    array (array ('tag_id', 'event_id'), 'message' => 'columns(tag_id, event_id) Repeat!')
+  );
+
   static $has_one = array (
   );
 
   static $has_many = array (
-    array ('tag_event_maps', 'class_name' => 'TagEventMap'),
-
-    array ('events', 'class_name' => 'Event', 'through' => 'tag_event_maps')
+    array ('tags', 'class_name' => 'Tag'),
+    array ('events', 'class_name' => 'Event')
   );
 
   static $belongs_to = array (

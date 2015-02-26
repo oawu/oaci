@@ -10,12 +10,14 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
   static $table_name = '<?php echo pluralize ($name);?>';
 
   static $has_one = array (
+    array ('first_attendee', 'class_name' => 'Attendee', 'order' => 'id ASC'),
   );
 
   static $has_many = array (
     array ('tag_event_maps', 'class_name' => 'TagEventMap'),
 
-    array ('events', 'class_name' => 'Event', 'through' => 'tag_event_maps')
+    array ('attendees', 'class_name' => 'Attendee'),
+    array ('tags', 'class_name' => 'Tag', 'through' => 'tag_event_maps')
   );
 
   static $belongs_to = array (
