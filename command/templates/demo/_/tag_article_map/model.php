@@ -9,10 +9,16 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
 
   static $table_name = '<?php echo pluralize ($name);?>';
 
+  static $validates_uniqueness_of = array (
+    array (array ('tag_id', 'article_id'), 'message' => 'columns(tag_id, article_id) Repeat!')
+  );
+
   static $has_one = array (
   );
 
   static $has_many = array (
+    array ('tags', 'class_name' => 'Tag'),
+    array ('articles', 'class_name' => 'Article')
   );
 
   static $belongs_to = array (
@@ -25,7 +31,7 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
 
 <?php
       foreach ($columns as $column) { ?>
-    OrmImageUploader::bind ('<?php echo $column; ?>', '<?php echo ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix; ?>');
+    OrmImageUploader::bind ('<?php echo $column; ?>', '<?php echo ucfirst (camelize ($name)) . ucfirst ($column) . 'Uploader'; ?>');
 <?php
       }
     } ?>

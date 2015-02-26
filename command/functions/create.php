@@ -10,7 +10,7 @@ include 'functions.php';
 if (!function_exists ('create_controller')) {
   function create_controller ($temp_path, $name, $action, $methods = array ('index')) {
     $results = array ();
-    $name = strtolower ($name);
+    $name = pluralize (strtolower ($name));
     $action = $action ? $action : 'site';
 
     $controllers_path = FCPATH . 'application/controllers/' . ($action != 'site' ? $action . '/': '');
@@ -25,7 +25,7 @@ if (!function_exists ('create_controller')) {
     if (!is_writable ($controllers_path) || !is_writable ($contents_path))
       console_error ("無法有寫入的權限!");
 
-    $date = "<?php" . load_view ($temp_path . 'controller.php', array ('name' => $name, 'action' => $action, 'methods' => $methods));
+    $date = load_view ($temp_path . 'controller.php', array ('name' => $name, 'action' => $action, 'methods' => $methods));
 
     if (!write_file ($controller_path = $controllers_path . $name . EXT, $date))
       console_error ("新增 controller 失敗!");
@@ -42,6 +42,9 @@ if (!function_exists ('create_controller')) {
     }
 
     array_map (function ($method) use ($view_path, $temp_path, &$results) {
+      if (!file_exists ($temp_path . $method))
+        return null;
+
       $oldmask = umask (0);
       @mkdir ($view_path . $method . '/', 0777, true);
       umask ($oldmask);
@@ -86,12 +89,12 @@ if (!function_exists ('create_model')) {
       $column = strtolower ($column);
       $uploader = ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix;
 
-      if (!in_array ($uploader, $uploaders) && write_file ($uploader_path = $uploaders_path . $uploader . EXT, "<?php" . load_view ($temp_path . 'uploader.php', array ('name' => $uploader))) && array_push ($results, $uploader_path))
+      if (!in_array ($uploader, $uploaders) && write_file ($uploader_path = $uploaders_path . $uploader . EXT, load_view ($temp_path . 'uploader.php', array ('name' => $uploader))) && array_push ($results, $uploader_path))
         return $column;
       return null;
     }, $columns));
 
-    $date = "<?php" . load_view ($temp_path . 'model.php', array ('name' => $name, 'columns' => $columns));
+    $date = load_view ($temp_path . 'model.php', array ('name' => $name, 'columns' => $columns, 'uploader_class_suffix' => $uploader_class_suffix));
     if (!write_file ($model_path = $models_path . ucfirst (camelize ($name)) . EXT, $date)) {
       array_map (function ($column) use ($name, $uploaders_path, $uploader_class_suffix) { delete_file ($uploaders_path . ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix . EXT); }, $columns);
       console_error ("新增 model 失敗!");
@@ -132,7 +135,7 @@ if (!function_exists ('create_migration')) {
     else
       $file_name = $count . '_' . $action . '_' . pluralize ($name) . EXT;
 
-    $date = "<?php" . load_view ($temp_path . 'migration.php', array ('name' => $name, 'action' => $action));
+    $date = load_view ($temp_path . 'migration.php', array ('name' => $name, 'action' => $action));
 
     if (!write_file ($migrations_path . $file_name, $date))
       console_error ("寫檔失敗!");
@@ -163,7 +166,7 @@ if (!function_exists ('create_cell')) {
     if (($controllers && in_array ($file_name = $name . $class_suffix, $controllers)) || ($views && in_array ($file_name, $views)))
       console_error ("名稱錯誤!");
 
-    $date = "<?php" . load_view ($temp_path . 'cell.php', array ('file_name' => $file_name, 'name' => $name, 'methods' => $methods, 'method_prefix' => $method_prefix));
+    $date = load_view ($temp_path . 'cell.php', array ('file_name' => $file_name, 'name' => $name, 'methods' => $methods, 'method_prefix' => $method_prefix));
 
     if (!write_file ($controller_path = $controllers_path . $file_name . EXT, $date))
       console_error ("新增 controller 失敗!");
@@ -179,7 +182,9 @@ if (!function_exists ('create_cell')) {
       console_error ("新增 controller 失敗!");
     }
 
-    if (!array_filter (array_map (function ($method) use ($view_path, &$results) { return write_file ($method_path = $view_path . $method . EXT, '') ? array_push ($results, $method_path) : null; }, $methods)) && $methods) {
+    $date = is_readable ($temp_path . 'cell_content.php') ? load_view ($temp_path . 'cell_content.php', array ()) : '';
+
+    if (!array_filter (array_map (function ($method) use ($view_path, &$results) { return write_file ($method_path = $view_path . $method . EXT, $date) ? array_push ($results, $method_path) : null; }, $methods)) && $methods) {
       @directory_delete ($view_path);
       delete_file ($controller_path);
       console_error ("新增 view 失敗!");

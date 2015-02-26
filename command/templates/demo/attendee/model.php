@@ -1,4 +1,4 @@
- if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+{<{<{ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
@@ -16,6 +16,7 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
   );
 
   static $belongs_to = array (
+    array ('event', 'class_name' => 'Event'),
   );
 
   public function __construct ($attributes = array (), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) {

@@ -16,6 +16,7 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
   );
 
   static $belongs_to = array (
+    array ('article', 'class_name' => 'Article'),
   );
 
   public function __construct ($attributes = array (), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) {
@@ -25,7 +26,7 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
 
 <?php
       foreach ($columns as $column) { ?>
-    OrmImageUploader::bind ('<?php echo $column; ?>', '<?php echo ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix; ?>');
+    OrmImageUploader::bind ('<?php echo $column; ?>', '<?php echo ucfirst (camelize ($name)) . ucfirst ($column) . 'Uploader'; ?>');
 <?php
       }
     } ?>

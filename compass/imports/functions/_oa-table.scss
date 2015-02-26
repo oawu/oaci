@@ -1,0 +1,88 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 OA Wu Design
+ */
+
+@mixin table-list () {
+  margin: 10px 0;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  $borderRadius: 3px;
+
+  &, &:after, &:before, *, *:after, *:before {
+      @include box-sizing(border-box);
+  }
+  thead {
+    tr {
+      background-color: rgba(39, 40, 34, .15);
+
+      &:first-child {
+        th {
+          &:first-child {
+            @include border-top-left-radius($borderRadius);
+          }
+          &:last-child {
+            @include border-top-right-radius($borderRadius);
+          }
+        }
+      }
+      &:not(:first-child) {
+        th {
+          border-top: 0;
+        }
+      }
+      th {
+        border: 1px solid rgba(39, 40, 34, .25);
+        border-right: 0;
+
+        &:last-child {
+          border-right: 1px solid rgba(39, 40, 34, .25);
+        }
+        padding: 5px;
+        text-align: center;
+      }
+    }
+  }
+  tbody {
+    tr {
+      &:last-child {
+        td {
+          &:first-child {
+            background-color: rgba(0, 128, 0, 0.2);
+            @include border-bottom-left-radius($borderRadius);
+          }
+          &:last-child {
+            @include border-bottom-right-radius($borderRadius);
+          }
+        }
+      }
+      &:hover {
+        background-color: rgba(39, 40, 34, .03);
+      }
+      td {
+        border: 1px solid rgba(39, 40, 34, .25);
+        border-right: 0;
+        border-top: 0;
+
+        &:last-child {
+          border-right: 1px solid rgba(39, 40, 34, .25);
+        }
+        padding: 5px 8px;
+        text-align: center;
+
+        svg {
+          @include transition(all .3s);
+          @include svg-color(rgba(39, 40, 34, .6), rgba(39, 40, 34, 1));
+        }
+        input[type='text'] {
+          @include input();
+          width: 100%;
+        }
+        a {
+          @include a(rgba(39, 40, 34, .6), rgba(39, 40, 34, 1), false);
+        }
+      }
+    }
+  }
+}
