@@ -12,13 +12,16 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   }
 
   public function index () {
-    $message = identity ()->get_session ('_flash_message', true);
     $events = Event::all ();
+    $message = identity ()->get_session ('_flash_message', true);
     $this->load_view (array ('events' => $events, 'message' => $message));
   }
 
-  public function show () {
-    $this->load_view (null);
+  public function show ($id) {
+    if (!$event = Event::find_by_id ($id))
+      redirect (array ($this->get_class (), 'index'));
+
+    $this->load_view (array ('event' => $event));
   }
 
   public function add () {
