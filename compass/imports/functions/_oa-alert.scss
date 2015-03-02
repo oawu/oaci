@@ -3,11 +3,13 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-@mixin alert ($type: 'error') {
+@mixin alert ($type: 'danger', $shadow: true) {
   padding: 3px 8px;
   @include border-radius(4px);
-  @include box-shadow(0 4px 8px rgba(0,0,0,.175));
 
+  @if $shadow == true {
+    @include box-shadow(0 4px 8px rgba(0,0,0,.175));
+  }
   @if $type == 'success' {
     color: rgba(60, 118, 61, 1);
     background-color: rgba(223, 240, 216, 1);

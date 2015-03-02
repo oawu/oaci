@@ -215,7 +215,7 @@ if ( ! function_exists('img'))
 		foreach ($src as $k=>$v)
 		{
 
-			if ($k == 'src' AND strpos($v, '://') === FALSE)
+			if ($k == 'src' AND strpos($v, '://') === FALSE AND strpos($v, 'data:image') === FALSE)
 			{
 				$CI =& get_instance();
 
@@ -443,9 +443,9 @@ if ( ! function_exists('nbs'))
  * @param    string    type
  * @param    string    charset
  * @param    string    defer
- * @param    boolean    should index_page be added to the script path path 
+ * @param    boolean    should index_page be added to the script path path
  * @return   string
- */ 
+ */
 if ( ! function_exists('script_tag')) {
     function script_tag($src = '', $language = 'javascript', $type = 'text/javascript', $index_page = FALSE)
     {
