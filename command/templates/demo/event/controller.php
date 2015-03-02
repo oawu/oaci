@@ -12,7 +12,7 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   }
 
   public function index () {
-    $events = Event::all ();
+    $events = Event::all (array ('include' => array ('attendees')));
     $message = identity ()->get_session ('_flash_message', true);
     $this->load_view (array ('events' => $events, 'message' => $message));
   }
