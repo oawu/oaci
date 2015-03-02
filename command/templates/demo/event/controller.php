@@ -5,7 +5,7 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-class Events extends Site_controller {
+class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_controller {
 
   public function __construct () {
     parent::__construct ();
