@@ -29,6 +29,7 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   public function create () {
     $title = trim ($this->input_post ('title'));
     $info  = trim ($this->input_post ('info'));
+    $tag_ids  = $this->input_post ('tag_ids');
     $cover = $this->input_post ('cover', true, true);
 
     if (!($title && $info && $cover)) {
@@ -37,6 +38,11 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
     }
 
     if (verifyCreateOrm ($event = Event::create (array ('title' => $title, 'info' => $info, 'cover' => ''))) && $event->cover->put ($cover)) {
+      if ($tag_ids)
+        array_map (function ($tag) use ($event) {
+          return verifyCreateOrm (TagEventMap::create (array ('tag_id' => $tag->id, 'event_id' => $event->id)));
+        }, Tag::find ('all', array ('select' => 'id', 'conditions' => array ('id IN (?)', $tag_ids))));
+
       identity ()->set_session ('_flash_message', '新增成功!', true);
       return redirect (array ($this->get_class (), 'index'), 'refresh');
     } else {
@@ -59,6 +65,7 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
 
     $title = trim ($this->input_post ('title'));
     $info  = trim ($this->input_post ('info'));
+    $tag_ids = ($tag_ids = $this->input_post ('tag_ids')) ? $tag_ids : array ();
     $cover = $this->input_post ('cover', true, true);
 
     if (!($title && $info)) {
@@ -68,6 +75,15 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
 
     $event->title = $title;
     $event->info = $info;
+
+    $old_tag_ids = field_array ($event->tag_event_maps, 'tag_id');
+    if ($delete_tag_ids = array_diff ($old_tag_ids, $tag_ids))
+      $a = TagEventMap::delete_all (array ('conditions' => array ('tag_id IN (?)', $delete_tag_ids)));
+
+    if ($create_tag_ids = array_diff ($tag_ids, $old_tag_ids))
+      array_map (function ($tag) use ($event) {
+        return verifyCreateOrm (TagEventMap::create (array ('tag_id' => $tag->id, 'event_id' => $event->id)));
+      }, Tag::find ('all', array ('select' => 'id', 'conditions' => array ('id IN (?)', $create_tag_ids))));
 
     if ($event->save () && (!$cover || $event->cover->put ($cover))) {
       identity ()->set_session ('_flash_message', '修改成功!', true);
@@ -81,6 +97,9 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   public function destroy ($id) {
     if (!$event = Event::find_by_id ($id))
       redirect (array ($this->get_class (), 'index'));
+
+    if ($old_tag_ids = field_array ($event->tag_event_maps, 'tag_id'))
+      TagEventMap::delete_all (array ('conditions' => array ('tag_id IN (?)', $old_tag_ids)));
 
     if ($event->cover->cleanAllFiles () && $event->delete ())
       identity ()->set_session ('_flash_message', '刪除成功!', true);

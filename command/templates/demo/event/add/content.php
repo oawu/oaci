@@ -28,6 +28,20 @@
           </td>
         </tr>
         <tr>
+          <th>標籤</th>
+          <td>
+      {<{<{ if ($tags = Tag::all ()) {
+              foreach ($tags as $tag) { ?>
+                <div class='checkbox'>
+                  <input type='checkbox' name='tag_ids[]' id='tag_{<{<{ echo $tag->id;?>' value='{<{<{ echo $tag->id;?>' />
+                  <span class='ckb-check'></span>
+                  <label for='tag_{<{<{ echo $tag->id;?>'>{<{<{ echo $tag->name;?></label>
+                </div>
+        {<{<{ }
+            }?>
+          </td>
+        </tr>
+        <tr>
           <td colspan='2'>
             <button type='reset' class='button'>重填</button>
             <button type='submit' class='button'>確定</button>

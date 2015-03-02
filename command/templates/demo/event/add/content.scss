@@ -41,5 +41,8 @@
     .button {
       @include button('blue', false);
     }
+    .checkbox {
+      @include checkbox('blue', false);
+    }
   }
 }
