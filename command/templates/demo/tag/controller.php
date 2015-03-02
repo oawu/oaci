@@ -13,8 +13,8 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
 
   public function index () {
     $message = identity ()->get_session ('_flash_message', true);
-    $events = Event::all ();
-    $this->load_view (array ('events' => $events, 'message' => $message));
+    $tags = Tag::all ();
+    $this->load_view (array ('tags' => $tags, 'message' => $message));
   }
 
   public function show () {
@@ -27,16 +27,14 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   }
 
   public function create () {
-    $title = trim ($this->input_post ('title'));
-    $info  = trim ($this->input_post ('info'));
-    $cover = $this->input_post ('cover', true, true);
+    $name = trim ($this->input_post ('name'));
 
-    if (!($title && $info && $cover)) {
+    if (!$name) {
       identity ()->set_session ('_flash_message', '輸入資訊有誤!', true);
       return redirect (array ($this->get_class (), 'add'), 'refresh');
     }
 
-    if (verifyCreateOrm ($event = Event::create (array ('title' => $title, 'info' => $info, 'cover' => ''))) && $event->cover->put ($cover)) {
+    if (verifyCreateOrm ($tag = Tag::create (array ('name' => $name)))) {
       identity ()->set_session ('_flash_message', '新增成功!', true);
       return redirect (array ($this->get_class (), 'index'), 'refresh');
     } else {
@@ -46,30 +44,27 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   }
 
   public function edit ($id) {
-    if (!$event = Event::find_by_id ($id))
+    if (!$tag = Tag::find_by_id ($id))
       redirect (array ($this->get_class (), 'index'));
 
     $message = identity ()->get_session ('_flash_message', true);
-    $this->load_view (array ('message' => $message, 'event' => $event));
+    $this->load_view (array ('message' => $message, 'tag' => $tag));
   }
 
   public function update ($id) {
-    if (!$event = Event::find_by_id ($id))
+    if (!$tag = Tag::find_by_id ($id))
       redirect (array ($this->get_class (), 'index'));
 
-    $title = trim ($this->input_post ('title'));
-    $info  = trim ($this->input_post ('info'));
-    $cover = $this->input_post ('cover', true, true);
+    $name = trim ($this->input_post ('name'));
 
-    if (!($title && $info)) {
+    if (!$name) {
       identity ()->set_session ('_flash_message', '輸入資訊有誤!', true);
       return redirect (array ($this->get_class (), 'add'), 'refresh');
     }
 
-    $event->title = $title;
-    $event->info = $info;
+    $tag->name = $name;
 
-    if ($event->save () && (!$cover || $event->cover->put ($cover))) {
+    if ($tag->save ()) {
       identity ()->set_session ('_flash_message', '修改成功!', true);
       return redirect (array ($this->get_class (), 'index'), 'refresh');
     } else {
@@ -79,10 +74,10 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   }
 
   public function destroy ($id) {
-    if (!$event = Event::find_by_id ($id))
+    if (!$tag = Tag::find_by_id ($id))
       redirect (array ($this->get_class (), 'index'));
 
-    if ($event->cover->cleanAllFiles () && $event->delete ())
+    if ($tag->delete ())
       identity ()->set_session ('_flash_message', '刪除成功!', true);
     else
       identity ()->set_session ('_flash_message', '刪除失敗!', true);

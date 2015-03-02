@@ -77,6 +77,12 @@
   $results = create_controller ($temp_path, $name, $action, array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy'));
 
 
+  $temp_path = FCPATH . 'command/templates/demo/tag/';
+  $name = 'tag';
+  $action = 'site';
+  $results = create_controller ($temp_path, $name, $action, array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy'));
+
+
 
 
 
