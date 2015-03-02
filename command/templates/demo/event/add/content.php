@@ -1,10 +1,10 @@
 <div class='container'>
 {<{<{ echo render_cell ('demo_cells', 'main_menu', array ()); ?>
   <a class='list' href='{<{<{ echo base_url (array ('events', 'index'));?>'>列表</a>
-  {<{<{ 
+  {<{<{
     if (isset ($message) && $message) { ?>
       <div class='error'>{<{<{ echo $message;?></div>
-  {<{<{ 
+  {<{<{
     } ?>
   <form action='{<{<{ echo base_url (array ('events', 'create'));?>' method='post' enctype='multipart/form-data'>
     <table class='table-form'>
@@ -24,7 +24,7 @@
         <tr>
           <th>封面</th>
           <td>
-            <input type='file' name='cover' value='' accept="image/gif, image/jpeg, image/png"  pattern='.{1,}' required title='請選擇檔案!' />
+            <input type='file' name='cover' value='' accept="image/gif, image/jpeg, image/png" pattern='.{1,}' required title='請選擇檔案!' />
           </td>
         </tr>
         <tr>
