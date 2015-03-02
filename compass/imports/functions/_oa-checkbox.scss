@@ -41,6 +41,9 @@
     vertical-align: middle;
   }
 
+  label {
+    cursor: pointer;
+  }
 
   input[type='checkbox'] {
     position: absolute;
