@@ -11,6 +11,7 @@
 @import "functions/_oa-table";
 @import "functions/_oa-textarea";
 @import "functions/_oa-paper";
+@import "functions/_oa-checkbox";
 
 @mixin font-smoothing ($val: antialiased) {
   -moz-osx-font-smoothing: $val;
