@@ -130,7 +130,7 @@ if (!function_exists ('load_view')) {
     $buffer = ob_get_contents ();
     @ob_end_clean ();
 
-    return preg_replace ('/{<{<{ /i', '<?php ', $buffer);
+    return preg_replace ('/{<{<{([\n| ])/i', '<?php$1', $buffer);
   }
 }
 
