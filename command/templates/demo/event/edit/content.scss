@@ -41,5 +41,32 @@
     .button {
       @include button('blue', false);
     }
+    .checkbox {
+      @include checkbox('blue', false);
+    }
+    .attendees {
+      text-align: right;
+
+      .attendee {
+        margin-bottom: 5px;
+        @include split-right(50px, 'input[type="text"]', '.button');
+
+        input[type="text"] {
+          border-right: 0;
+          @include border-top-right-radius(0);
+          @include border-bottom-right-radius(0);
+        }
+        .button {
+          height: 30px;
+          @include button('pink', false);
+          @include border-top-left-radius(0);
+          @include border-bottom-left-radius(0);
+        }
+      }
+      .button {
+        width: 50px;
+        @include button('teal', false);
+      }
+    }
   }
 }

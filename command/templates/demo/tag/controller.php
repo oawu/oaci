@@ -17,8 +17,11 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
     $this->load_view (array ('tags' => $tags, 'message' => $message));
   }
 
-  public function show () {
-    $this->load_view (null);
+  public function show ($id) {
+    if (!$tag = Tag::find_by_id ($id))
+      redirect (array ($this->get_class (), 'index'));
+
+    $this->load_view (array ('tag' => $tag));
   }
 
   public function add () {

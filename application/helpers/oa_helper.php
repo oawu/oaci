@@ -156,7 +156,7 @@ if ( !function_exists ('make_click_able_links')) {
 if (!function_exists ('field_array')) {
   function field_array ($objects, $key) {
     return array_map (function ($object) use ($key) {
-      return $object->$key;
+      return !is_array ($object) ? is_object ($object) ? $object->$key : $object : $object[$key];
     }, $objects);
   }
 }

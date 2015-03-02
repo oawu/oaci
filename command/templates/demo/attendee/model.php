@@ -16,7 +16,7 @@ class <?php echo ucfirst (camelize ($name));?> extends OaModel {
   );
 
   static $belongs_to = array (
-    array ('event', 'class_name' => 'Event'),
+    array ('event', 'class_name' => 'Event')
   );
 
   public function __construct ($attributes = array (), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) {
