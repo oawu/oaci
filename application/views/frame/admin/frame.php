@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
   <head>
     <?php echo isset ($meta) ? $meta:''; ?>
     <title data-ori="<?php echo isset ($title) ? $title:''; ?>"><?php echo isset ($title) ? $title : ''; ?></title>
