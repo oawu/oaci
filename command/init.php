@@ -8,13 +8,14 @@
   include 'base.php';
   include 'functions/create.php';
 
-  //       file       username       password       hostname
-  // =============================================================
-  // php   init       [root          [password      [127.0.0.1]]]
+  //       file       username       password       database       hostname
+  // =============================================================================
+  // php   init       [root          [password      [table         [127.0.0.1]]]]
 
   $file     = array_shift ($argv);
   $username = ($username = array_shift ($argv)) ? $username : 'root';
   $password = ($password = array_shift ($argv)) ? $password : 'password';
+  $database = ($database = array_shift ($argv)) ? $database : 'table';
   $hostname = ($hostname = array_shift ($argv)) ? $hostname : '127.0.0.1';
   $temp_path = FCPATH . 'command/templates/init/';
 
@@ -35,7 +36,7 @@
 
 
   $files = array (
-      array ('name' => 'database.php',  'path' => $path_config, 'params' => array ('hostname' => $hostname, 'username' => $username, 'password' => $password)),
+      array ('name' => 'database.php',  'path' => $path_config, 'params' => array ('hostname' => $hostname, 'username' => $username, 'password' => $password, 'database' => $database)),
       array ('name' => 'query.log',     'path' => $path_logs,   'params' => array ()),
       array ('name' => 'delay_job.log', 'path' => $path_logs,   'params' => array ())
     );
