@@ -17,6 +17,7 @@
   // php   create   model        model_name        [(-p | -pic) column_name1, column_name2...]
   // php   create   migration    table_name        [(-a | -add) | (-e | -edit) | (-d | -delete | -del | -drop)]
   // php   create   cell         cell_name         [method_name1, method_name2...]
+  // php   create   demo
 
   $file   = array_shift ($argv);
   $type   = array_shift ($argv);
@@ -24,7 +25,7 @@
   $action = array_shift ($argv);
   $temp_path = FCPATH . 'command/templates/create/';
 
-  switch ($type) {
+  switch (strtolower ($type)) {
     case 'controller':
       $results = create_controller ($temp_path, $name, $action);
       break;
@@ -39,6 +40,11 @@
 
     case 'cell':
       $results = create_cell ($temp_path, $name, array_merge (array ($action), $argv));
+      break;
+
+    case 'demo':
+      include 'functions/demo.php';
+      $results = create_demo ();
       break;
   }
 
