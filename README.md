@@ -79,7 +79,8 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 * 進入資料夾，並且下初始指令，終端機輸入 ```php ini```，即完成。
 
 * 更多初始化指令可以 [點我](#初始化指令)。
- 
+
+![OA's CodeIgniter Init](resource/image/readme/init.png)
 
 <br />
 <br />
@@ -124,6 +125,7 @@ php  | delete | cell       | cell_name       |
 
 [回常用指令 ↩](#常用指令)
 
+![OA's CodeIgniter Create Controller](resource/image/readme/create_controller.png)
 
 #### create migration
 基本指令為 ```php create migration table_name [(-a | -add) | (-e | -edit) | (-d | -delete | -del | -drop)]```。
@@ -134,6 +136,7 @@ php  | delete | cell       | cell_name       |
 
 [回常用指令 ↩](#常用指令)
 
+![OA's CodeIgniter Create Migration](resource/image/readme/create_migration.png)
 
 #### create model
 基本指令為 ```php create model model_name [(-p | -pic) column_name1, column_name2...]```。
@@ -144,6 +147,7 @@ php  | delete | cell       | cell_name       |
 
 [回常用指令 ↩](#常用指令)
 
+![OA's CodeIgniter Create Model](resource/image/readme/create_model.png)
 
 #### create cell
 基本指令為 ```php create cell cell_name [method_name1, method_name2...]```。
@@ -155,6 +159,7 @@ php  | delete | cell       | cell_name       |
 
 [回常用指令 ↩](#常用指令)
 
+![OA's CodeIgniter Create Cell](resource/image/readme/create_cell.png)
 
 #### delete controller
 基本指令為 ```php delete controller controller_name [site | admin | delay]```。
@@ -165,6 +170,7 @@ php  | delete | cell       | cell_name       |
 
 [回常用指令 ↩](#常用指令)
 
+![OA's CodeIgniter Delete Controller](resource/image/readme/delete_controller.png)
 
 #### delete model
 基本指令為 ```php delete model model_name```。
@@ -175,6 +181,7 @@ php  | delete | cell       | cell_name       |
 
 [回常用指令 ↩](#常用指令)
 
+![OA's CodeIgniter Delete Model](resource/image/readme/delete_model.png)
 
 #### delete cell
 基本指令為 ```php delete cell cell_name```。
@@ -183,6 +190,8 @@ php  | delete | cell       | cell_name       |
 * 舉例，若要刪除一個名為 test 的 cell，則輸入 ```php delete cell test```。
 
 [回常用指令 ↩](#常用指令)
+
+![OA's CodeIgniter Delete Cell](resource/image/readme/delete_cell.png)
 
 <br />
 <br />
@@ -194,10 +203,18 @@ php  | delete | cell       | cell_name       |
 * table 為資料庫的 table，**預設值為 table**。
 * 舉例，若是初始化給予資料庫使用者為 oa，密碼為 1234，資料庫為 oaci，則輸入 ```php init oa 1234 oaci```。
 
+![OA's CodeIgniter Init Command](resource/image/readme/init_command.png)
+
 <br />
 <br />
 ### Demo指令
 * 此版本也內建 Demo 版本指令，只要一個指令，就可以快速建制一個 CRUD 的版本 Sample!
+
+	![OA's CodeIgniter Tag List](resource/image/readme/tags.png)
+
+	![OA's CodeIgniter Event List](resource/image/readme/events.png) 
+
+	![OA's CodeIgniter Edit Event](resource/image/readme/edit_event.png) 
 
 * 其主要是分別會建立起 event、attendee、tag、tag_event_map 這四張關係表，借由這四張表去演練相關 model、 controller 範例
 
@@ -227,6 +244,8 @@ php  | delete | cell       | cell_name       |
 
 [Demo指令 ↩](#demo指令)
 
+![OA's CodeIgniter Create Demo](resource/image/readme/create_demo.png)
+
 #### delete demo
 基本指令為 ```php delete demo```。
 
@@ -244,6 +263,8 @@ php  | delete | cell       | cell_name       |
 * 特別注意! migrations 不會刪除，所以可能要特別注意一下！
 
 [Demo指令 ↩](#demo指令)
+
+![OA's CodeIgniter Delete Demo](resource/image/readme/delete_demo.png)
 
 
 <br />

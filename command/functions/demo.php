@@ -73,7 +73,7 @@ if (!function_exists ('delete_demo')) {
     $results = array_map (function ($name) {
       return implode ("\n", array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, delete_model ($name)));
     }, $models);
-    echo implode ("\n", $results) . "\n" . $line;
+    echo implode ("\n", $results) . "\n";
 
     $results = array ();
     array_push ($results, "models(" . implode (', ', $models) . ")");
