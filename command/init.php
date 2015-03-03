@@ -18,7 +18,13 @@
   $hostname = ($hostname = array_shift ($argv)) ? $hostname : '127.0.0.1';
   $temp_path = FCPATH . 'command/templates/init/';
 
-  echo $date = load_view ($temp_path . 'database.php', array ('hostname' => $hostname, 'username' => $username, 'password' => $password));
+  $date = load_view ($temp_path . 'database.php', array ('hostname' => $hostname, 'username' => $username, 'password' => $password));
+  if (!is_writable ($config_path = FCPATH . 'application/config/'))
+    console_error ("無法有寫入的權限!");
+
+  if (!write_file ($datebase_path = $config_path . 'database.php', $date))
+    console_error ("寫入資料庫設定失敗!");
+
 
 //cp resource/share/database.php application/config/database.php &&
 // mkdir assets &&
