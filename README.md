@@ -4,7 +4,7 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 
 ---
 ## 聲明
-本作品只限分享於研究、研討性質之使用，並不提供任何有營利效益之使用。  
+本作品只限分享於研究、研討性質之使用，並不提供任何有營利效益之使用。
 如有營利用途，務必告知作者 OA(<comdan66@gmail.com>)，並且經由作者同意。
 
 <br/>
@@ -50,6 +50,6 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 * 打開終端機，並且至該 oaci 目錄下，並且貼上以下語法:
 
 	```
-cp resource/share/database.php application/config/database.php & mkdir temp & mkdir upload & mkdir application/cell/cache & mkdir application/cache/file & mkdir application/cache/output & touch application/logs/query-log.log & touch application/logs/delay_job-log.log & chmod 777 temp & chmod 777 upload & chmod 777 application/cell/cache & chmod 777 application/cache/file & chmod 777 application/cache/output & chmod 777 application/logs/query-log.log & chmod 777 application/logs/delay_job-log.log & vi application/config/database.php
+cp resource/share/database.php application/config/database.php & mkdir temp & mkdir upload & mkdir application/cell/cache & mkdir application/cache/file & mkdir application/cache/output & touch application/logs/query.log & touch application/logs/delay_job.log & chmod 777 temp & chmod 777 upload & chmod 777 application/cell/cache & chmod 777 application/cache/file & chmod 777 application/cache/output & chmod 777 application/logs/query.log & chmod 777 application/logs/delay_job.log & vi application/config/database.php
 ```
 * 最後會開啟 `application/config/database.php`，設定儲存完後即可開始使用！
