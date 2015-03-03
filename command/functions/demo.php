@@ -7,108 +7,66 @@
 
 if (!function_exists ('create_demo')) {
   function create_demo () {
+    $main_results = array ();
+    $db_line = color (str_repeat ('=', 80), 'N') . "\n";
+    $line = color (str_repeat ('-', 80), 'w') . "\n";
+
+    echo $db_line;
     $results = array ();
+    $migrations = array ('event' => array (), 'attendee' => array (), 'tag' => array (), 'tag_event_map' => array ());
+    array_walk ($migrations, function ($value, $key) use (&$results) {
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_migration (FCPATH . 'command/templates/demo/' . $key . '/', $key, 'add'))));
+    });
+    echo implode ("\n", $results) . "\n" . $line;
 
-    $temp_path = FCPATH . 'command/templates/demo/event/';
-    $name = 'event';
-    $action = 'add';
-    create_migration ($temp_path, $name, $action);
+    $results = array ();
+    $models = array ('event' => array ('cover'), 'attendee' => array (), 'tag' => array (), 'tag_event_map' => array ());
+    array_walk ($models, function ($value, $key) use (&$results) {
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_model (FCPATH . 'command/templates/demo/' . $key . '/', $key, $value))));
+    });
+    echo implode ("\n", $results) . "\n" . $line;
 
-    $temp_path = FCPATH . 'command/templates/demo/attendee/';
-    $name = 'attendee';
-    $action = 'add';
-    create_migration ($temp_path, $name, $action);
-
-    $temp_path = FCPATH . 'command/templates/demo/tag/';
-    $name = 'tag';
-    $action = 'add';
-    create_migration ($temp_path, $name, $action);
-
-    $temp_path = FCPATH . 'command/templates/demo/tag_event_map/';
-    $name = 'tag_event_map';
-    $action = 'add';
-    create_migration ($temp_path, $name, $action);
-
-    array_push ($results, 'Migration 新增成功!');
-
-    $temp_path = FCPATH . 'command/templates/demo/event/';
-    $name = 'event';
-    $action = array ('cover');
-    create_model ($temp_path, $name, $action);
-
-    $temp_path = FCPATH . 'command/templates/demo/attendee/';
-    $name = 'attendee';
-    $action = array ();
-    create_model ($temp_path, $name, $action);
-
-    $temp_path = FCPATH . 'command/templates/demo/tag/';
-    $name = 'tag';
-    $action = array ();
-    create_model ($temp_path, $name, $action);
-
-    $temp_path = FCPATH . 'command/templates/demo/tag_event_map/';
-    $name = 'tag_event_map';
-    $action = array ();
-    create_model ($temp_path, $name, $action);
-
-    array_push ($results, 'Model 新增成功!');
-
-  // ------------------------------------------------------------------------------------------------------------
+    $results = array ();
+    $cells = array ('demo' => array ('main_menu'));
+    array_walk ($cells, function ($value, $key) use (&$results) {
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_cell (FCPATH . 'command/templates/demo/cell/', $key, $value))));
+    });
+    echo implode ("\n", $results) . "\n" . $line;
 
 
-    $temp_path = FCPATH . 'command/templates/demo/cell/';
-    $name = 'demo';
-    $action = array ('main_menu');
-    create_cell ($temp_path, $name, $action);
+    $results = array ();
+    $controllers = array ('event' => array (), 'tag' => array ());
+    array_walk ($controllers, function ($value, $key) use (&$results) {
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_controller (FCPATH . 'command/templates/demo/' . $key . '/', $key, 'site', array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy')))));
+    });
+    echo implode ("\n", $results) . "\n";
 
-    array_push ($results, 'Cell 新增成功!');
+    array_push ($main_results, "migrations(" . implode(', ', array_keys ($migrations)) . ")");
+    array_push ($main_results, "models(" . implode(', ', array_keys ($models)) . ")");
+    array_push ($main_results, "cells(" . implode(', ', array_keys ($cells)) . ")");
+    array_push ($main_results, "controllers(" . implode(', ', array_keys ($controllers)) . ")");
 
-  // ------------------------------------------------------------------------------------------------------------
-
-
-    $temp_path = FCPATH . 'command/templates/demo/event/';
-    $name = 'event';
-    $action = 'site';
-    create_controller ($temp_path, $name, $action, array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy'));
-
-
-    $temp_path = FCPATH . 'command/templates/demo/tag/';
-    $name = 'tag';
-    $action = 'site';
-    create_controller ($temp_path, $name, $action, array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy'));
-
-    array_push ($results, 'Controller 新增成功!');
-
-    return $results;
+    return $main_results;
   }
 }
 
 
 if (!function_exists ('delete_demo')) {
   function delete_demo () {
-    $name = 'event';
-    $action = 'site';
-    delete_controller ($name, $action);
+    $results = array ();
 
-    $name = 'tag';
-    $action = 'site';
-    delete_controller ($name, $action);
+    array_map (function ($name) {
+      delete_controller ($name, 'site');
+    }, array ('event', 'tag'));
 
+    array_map (function ($name) {
+      delete_cell ($name);
+    }, array ('demo'));
 
-    $name = 'demo';
-    delete_cell ($name);
+    array_map (function ($name) {
+      delete_model ($name);
+    }, array ('event', 'attendee', 'tag', 'tag_event_map'));
 
-
-    $name = 'event';
-    delete_model ($name);
-
-    $name = 'attendee';
-    delete_model ($name);
-
-    $name = 'tag';
-    delete_model ($name);
-
-    $name = 'tag_event_map';
-    delete_model ($name);
+    return $results;
   }
 }

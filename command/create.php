@@ -47,9 +47,7 @@
       $results = create_demo ();
       break;
   }
-  if (strtolower ($type) != 'demo')
-    $results = array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, $results);
+  $results = array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, $results);
 
   array_unshift ($results, '新增成功!');
   call_user_func_array ('console_log', $results);
-

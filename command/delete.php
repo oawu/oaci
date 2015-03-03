@@ -8,7 +8,6 @@
   define ('EXT', '.php');
   define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));
   define ('FCPATH', dirname (str_replace (SELF, '', __FILE__)) . '/');
-  define ('TEMP_PATH', FCPATH . 'command/templates/');
 
   include 'functions/delete.php';
 
@@ -22,6 +21,7 @@
   $type   = array_shift ($argv);
   $name   = array_shift ($argv);
   $action = array_shift ($argv);
+  $temp_path = FCPATH . 'command/templates/create/';
 
   switch ($type) {
     case 'controller':
