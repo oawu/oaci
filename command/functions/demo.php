@@ -7,7 +7,6 @@
 
 if (!function_exists ('create_demo')) {
   function create_demo () {
-    $main_results = array ();
     $db_line = color (str_repeat ('=', 80), 'N') . "\n";
     $line = color (str_repeat ('-', 80), 'w') . "\n";
 
@@ -41,32 +40,45 @@ if (!function_exists ('create_demo')) {
     });
     echo implode ("\n", $results) . "\n";
 
-    array_push ($main_results, "migrations(" . implode(', ', array_keys ($migrations)) . ")");
-    array_push ($main_results, "models(" . implode(', ', array_keys ($models)) . ")");
-    array_push ($main_results, "cells(" . implode(', ', array_keys ($cells)) . ")");
-    array_push ($main_results, "controllers(" . implode(', ', array_keys ($controllers)) . ")");
+    $results = array ();
+    array_push ($results, "migrations(" . implode(', ', array_keys ($migrations)) . ")");
+    array_push ($results, "models(" . implode(', ', array_keys ($models)) . ")");
+    array_push ($results, "cells(" . implode(', ', array_keys ($cells)) . ")");
+    array_push ($results, "controllers(" . implode(', ', array_keys ($controllers)) . ")");
 
-    return $main_results;
+    return $results;
   }
 }
 
 
 if (!function_exists ('delete_demo')) {
   function delete_demo () {
+    $db_line = color (str_repeat ('=', 80), 'N') . "\n";
+    $line = color (str_repeat ('-', 80), 'w') . "\n";
+
+    echo $db_line;
+    $controllers = array ('event', 'tag');
+    $results = array_map (function ($name) {
+      return implode ("\n", array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, delete_controller ($name, 'site')));
+    }, $controllers);
+    echo implode ("\n", $results) . "\n" . $line;
+
+    $cells = array ('demo');
+    $results = array_map (function ($name) {
+      return implode ("\n", array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, delete_cell ($name)));
+    }, $cells);
+    echo implode ("\n", $results) . "\n" . $line;
+
+    $models = array ('event', 'attendee', 'tag', 'tag_event_map');
+    $results = array_map (function ($name) {
+      return implode ("\n", array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, delete_model ($name)));
+    }, $models);
+    echo implode ("\n", $results) . "\n" . $line;
+
     $results = array ();
-
-    array_map (function ($name) {
-      delete_controller ($name, 'site');
-    }, array ('event', 'tag'));
-
-    array_map (function ($name) {
-      delete_cell ($name);
-    }, array ('demo'));
-
-    array_map (function ($name) {
-      delete_model ($name);
-    }, array ('event', 'attendee', 'tag', 'tag_event_map'));
-
+    array_push ($results, "models(" . implode (', ', $models) . ")");
+    array_push ($results, "cells(" . implode (', ', $cells) . ")");
+    array_push ($results, "controllers(" . implode (', ', $controllers) . ")");
     return $results;
   }
 }
