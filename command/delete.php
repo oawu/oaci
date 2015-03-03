@@ -35,9 +35,15 @@
     case 'cell':
       $results = delete_cell ($name);
       break;
+
+    case 'demo':
+      include 'functions/demo.php';
+      $results = delete_demo ();
+      break;
   }
 
-  $results = array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, $results);
+  if (strtolower ($type) != 'demo')
+    $results = array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, $results);
 
   array_unshift ($results, '刪除成功!');
   call_user_func_array ('console_log', $results);
