@@ -5,7 +5,7 @@
 
 window.ajaxError = function (result) {
   console.error (result.responseText);
-}
+};
 
-$(function(){
+$(function () {
 });
