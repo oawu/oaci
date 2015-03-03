@@ -5,51 +5,255 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 ---
 ## 聲明
 本作品只限分享於研究、研討性質之使用，並不提供任何有營利效益之使用。
-如有營利用途，務必告知作者 OA(<comdan66@gmail.com>)，並且經由作者同意。
+如有營利用途，務必告知作者 [OA](http://www.ioa.tw/)(<comdan66@gmail.com>)，並且經由作者同意。
 
-<br/>
+<br />
+## 目錄
+* [簡介](#簡介)
 
+* [快速初始化](#快速初始化)
+
+* [常用指令](#常用指令)
+	* [create controller](#create-controller)
+	* [create migration](#create-migration)
+	* [create model](#create-model)
+	* [create cell](#create-cell)
+	* [delete controller](#delete-controller)
+	* [delete model](#delete-model)
+	* [delete cell](#delete-cell)
+	
+* [初始化指令](#初始化指令)
+
+* [Demo指令](#demo指令)
+	* [create demo](#create-demo)
+	* [delete demo](#delete-demo)
+
+<br />
+<br />
 ## 簡介
-
-這是一個以 CodeIgniter 2.1.4 為基礎版本，將其改造出進階功能的 framework!
+這是一個以 CodeIgniter 2.1.4 為基礎版本，將其新增進階功能的一套好用的 framework!  
 
 基本改寫項目如下:
 
-* 匯入並且使用 PHP ActiveRecord ORM
-	* 加強 PHP ActiveRecord，新增 recycle、recycle_all、recover 等功能
-	* 可以與 OrmImageUploader 搭配結合
-<br/><br/>
-* 匯入使用 OrmImageUploader 的 library
-	* 配合使用 ImageGdUtility、ImageImagickUtility 這兩個主要處理圖片的 library
-<br/><br/>
-* 匯入使用 cell 的 library
-	* 加強有層級結構關係
-<br/><br/>
-* Identity library 與 identity helper 的使用
-<br/><br/>
-* Config 的 library 與應用
-<br/><br/>
-* Cache file folder 的重新定義
-<br/><br/>
-* Controller core loading 規則順序的改變
-<br/><br/>
-* 匯入 OA helper 的功能 function
-<br/><br/>
-* 匯入 可記錄 delay request 的 log 以及 query log
-<br/><br/>
-* 匯入並且可使用 scss
-<br/><br/>
-* 匯入並且可使用 compass, gulp.. 等
+* 匯入並且使用 [PHP ActiveRecord](http://www.phpactiverecord.org/) ORM。
+	* 可以與 OrmImageUploader 搭配結合。
 
-<br/>
+* <a name="back1"></a>匯入使用 OrmImageUploader 的 library。([1](#comment1))
+	* 配合使用 ImageGdUtility、ImageImagickUtility 這兩個主要處理圖片的 library。
 
-## 快速安裝
+* <a name="back2"></a>匯入使用 cell 的 library。([註2](#comment2))
+	* 加強有層級結構關係。
+	* 加強暫存快娶機制。
+	
+* Identity library 與 identity helper 的使用。
+	* 方便管理權限問題。
+	* Session 處理機制。
 
-* 請先確保您的 server 可以正常啟用 CodeIgniter
+* Config 的 library 與應用。
+	* 加強 CodeIgniter 原生 config 機制。
 
-* 打開終端機，並且至該 oaci 目錄下，並且貼上以下語法:
+* Cache file folder 的重新定義。
+	* 向下延伸 cache 分類資料夾。
 
-	```
-cp resource/share/database.php application/config/database.php & mkdir temp & mkdir upload & mkdir application/cell/cache & mkdir application/cache/file & mkdir application/cache/output & touch application/logs/query.log & touch application/logs/delay_job.log & chmod 777 temp & chmod 777 upload & chmod 777 application/cell/cache & chmod 777 application/cache/file & chmod 777 application/cache/output & chmod 777 application/logs/query.log & chmod 777 application/logs/delay_job.log & vi application/config/database.php
-```
-* 最後會開啟 `application/config/database.php`，設定儲存完後即可開始使用！
+* Controller core loading 規則順序的改變。
+	* 運用 OOP 基本繼承概念定義主要 controller。
+
+* 匯入 OA helper 的功能 function。
+
+* 匯入 可記錄 delay request 的 log 以及 query log。
+
+* 匯入並且可使用 scss。
+
+* 匯入並且可使用 compass, gulp.. 等。
+
+
+<br />
+<br />
+## 快速初始化
+基本快速地建立起常用資料夾以及檔案，例如 log files、temp folders... 等。
+
+* 請先確保您的 server 可以正常使用 CodeIgniter。
+
+* <a name="back3"></a>打開終端機，並且在你的 DocumentRoot([註3](#comment3)) 下，輸入 ```git clone https://github.com/comdan66/oaci.git```。
+
+* 進入資料夾，並且下初始指令，終端機輸入 ```php ini```，即完成。
+
+* 更多初始化指令可以 [點我](#初始化指令)。
+ 
+
+<br />
+<br />
+## 常用指令
+此版本中已經建立多個快速建置檔案的指令，其中包含如下:
+
+* create
+	* [controller](#create-controller)
+	* [migration](#create-migration)
+	* [model](#create-model)
+	* [cell](#create-cell)
+	
+* delete
+	* [controller](#delete-controller)
+	* [model](#delete-model)
+	* [cell](#delete-cell)
+
+* 語法表格
+	* 新增 - create
+
+		_  |  file  |    type    |      name       |       action
+-----|--------|------------|-----------------|----------------
+php  | create | controller | controller_name | [site \| admin \| delay]
+php  | create | model      | model_name      | [(-p \| -pic) column_name1, column_name2...]
+php  | create | migration  | table_name      | [(-a \| -add) \| (-e \| -edit) \| (-d \| -delete \| -del \| -drop)]
+php  | create | cell       | cell_name       | [method_name1, method_name2...]
+
+	* 刪除 - delete
+
+		_  |  file  |    type    |      name       |       action
+-----|--------|------------|-----------------|----------------
+php  | delete | controller | controller_name | [site \| admin \| delay]
+php  | delete | model      | model_name      |
+php  | delete | cell       | cell_name       |
+
+#### create controller
+基本指令為 ```php create controller controller_name [site | admin | delay]```。
+
+* controller_name 為欲建立的 controller 名稱。
+* [site | admin | delay] 為 controller 形態，主要為這三種，其意思分別為 前台、後台、延遲，分別是繼承不同的 controller，**預設值為 site**。
+* 舉例，若要建立一個名為 test 的前台 controller，則輸入 ```php create controller test site```。
+
+[回常用指令 ↩](#常用指令)
+
+
+#### create migration
+基本指令為 ```php create migration table_name [(-a | -add) | (-e | -edit) | (-d | -delete | -del | -drop)]```。
+
+* table_name 為要修改的資料表名稱。
+* [(-a | -add) | (-e | -edit) | (-d | -delete | -del | -drop)] 為此修改的主要動作行為，**預設值為 add**。
+* 舉例，若要新增一個資料表，名稱為 test，則輸入 ```php create migration test add```，若要是想對 test 這張資料表做修改，則輸入 ```php create migration test edit```，刪除則是 ```php create migration test del```。
+
+[回常用指令 ↩](#常用指令)
+
+
+#### create model
+基本指令為 ```php create model model_name [(-p | -pic) column_name1, column_name2...]```。
+
+* model_name 為欲建立的 model 名稱。
+* [(-p | -pic) column_name1, column_name2...] 為該 model 使用 OrmImageUploader 的欄位名稱，**可同時為多個**，**預設值為 null，也就是沒有欄位使用**。
+* 舉例，若要建立一個名為 test 的 model，則輸入 ```php create model test```，若 test 有兩個圖片欄位名稱分別為 avatar、cover，則是輸入 ```php create model test -p avatar cover```。
+
+[回常用指令 ↩](#常用指令)
+
+
+#### create cell
+基本指令為 ```php create cell cell_name [method_name1, method_name2...]```。
+
+* cell_name 為欲建立的 cell 名稱。
+* [method_name1, method_name2...] 一併新增的 method 名稱，**可同時為多個**，**預設值為 null，也就是預設不新增任何 mothod**。
+* 舉例，若要建立一個名為 test 的 cell，則輸入 ```php create cell test```，若是想一開始就建立名稱為 index 以及 add 的 method，則輸入 ```php create cell test index add```。
+* 特別注意！ 預設的 cache 機制是被隱藏關閉的，如要使用再將註解拿掉即可。
+
+[回常用指令 ↩](#常用指令)
+
+
+#### delete controller
+基本指令為 ```php delete controller controller_name [site | admin | delay]```。
+
+* controller_name 為欲刪除的 controller 名稱。
+* [site | admin | delay] 為 controller 形態，主要為這三種，其意思分別為 前台、後台、延遲，分別是繼承不同的 controller，**預設值為 site**。
+* 舉例，若要刪除一個名為 test 的前台 controller，則輸入 ```php delete controller test site```。
+
+[回常用指令 ↩](#常用指令)
+
+
+#### delete model
+基本指令為 ```php delete model model_name```。
+
+* model_name 為欲刪除的 model 名稱。
+* 舉例，若要刪除一個名為 test 的 model，則輸入 ```php delete model test```。
+* 特別注意，若是該 model 有引用 OrmImageUploader 的 library，其 third_party 下的相關檔案也會一併移除。
+
+[回常用指令 ↩](#常用指令)
+
+
+#### delete cell
+基本指令為 ```php delete cell cell_name```。
+
+* cell_name 為欲刪除的 cell 名稱。
+* 舉例，若要刪除一個名為 test 的 cell，則輸入 ```php delete cell test```。
+
+[回常用指令 ↩](#常用指令)
+
+<br />
+<br />
+### 初始化指令
+在一開始建立時會使用到，主要就是處理一些暫存資料夾、資料庫設定檔案..等設定，基本指令為 ```php init [root [password [table [127.0.0.1]]]]```。
+
+* root 為資料庫的 username，**預設值為 root**。
+* password 為資料庫的 password，**預設值為 password**。
+* table 為資料庫的 table，**預設值為 table**。
+* 舉例，若是初始化給予資料庫使用者為 oa，密碼為 1234，資料庫為 oaci，則輸入 ```php init oa 1234 oaci```。
+
+<br />
+<br />
+### Demo指令
+* 此版本也內建 Demo 版本指令，只要一個指令，就可以快速建制一個 CRUD 的版本 Sample!
+
+* 其主要是分別會建立起 event、attendee、tag、tag_event_map 這四張關係表，借由這四張表去演練相關 model、 controller 範例
+
+* 初步創建完後，可以執行一下 migration，讓資料庫更新，以便 demo 讀寫。指令分別如下:
+	* [create demo](#create-demo)。
+	* [delete demo](#delete-demo)。
+
+#### create demo
+基本指令為 ```php create demo```。
+
+* 主要分別會建立起以下檔案:
+	* migrations
+		* event
+		* attendee
+		* tag
+		* tag_event_map
+	* models
+		* Event
+		* Attendee
+		* Tag
+		* TagEventMap
+	* cells
+		* demo_cells
+	* controllers
+		* events
+		* tags
+
+[Demo指令 ↩](#demo指令)
+
+#### delete demo
+基本指令為 ```php delete demo```。
+
+* 主要分別會刪除以下檔案:
+	* models
+		* Event
+		* Attendee
+		* Tag
+		* TagEventMap
+	* cells
+		* demo_cells
+	* controllers
+		* events
+		* tags
+* 特別注意! migrations 不會刪除，所以可能要特別注意一下！
+
+[Demo指令 ↩](#demo指令)
+
+
+<br />
+<br />
+<br />
+
+---
+
+<a name="comment1"></a>註1: OrmImageUploader 主要參考於 Ruby on Rails 的 [carrierwave](https://github.com/carrierwaveuploader/carrierwave)所設計。 [↩](#back1)
+
+<a name="comment2"></a>註2: Cell 主要參考於 Ruby on Rails 的 [cells](https://github.com/apotonick/cells) 所設計。 [↩](#back2)
+
+<a name="comment3"></a>註3: DocumentRoot 是指 web 的資料夾位置，一般 Mac OSX 系統下的 apache 預設值為 ```/Library/WebServer/Documents/```。 [↩](#back3)
