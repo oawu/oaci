@@ -26,48 +26,26 @@
     console_error ("無法有 application/logs/ 的寫入權限!");
 
 
-  $oldmask = umask (0);
-  @mkdir ($path_assets = FCPATH . 'assets' . '/', 0777, true);
-  umask ($oldmask);
-
-  $oldmask = umask (0);
-  @mkdir ($path_temp = FCPATH . 'temp' . '/', 0777, true);
-  umask ($oldmask);
-
-  $oldmask = umask (0);
-  @mkdir ($path_upload = FCPATH . 'upload' . '/', 0777, true);
-  umask ($oldmask);
-
-  $oldmask = umask (0);
-  @mkdir ($path_cache = FCPATH . 'application/cell/cache' . '/', 0777, true);
-  umask ($oldmask);
-
-  $oldmask = umask (0);
-  @mkdir ($path_cache_file = FCPATH . 'application/cache/file' . '/', 0777, true);
-  umask ($oldmask);
-
-  $oldmask = umask (0);
-  @mkdir ($path_cache_output = FCPATH . 'application/cache/output' . '/', 0777, true);
-  umask ($oldmask);
+  $directories = array ('assets', 'temp', 'upload', 'application/cell/cache', 'application/cache/file', 'application/cache/output');
+  array_map (function ($directory) {
+    $oldmask = umask (0);
+    @mkdir (FCPATH . $directory . '/', 0777, true);
+    umask ($oldmask);
+  }, $directories);
 
 
-  $date = load_view ($temp_path . 'database.php', array ('hostname' => $hostname, 'username' => $username, 'password' => $password));
-  if (!write_file ($path_database_php = $path_config . 'database.php', $date))
-    console_error ("寫入 database.php 失敗!");
-  $oldmask = umask (0);
-  chmod($path_database_php, 0777);
-  umask ($oldmask);
+  $files = array (
+      array ('name' => 'database.php',  'path' => $path_config, 'params' => array ('hostname' => $hostname, 'username' => $username, 'password' => $password)),
+      array ('name' => 'query.log',     'path' => $path_logs,   'params' => array ()),
+      array ('name' => 'delay_job.log', 'path' => $path_logs,   'params' => array ())
+    );
+  array_map (function ($file) use ($temp_path) {
+    $date = load_view ($temp_path . $file['name'], $file['params']);
 
-  $date = load_view ($temp_path . 'query.log');
-  if (!write_file ($path_query_log = $path_logs . 'query.log', $date))
-    console_error ("寫入 query.log 失敗!");
-  $oldmask = umask (0);
-  chmod($path_query_log, 0777);
-  umask ($oldmask);
+    if (!write_file ($path = $file['path'] . $file['name'], $date))
+      console_error ("寫入 " . $file['name'] . " 失敗!");
 
-  $date = load_view ($temp_path . 'delay_job.log');
-  if (!write_file ($path_delay_job_log = $path_logs . 'delay_job.log', $date))
-    console_error ("寫入 delay_job.log 失敗!");
-  $oldmask = umask (0);
-  chmod($path_delay_job_log, 0777);
-  umask ($oldmask);
+    $oldmask = umask (0);
+    @chmod ($path, 0777);
+    umask ($oldmask);
+  }, $files);
