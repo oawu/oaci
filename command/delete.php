@@ -16,6 +16,7 @@
   // php   delete   controller   controller_name   [site | admin | delay]
   // php   delete   model        model_name
   // php   delete   cell         cell_name
+  // php   delete   demo
 
   $file   = array_shift ($argv);
   $type   = array_shift ($argv);
