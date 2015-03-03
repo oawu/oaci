@@ -156,8 +156,8 @@ if (!function_exists ('color')) {
 if (!function_exists ('console_error')) {
   function console_error () {
     $messages = array_filter (func_get_args ());
-    $db_line = color (str_repeat ('=', 70), 'N') . "\n";
-    $line = color (str_repeat ('-', 70), 'w') . "\n";
+    $db_line = color (str_repeat ('=', 80), 'N') . "\n";
+    $line = color (str_repeat ('-', 80), 'w') . "\n";
 
     echo "\n" .
           $db_line .
@@ -174,8 +174,8 @@ if (!function_exists ('console_error')) {
 if (!function_exists ('console_log')) {
   function console_log () {
     $messages = array_filter (func_get_args ());
-    $db_line = color (str_repeat ('=', 70), 'N') . "\n";
-    $line = color (str_repeat ('-', 70), 'w') . "\n";
+    $db_line = color (str_repeat ('=', 80), 'N') . "\n";
+    $line = color (str_repeat ('-', 80), 'w') . "\n";
 
     echo "\n" .
           $db_line .
