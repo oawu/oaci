@@ -43,6 +43,7 @@ if (!function_exists ('create_demo')) {
     echo implode ("\n", $results) . "\n" . $line;
 
     $results = run_migration (null);
+    echo color ('注意! ', 'r');
     echo implode ("\n", $results) . "\n";
 
     $results = array ();
