@@ -39,6 +39,7 @@ function &get_instance () {
 if (!function_exists ('run_migration')) {
   function run_migration ($version = null) {
     $version = $version !== null ? is_numeric($version) ? $version : null : null;
+
     $results = array ();
     $controller = new CI_Controller ();
     $controller->load->library ('migration');
