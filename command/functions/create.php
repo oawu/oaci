@@ -10,7 +10,7 @@ include_once 'functions.php';
 if (!function_exists ('create_controller')) {
   function create_controller ($temp_path, $name, $action, $methods = array ('index')) {
     $results = array ();
-    $name = pluralize (strtolower ($name));
+    $name = strtolower ($name);
     $action = $action ? $action : 'site';
 
     $controllers_path = FCPATH . 'application/controllers/' . ($action != 'site' ? $action . '/': '');

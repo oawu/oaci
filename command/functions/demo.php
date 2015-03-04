@@ -36,7 +36,7 @@ if (!function_exists ('create_demo')) {
 
 
     $results = array ();
-    $controllers = array ('event' => array (), 'tag' => array ());
+    $controllers = array ('events' => array (), 'tags' => array ());
     array_walk ($controllers, function ($value, $key) use (&$results) {
       array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_controller (FCPATH . 'command/templates/demo/' . $key . '/', $key, 'site', array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy')))));
     });
@@ -62,7 +62,7 @@ if (!function_exists ('delete_demo')) {
     $line = color (str_repeat ('-', 80), 'w') . "\n";
 
     echo $db_line;
-    $controllers = array ('event', 'tag');
+    $controllers = array ('events', 'tags');
     $results = array_map (function ($name) {
       return implode ("\n", array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, delete_controller ($name, 'site')));
     }, $controllers);
