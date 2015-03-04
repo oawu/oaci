@@ -5,7 +5,7 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-include 'functions.php';
+include_once 'functions.php';
 
 if (!function_exists ('delete_controller')) {
   function delete_controller ($name, $action) {

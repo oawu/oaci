@@ -5,6 +5,8 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
+include_once 'migration.php';
+
 if (!function_exists ('create_demo')) {
   function create_demo () {
     $db_line = color (str_repeat ('=', 80), 'N') . "\n";
@@ -38,6 +40,10 @@ if (!function_exists ('create_demo')) {
     array_walk ($controllers, function ($value, $key) use (&$results) {
       array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_controller (FCPATH . 'command/templates/demo/' . $key . '/', $key, 'site', array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy')))));
     });
+    echo implode ("\n", $results) . "\n" . $line;
+
+    $results = run_migration (null);
+    echo color ('注意! ', 'r');
     echo implode ("\n", $results) . "\n";
 
     $results = array ();
@@ -49,7 +55,6 @@ if (!function_exists ('create_demo')) {
     return $results;
   }
 }
-
 
 if (!function_exists ('delete_demo')) {
   function delete_demo () {
