@@ -61,7 +61,7 @@ if ( ! function_exists('site_url'))
  */
 if ( ! function_exists('base_url'))
 {
-	function base_url($uri)
+	function base_url($uri = '')
 	{
 		if (!is_array ($uri))
     	$uri = array_filter (func_get_args ());

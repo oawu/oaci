@@ -107,8 +107,8 @@ class Oa_controller extends Root_controller {
     $list = array (
         'meta_list'   => array_filter ($this->meta_list),
         'hidden_list' => array_filter ($this->hidden_list),
-        'js_list'  => array_filter (array_map (function ($js) { return $js['path']; }, $this->js_list)),
-        'css_list' => array_filter (array_map (function ($css) { return $css['path']; }, $this->css_list))
+        'js_list'  => array_filter (array_map (function ($js) { return isset ($js['path']) ? $js['path'] : $js; }, $this->js_list)),
+        'css_list' => array_filter (array_map (function ($css) { return isset ($css['path']) ? $css['path'] : $css; }, $this->css_list))
       );
     $frame_data = array ();
 
@@ -119,33 +119,51 @@ class Oa_controller extends Root_controller {
     return $frame_data;
   }
 
+  private function _build_static_files ($temp, $i, $format) {
+    if (!$temp)
+      return null;
+
+    if (!is_writable ($folder_path = FCPATH . implode (DIRECTORY_SEPARATOR, Cfg::system ('static', 'assets_folder')) . DIRECTORY_SEPARATOR))
+      return null;
+
+    $file_name = implode (Cfg::system ('static', 'separate'), array (Cfg::system ('static', 'file_prefix'), get_parent_class ($this), $this->get_class (), $this->get_method (), Cfg::system ('static', 'name'), $i));
+    $file_name = (Cfg::system ('static', 'is_md5') ? md5 ($file_name) : $file_name) . '.' .  $format;
+
+    if (!is_readable ($folder_path . $file_name) && !($data = '')) {
+      foreach ($temp as $key => $value)
+        $data .= (($file = read_file ($path = FCPATH . preg_replace ("|^(" . preg_quote (base_url ('')) . ")|", '', $value))) ? Cfg::system ('static', 'minify') ? $this->minify->$format->min ($file) : $file : '') . "\n";
+      write_file ($folder_path . $file_name, $data, 'w+');
+    }
+    return base_url (array_merge (Cfg::system ('static', 'assets_folder'), array ($file_name)));
+  }
   private function _combine_static_files () {
-    if (ENVIRONMENT !== 'production')
+    if ((ENVIRONMENT !== 'production') && Cfg::system ('static', 'enable'))
       return $this;
 
-    if (!is_writable ($folder_path = FCPATH . implode (DIRECTORY_SEPARATOR, Cfg::system ('static', 'assets_folder'))))
+    if (!is_writable ($folder_path = FCPATH . implode (DIRECTORY_SEPARATOR, Cfg::system ('static', 'assets_folder')) . DIRECTORY_SEPARATOR))
       return $this;
 
     $this->load->driver ('minify');
 
-    if ($component_lists = array_map (function ($component_list) { return array_filter ($component_list, function ($component) { return preg_match ("|^(" . preg_quote (base_url ()) . ")|", $component); }); }, array_intersect_key ($this->get_component_lists (), array_flip (Cfg::system ('static', 'allow_keys'))))) {
-      foreach ($component_lists as $key => $component_list) {
+    foreach (array ('js', 'css') as  $key) {
+      $list = $key . '_list';
 
-        if (Cfg::system ('static', 'enable') && is_readable ($path = implode (DIRECTORY_SEPARATOR, array ($folder_path, Cfg::system ('static', 'file_prefix') . get_parent_class ($this) . '_|_' . $this->get_class () . '_|_' . $this->get_method () . '.' . $key)))) {
-          $this->component_lists[$key] = array_diff ($this->component_lists[$key], $component_list);
-          array_push ($this->component_lists[$key], base_url (array (implode ('/', Cfg::system ('static', 'assets_folder')), Cfg::system ('static', 'file_prefix') . get_parent_class ($this) . '_|_' . $this->get_class () . '_|_' . $this->get_method () . '.' . $key)));
-          continue;
-        }
+      if ($this->$list) {
+        $temp = $$key = array ();
 
-        $data = Cfg::system ('static', 'minify') ? $this->minify->$key->min (implode ('', array_map (function ($component) { return read_file (FCPATH . preg_replace ("|^(" . preg_quote (base_url ()) . ")|", '', $component)); }, $component_list))) : implode ('', array_map (function ($component) { return read_file (FCPATH . preg_replace ("|^(" . preg_quote (base_url ()) . ")|", '', $component)); }, $component_list));
-        $path = implode (DIRECTORY_SEPARATOR, array ($folder_path, Cfg::system ('static', 'file_prefix') . get_parent_class ($this) . '_|_' . $this->get_class () . '_|_' . $this->get_method () . '.' . $key));
+        foreach ($this->$list as $i => $value)
+          if (!$value['is_minify'] || !preg_match ("|^(" . preg_quote (base_url ('')) . ")|", $value['path']))
+            if ($static_path = $this->_build_static_files ($temp, $i, $key)) array_push ($$key, $static_path, $value['path']) && $temp = array ();
+            else ($$key = array_merge ($$key, $temp, array ($value['path']))) && $temp = array ();
+          else array_push ($temp, $value['path']);
 
-        if (write_file ($path, $data, 'w+')) {
-          $this->component_lists[$key] = array_diff ($this->component_lists[$key], $component_list);
-          array_push ($this->component_lists[$key], base_url (array (implode ('/', Cfg::system ('static', 'assets_folder')), Cfg::system ('static', 'file_prefix') . get_parent_class ($this) . '_|_' . $this->get_class () . '_|_' . $this->get_method () . '.' . $key)));
-        }
+        if ($static_path = $this->_build_static_files ($temp, $i, $key)) array_push ($$key, $static_path);
+        else $$key = array_merge ($$key, $temp);
+
+        $this->$list = array_filter ($$key);
       }
     }
+
     return $this;
   }
 
@@ -159,11 +177,11 @@ class Oa_controller extends Root_controller {
       return show_error ('The controller lack of necessary resources!!  Please confirm your program again.');
 
     $this->add_css (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('public.css')))))
-         ->add_css (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('frame.css')))))
-         ->add_css (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ($this->get_class (), $this->get_method (), 'content.css')))))
+         ->add_css (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame.css')))))
+         ->add_css (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.css')))))
          ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('public.js')))))
-         ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('frame.js')))))
-         ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ($this->get_class (), $this->get_method (), 'content.js')))));
+         ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame.js')))))
+         ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.js')))));
 
     $this->_combine_static_files ();
 
