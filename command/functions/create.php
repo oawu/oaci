@@ -5,7 +5,7 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-include 'functions.php';
+include_once 'functions.php';
 
 if (!function_exists ('create_controller')) {
   function create_controller ($temp_path, $name, $action, $methods = array ('index')) {

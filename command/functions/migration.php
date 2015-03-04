@@ -5,10 +5,10 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-include 'functions.php';
+include_once 'functions.php';
 
-require (BASEPATH . 'core/Common.php');
-require (FCPATH . 'application/config/constants.php');
+require_once (BASEPATH . 'core/Common.php');
+require_once (FCPATH . 'application/config/constants.php');
 
 set_error_handler('_exception_handler');
 
@@ -40,7 +40,7 @@ if (!function_exists ('run_migration')) {
   function run_migration ($version = null) {
     $version = $version !== null ? is_numeric($version) ? $version : null : null;
     $results = array ();
-    $controller = new CI_Controller();
+    $controller = new CI_Controller ();
     $controller->load->library ('migration');
 
     if ((($version === null) && !is_bool ($version = $controller->migration->latest ())) || !is_bool ($version = $controller->migration->version ($version)))

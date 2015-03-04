@@ -5,8 +5,8 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-  include 'base.php';
-  include 'functions/create.php';
+  include_once 'base.php';
+  include_once 'functions/create.php';
 
   //       file       username       password       database       hostname
   // =============================================================================

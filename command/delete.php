@@ -5,8 +5,8 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-  include 'base.php';
-  include 'functions/delete.php';
+  include_once 'base.php';
+  include_once 'functions/delete.php';
 
   //       file     type         name              action
   // =============================================================
