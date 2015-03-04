@@ -1193,8 +1193,18 @@ class CI_DB_driver {
 			}
 		}
 
-		$error =& load_class('Exceptions', 'core');
-		echo $error->show_error($heading, $message, 'error_db');
+		if (ENVIRONMENT != 'console') {
+			$error =& load_class('Exceptions', 'core');
+			echo $error->show_error($heading, $message, 'error_db');
+		} else {
+    	$db_line = color (str_repeat ('=', 80), 'N') . "\n";
+    	$line = color (str_repeat ('-', 80), 'N') . "\n";
+    	echo $db_line;
+			echo color ('資料庫發生錯誤!', 'R') . "\n";
+			echo $line;
+			echo implode ("", array_map (function ($m) { return $m . "\n"; }, !is_array ($message) ? array ($message) : $message));
+    	echo $db_line;
+		}
 		exit;
 	}
 

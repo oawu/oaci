@@ -195,14 +195,6 @@ if (defined('ENVIRONMENT')) {
 		define('APPPATH', BASEPATH.$application_folder.'/');
 	}
 
-  // Resource relative base path.
-  define('REL_PATH_CSS',   'resource/css/');
-  define('REL_PATH_JS',    'resource/javascript/');
-  define('REL_PATH_IMG',   'resource/image/');
-  define('REL_PATH_FILE',  'resource/file/');
-  define('REL_PATH_FONT',  'resource/font/');
-  define('REL_PATH_FLASH', 'resource/flash/');
-  define('REL_PATH_AUDIO', 'resource/audio/');
 
 /*
  * --------------------------------------------------------------------

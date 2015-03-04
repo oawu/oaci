@@ -27,7 +27,7 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
   public function add () {
     $message = identity ()->get_session ('_flash_message', true);
 
-    $this->add_js (base_url (utilitySameLevelPath (REL_PATH_JS, 'underscore_v1.7.0', 'underscore-min.js')))
+    $this->add_js (base_url (utilitySameLevelPath ('resource', 'javascript', 'underscore_v1.7.0', 'underscore-min.js')))
          ->load_view (array ('message' => $message));
   }
 
@@ -67,7 +67,7 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
       redirect (array ($this->get_class (), 'index'));
 
     $message = identity ()->get_session ('_flash_message', true);
-    $this->add_js (base_url (utilitySameLevelPath (REL_PATH_JS, 'underscore_v1.7.0', 'underscore-min.js')))
+    $this->add_js (base_url (utilitySameLevelPath ('resource', 'javascript', 'underscore_v1.7.0', 'underscore-min.js')))
          ->load_view (array ('message' => $message, 'event' => $event));
   }
 
