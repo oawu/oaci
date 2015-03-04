@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh">
   <head>
-    <?php echo isset ($meta) ? $meta:''; ?>
-    <title data-ori="<?php echo isset ($title) ? $title:''; ?>"><?php echo isset ($title) ? $title : ''; ?></title>
+    <?php echo isset ($meta_list) ? $meta_list : ''; ?>
 
-    <?php echo isset ($css) ? $css:''; ?>
-    <?php echo isset ($javascript) ? $javascript:''; ?>
+    <title><?php echo isset ($title) ? $title : ''; ?></title>
+
+<?php echo isset ($css_list) ? $css_list : ''; ?>
+
+<?php echo isset ($js_list) ? $js_list : ''; ?>
 
   </head>
   <body lang="zh-tw">
-    <?php echo isset ($hidden) ? $hidden:'';?>
-    <?php echo isset ($content) ? $content : '';?>
+    <?php echo isset ($hidden_list) ? $hidden_list : ''; ?>
+
+    <?php echo isset ($content) ? $content : ''; ?>
   </body>
 </html>

@@ -20,7 +20,7 @@ class Root_controller extends CI_Controller {
     ini_set('display_errors', 1);
 
     $this->load->driver ('cache', array ('adapter' => 'apc', 'backup' => 'file'));
-    
+
     $this->load->helper ('url');
     $this->load->helper ('html');
     $this->load->helper ('oa');
