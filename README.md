@@ -98,6 +98,9 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 	* [model](#delete-model)
 	* [cell](#delete-cell)
 
+* migration
+	* [migration](#migration)
+
 * 語法表格
 	* 新增 - create
 
@@ -115,6 +118,12 @@ php  | create | cell       | cell_name       | [method_name1, method_name2...]
 php  | delete | controller | controller_name | [site \| admin \| delay]
 php  | delete | model      | model_name      |
 php  | delete | cell       | cell_name       |
+
+	* migration
+
+		_  |   file    |  type
+-----|-----------|--------------------
+php  | migration | [0 | 1 | 2 |...]
 
 #### create controller
 基本指令為 ```php create controller controller_name [site | admin | delay]```。
@@ -193,6 +202,17 @@ php  | delete | cell       | cell_name       |
 
 ![OA's CodeIgniter Delete Cell](resource/image/readme/delete_cell.png)
 
+#### migration
+基本指令為 ```php migration```。
+
+* 預設會執行到最新的 migration。
+* [0 | 1 | 2 |...] 為指定版本，若是沒有此參數，則**預設值為最新版本**。
+* 舉例，若要更新 migration，則輸入 ```php migration```，若是要降版至第 0 版，則輸入 ```php migration 0```。
+
+[回常用指令 ↩](#常用指令)
+
+![OA's CodeIgniter Delete Cell](resource/image/readme/migration.png)
+
 <br />
 <br />
 ### 初始化指令
@@ -218,7 +238,9 @@ php  | delete | cell       | cell_name       |
 
 * 其主要是分別會建立起 event、attendee、tag、tag_event_map 這四張關係表，借由這四張表去演練相關 model、 controller 範例
 
-* 初步創建完後，可以執行一下 migration，讓資料庫更新，以便 demo 讀寫。指令分別如下:
+* 初步創建完後，migration 會自動更新，所以不必特地去執行 migration 指令。
+
+* Demo 指令分別如下:
 	* [create demo](#create-demo)。
 	* [delete demo](#delete-demo)。
 
@@ -244,7 +266,7 @@ php  | delete | cell       | cell_name       |
 
 [Demo指令 ↩](#demo指令)
 
-![OA's CodeIgniter Create Demo](resource/image/readme/create_demo.png)
+![OA's CodeIgniter Create Demo](resource/image/readme/create_demo_with_migration.png)
 
 #### delete demo
 基本指令為 ```php delete demo```。
