@@ -4,6 +4,7 @@
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
+
 class Cell {
   private $CI = null;
   private $configs = array ();
@@ -95,11 +96,12 @@ class Cell {
 
 class Cell_Controller {
   private $CI = null;
-  private $view_folder = null;
+  private $configs = array ();
 
-  public function __construct () {
+  public function __construct ($configs = array ()) {
     $this->CI =& get_instance ();
-    $this->view_folder = utilitySameLevelPath (FCPATH . Cfg::system ('cell', 'view_folder'));
+    $this->CI->load->library ("cfg");
+    $this->configs = array_merge (Cfg::system ('cell'), $configs);
   }
 
   public function get_CI () {
@@ -108,18 +110,23 @@ class Cell_Controller {
 
   protected function load_view ($data = array (), $set_method = null, $set_class = null) {
     $trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT);
-    if (isset ($trace) && count ($trace) > 1 && isset ($trace[1]) && isset ($trace[1]['class']) && isset ($trace[1]['function']) && is_string ($class = strtolower ($trace[1]['class'])) && is_string ($method = strtolower ($trace[1]['function'])) && strlen ($class) && strlen ($method)) {
-      if (is_readable ($_ci_path = utilitySameLevelPath ($this->view_folder . DIRECTORY_SEPARATOR . ($set_class ? $set_class : $class) . DIRECTORY_SEPARATOR . ($set_method ? $set_method : $method) . EXT))) {
-        extract ($data);
-        ob_start();
 
-        if (((bool)@ini_get('short_open_tag') === FALSE) && (config_item('rewrite_short_tags') == TRUE)) echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
-        else include ($_ci_path);
+    if (!(isset ($trace) && (count ($trace) > 1) && isset ($trace[1]) && isset ($trace[1]['class']) && isset ($trace[1]['function']) && is_string ($class = strtolower ($trace[1]['class'])) && is_string ($method = strtolower ($trace[1]['function'])) && strlen ($class) && strlen ($method)))
+      return show_error ('The debug_backtrace Error!');;
 
-        $buffer = ob_get_contents ();
-        @ob_end_clean ();
-        return $buffer;
-      } else { show_error ("The Cell's controllers is not exist or can't read! File: " . $_ci_path); }
-    } else { show_error ('The debug_backtrace Error!'); }
+    if (!is_readable ($_ci_path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method) . EXT)))))
+      return show_error ("The Cell's controllers is not exist or can't read!<br/>File: " . $_ci_path);
+
+    extract ($data);
+    ob_start();
+
+    if (((bool)@ini_get ('short_open_tag') === FALSE) && (config_item ('rewrite_short_tags') == TRUE))
+      echo eval ('?>'.preg_replace ("/;*\s*\?>/", "; ?>", str_replace ('<?=', '<?php echo ', file_get_contents ($_ci_path))));
+    else
+      include_once ($_ci_path);
+
+    $buffer = ob_get_contents ();
+    @ob_end_clean ();
+    return $buffer;
   }
 }
