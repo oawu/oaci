@@ -12,7 +12,7 @@ class Cell {
 
   public function __construct ($configs = array ()) {
     $this->CI =& get_instance ();
-    
+
     $this->CI->load->helper ('oa');
     $this->CI->load->library ("cfg");
     $this->CI->load->driver ('cache', array ('adapter' => 'apc', 'backup' => 'file'));
@@ -36,7 +36,7 @@ class Cell {
         require_once ($file);
         $class = ucfirst ($class);
         $object = new $class ();
-        
+
         if (is_callable (array ($object, $method))) {
           $option = array ();
 
@@ -45,7 +45,7 @@ class Cell {
 
             if (isset ($option['key']) && count ($option['key'] = array_filter (explode ('/', $option['key'])))) {
               $option['path'] = utilitySameLevelPath ($this->cache_folder . DIRECTORY_SEPARATOR . strtolower ($class) . '_|_' . strtolower ($method) . DIRECTORY_SEPARATOR);
-              
+
               if (count ($option['key']) == 1) {
                 $option['key'] = $option['key'][0];
               } else {
@@ -80,7 +80,7 @@ class Cell {
   public function clear_cell ($class, $method, $key = null) {
     if (isset ($key) && count ($key = array_filter (explode ('/', $key)))) {
       $path = utilitySameLevelPath ($this->cache_folder . DIRECTORY_SEPARATOR . strtolower ($class) . '_|_' . strtolower ($method) . DIRECTORY_SEPARATOR);
-      
+
       if (count ($key) == 1) {
         $key = $key[0];
       } else {
@@ -136,7 +136,7 @@ class Cell_Controller {
   public function get_CI () {
     return $this->CI;
   }
-  
+
   protected function load_view ($data = array (), $set_method = null, $set_class = null) {
     $trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT);
     if (isset ($trace) && count ($trace) > 1 && isset ($trace[1]) && isset ($trace[1]['class']) && isset ($trace[1]['function']) && is_string ($class = strtolower ($trace[1]['class'])) && is_string ($method = strtolower ($trace[1]['function'])) && strlen ($class) && strlen ($method)) {

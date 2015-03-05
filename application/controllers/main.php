@@ -11,6 +11,14 @@ class Main extends Site_controller {
     parent::__construct ();
   }
 
+  public function r () {
+    $this->load->library ('redis');
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    var_dump ($this->redis->get ('key_1'));
+    exit ();;
+
+  }
+
   public function index () {
     $this->load_view (null);
     // $this->load_view (null, false, 10);
