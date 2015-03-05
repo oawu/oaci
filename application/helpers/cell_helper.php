@@ -14,6 +14,7 @@ if (!function_exists ('render_cell')) {
     } else { show_error ('The render_cell params error!'); }
   }
 }
+
 if (!function_exists ('clean_cell')) {
   function clean_cell () {
     $CI =& get_instance ();
@@ -21,13 +22,3 @@ if (!function_exists ('clean_cell')) {
     return $CI->cell->clean_cell (func_get_args ());
   }
 }
-
-if (!function_exists ('clear_cell')) {
-  function clear_cell ($class, $method, $key = null) {
-    $CI =& get_instance ();
-    if (!isset ($CI->cell)) $CI->load->library ('cell');
-    return $CI->cell->clear_cell ($class, $method, $key);
-  }
-}
-
-
