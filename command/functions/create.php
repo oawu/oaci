@@ -151,7 +151,7 @@ if (!function_exists ('create_cell')) {
     $name = strtolower ($name);
     $methods = array_filter ($methods);
 
-    $class_suffix  = '_cells';
+    $class_suffix  = '_cell';
     $method_prefix = '_cache_';
 
     $controllers_path = FCPATH . 'application/cell/controllers/';

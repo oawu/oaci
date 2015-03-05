@@ -1,5 +1,5 @@
 <div class='container'>
-{<{<{ echo render_cell ('demo_cells', 'main_menu', array ()); ?>
+{<{<{ echo render_cell ('demo_cell', 'main_menu', array ()); ?>
   <a class='list' href='{<{<{ echo base_url (array ('tags', 'index'));?>'>列表</a>
 
   <table class='table-form'>
