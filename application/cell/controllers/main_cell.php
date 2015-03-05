@@ -4,7 +4,7 @@
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
-class Main_cells extends Cell_Controller {
+class Main_cell extends Cell_Controller {
 
   public function _cache_index () {
     return array ('time' => 60 * 60, 'key' => null);

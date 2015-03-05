@@ -1,5 +1,5 @@
 <div class='container'>
-{<{<{ echo render_cell ('demo_cells', 'main_menu', array ()); ?>
+{<{<{ echo render_cell ('demo_cell', 'main_menu', array ()); ?>
   <a class='create' href='{<{<{ echo base_url (array ('events', 'add'));?>'>新增</a>
   {<{<{
     if (isset ($message) && $message) { ?>

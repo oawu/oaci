@@ -61,7 +61,7 @@ if (!function_exists ('delete_cell')) {
   function delete_cell ($name) {
     $results = array ();
     $name = strtolower ($name);
-    $class_suffix  = '_cells';
+    $class_suffix  = '_cell';
 
     $controller_path = FCPATH . 'application/cell/controllers/' . $name . $class_suffix . EXT;
     $views_path = FCPATH . 'application/cell/views/' . $name . $class_suffix . '/';

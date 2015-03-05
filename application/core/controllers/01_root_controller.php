@@ -95,8 +95,10 @@ class Root_controller extends CI_Controller {
   }
 
   protected function load_content ($data = '', $return = false) {
-    if (!is_readable ($abs_path = utilitySameLevelPath (FCPATH . APPPATH . DIRECTORY_SEPARATOR . implode (DIRECTORY_SEPARATOR, $this->get_views_path ()) . DIRECTORY_SEPARATOR . ($path = utilitySameLevelPath (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.php'))))))))
+    if (!is_readable ($abs_path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.php')))))
       return show_error ('Can not find content file. path: ' . $abs_path);
+    else
+      $path = implode (DIRECTORY_SEPARATOR, array_merge ($this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.php')));
 
     if ($return) return $this->load->view ($path, $data, $return);
     else $this->load->view ($path, $data, $return);
