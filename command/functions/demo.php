@@ -38,7 +38,7 @@ if (!function_exists ('create_demo')) {
     $results = array ();
     $controllers = array ('events' => array (), 'tags' => array ());
     array_walk ($controllers, function ($value, $key) use (&$results) {
-      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_controller (FCPATH . 'command/templates/demo/' . $key . '/', $key, 'site', array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy')))));
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_controller (FCPATH . 'command/templates/demo/' . singularize ($key) . '/', $key, 'site', array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy')))));
     });
     echo implode ("\n", $results) . "\n" . $line;
 
