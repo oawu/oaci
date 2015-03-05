@@ -6,6 +6,72 @@
  */
 class Cell {
   private $CI = null;
+  private $configs = array ();
+
+  public function __construct ($configs = array ()) {
+    $this->CI =& get_instance ();
+    $this->CI->load->library ("cfg");
+    $this->configs = array_merge (Cfg::system ('cell'), $configs);
+
+    if ($this->configs['driver'] == 'redis') {
+      $this->CI->load->library ("redis");
+      $this->configs['driver'] = $this->CI->redis->getStatus ($error) ? 'redis' : 'file';
+    }
+  }
+
+  public function render_cell ($class, $method, $params = array ()) {
+    if (!preg_match ('/(' . $this->configs['class_suffix'] . ')$/', $class))
+      return show_error ("The class name doesn't have suffix!<br/>class name: " . $class . "<br/>suffix: " . Cfg::system ('cell', 'class_suffix'));
+
+    if (!is_readable ($path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['controller'], array ($class . EXT)))))
+      return show_error ("The Cell's controllers is not exist or can't read!<br/>File: " . $path);
+
+    include_once ($path);
+    $Class = ucfirst ($class);
+    $object = new $Class ();
+
+    if (!is_callable (array ($object, $method)))
+      return show_error ("The class: " . $path . " not exist method: " . $method);
+
+    if ($this->configs['is_enabled'] && is_callable (array ($object, $cache_method = $this->configs['method_prefix'] . $method)) && ($option = call_user_func_array (array ($object, $cache_method), $params))) {
+      $option['time'] = isset ($option['time']) && $option['time'] > 0 ? $option['time'] : $this->configs['d4_cache_time'];
+      $option['key'] = isset ($option['key']) && $option['key'] ? $option['key'] : null;
+      $name = array_filter (is_array ($option['key']) ? array_merge (array ($this->configs['redis_main_key'], $class, $method), $option['key']) : array ($this->configs['redis_main_key'], $class, $method, $option['key']));
+
+      if ($this->configs['driver'] == 'redis') {
+        if (($value = $this->CI->redis->hGetArray ($key = implode (':', $name))) && time () < $value['time'])
+          $view = $value['data'];
+        else
+          $this->CI->redis->hmset ($key, 'data', $view = call_user_func_array (array ($object, $method), $params), 'time', time () + $option['time']);
+      } else {
+        echo "string";
+      }
+    } else {
+      $view = call_user_func_array (array ($object, $method), $params);
+    }
+
+    return $view;
+  }
+
+  public function clean_cell ($keys) {
+    if ($this->configs['driver'] == 'redis') {
+      array_unshift ($keys, $this->configs['redis_main_key']);
+
+      $keys = implode (':', $keys);
+      $keys = !preg_match ('/\*$/', $keys) ? $this->CI->redis->exists ($keys) ? array ($keys) : array () : $this->CI->redis->keys ($keys);
+
+      if ($keys)
+        foreach ($keys as $key)
+          $this->CI->redis->del ($keys);
+    } else {
+      echo "string";
+    }
+  }
+}
+
+/*
+class Cell {
+  private $CI = null;
   private $is_enabled = null;
   private $controller_folder = null;
   private $cache_folder = null;
@@ -124,6 +190,7 @@ class Cell {
   }
 }
 
+*/
 class Cell_Controller {
   private $CI = null;
   private $view_folder = null;

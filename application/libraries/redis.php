@@ -8,24 +8,33 @@
 
 class Redis {
   private $CI = null;
-  private $connection;
+  private $connection = null;
+  private $error = null;
   const CRLF = "\r\n";
 
   public function __construct ($configs = array ()) {
     $this->CI =& get_instance ();
     $this->CI->load->library ("cfg");
 
-    if (!(isset ($configs['active_server']) && ($server = Cfg::system ('redis', 'server')[$configs['active_server']])))
-      $server = Cfg::system ('redis', 'server')[Cfg::system ('redis', 'active_server')];
+    if (!(isset ($configs['active_server']) && ($server = Cfg::system ('redis', 'servers')[$configs['active_server']])))
+      $server = Cfg::system ('redis', 'servers')[Cfg::system ('redis', 'active_server')];
 
     $this->connection = @fsockopen ($server['host'], $server['port'], $errno, $errstr, 3);
     if (!$this->connection)
-      show_error ('無法連接至 Redis<br/>Host: ' . $server['host'] . '<br/>Port: ' . $server['port']);
+      $this->error = '無法連接至 Redis<br/>Host: ' . $server['host'] . '<br/>Port: ' . $server['port'];
 
     $this->_auth ($server['password']);
   }
 
+  public function getStatus (&$error) {
+    $error = $this->error;
+    return $this->connection ? true : false;
+  }
+
   public function command ($command) {
+    if ($this->error)
+      return null;
+
     if (is_array ($command))
       $command = implode (' ', $command);
 
@@ -34,10 +43,17 @@ class Redis {
     return $this->_write ($request);
   }
 
+  public function __call ($method, $args) {
+    if ($this->error)
+      return null;
+    $request = $this->_encode ($method, $args);
+    return $this->_write ($request);
+  }
+
   private function _auth ($password) {
     if ($password)
       if ($this->command ('AUTH ' . $password) !== 'OK')
-        show_error ('無法連接至 Redis, 密碼錯誤!');
+        $this->error = '無法連接至 Redis, 密碼錯誤!';
   }
 
   private function _encode ($method, $args = array ()) {
@@ -173,11 +189,6 @@ class Redis {
       if (($parts = explode (':', $line)) && isset ($parts[1]))
         $data[$parts[0]] = $parts[1];
     return $data;
-  }
-
-  public function __call ($method, $args) {
-    $request = $this->_encode ($method, $args);
-    return $this->_write ($request);
   }
 
   public function __destruct () {

@@ -12,9 +12,11 @@ class Main extends Site_controller {
   }
 
   public function r () {
-    $this->load->library ('redis');
-
-    // $this->redis->hset ('name', 'key1', 'value1');
+    // $this->load->library ('redis');
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($this->redis->keys ('*'));
+    // exit ();;
+    clean_cell ('main_cell', 'type', 'user_id1');
     // $this->redis->hmset ('name', 'key1', 'value1', 'key2', 'value2');
     // $this->redis->hsetnx ('name', 'key1', 'value2');
 
