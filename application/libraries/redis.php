@@ -26,8 +26,11 @@ class Redis {
   }
 
   public function command ($command) {
-    $slices = is_array ($command) ? $command : preg_split ("/\s+/", $command);
-    $request = $this->_encode (array_shift ($slices), $slices);
+    if (is_array ($command))
+      $command = implode (' ', $command);
+
+    $command = preg_split ("/\s+/", $command);
+    $request = $this->_encode (array_shift ($command), $command);
     return $this->_write ($request);
   }
 
@@ -56,7 +59,7 @@ class Redis {
     $length = strlen ($request);
 
     if ($length <= 0)
-      return NULL;
+      return null;
 
     if ($length <= $max)
       fwrite ($this->connection, $request);
@@ -95,7 +98,7 @@ class Redis {
         return $this->_multi_bulk_reply (); break;
 
       default:
-        return FALSE;
+        return null;
     }
   }
 
@@ -104,21 +107,24 @@ class Redis {
     $this->_clear_socket ();
     return $value;
   }
+
   private function _error_reply () {
     $error = substr (rtrim (fgets ($this->connection)), 4);
     show_error ("Redis 執行錯誤!<br/>錯誤碼: " . $error);
     $this->_clear_socket ();
-    return FALSE;
+    return null;
   }
+
   private function _integer_reply () {
     return (int)rtrim (fgets ($this->connection));
   }
+
   private function _bulk_reply () {
     $max = 8192;
     $length = (int)fgets ($this->connection);
 
     if ($length <= 0)
-      return NULL;
+      return null;
 
     $response = '';
 
@@ -129,7 +135,7 @@ class Redis {
         $response .= fread ($this->connection, ($length - $i) > $max ? $max : $length - $i);
 
     $this->_clear_socket ();
-    return isset ($response) ? $response : FALSE;
+    return isset ($response) ? $response : null;
   }
 
   private function _multi_bulk_reply () {
@@ -148,16 +154,16 @@ class Redis {
     }
 
     $this->_clear_socket ();
-    return isset ($response) ? $response : FALSE;
+    return isset ($response) ? $response : null;
   }
 
   public function _clear_socket () {
     fflush ($this->connection);
-    return NULL;
+    return null;
   }
 
-  public function info ($section = false) {
-    if ($section !== false)
+  public function info ($section = null) {
+    if ($section !== null)
       $response = $this->command ('INFO '. $section);
     else
       $response = $this->command ('INFO');
@@ -181,27 +187,11 @@ class Redis {
 
   // ----------------------------------------------------------------------------
 
-  // public function hmget () {
-  //   if (!($args = array_filter (func_get_args (), 'trim')))
-  //     return null;
-
-  //   if (count ($args) > 1)
-  //     return $this->command (array_merge (array ('hmget'), $args));
-  //   else
-  //     return ($keys = $this->hkeys ($args[0])) ? $this->command (array_merge (array ('hmget', $args[0]), $keys)) : null;
-  // }
-
-  // public function hget () {
-  //   if (!($args = array_filter (func_get_args (), 'trim')))
-  //     return null;
-
-  //   if (count ($args) > 1)
-  //     return $this->command (array_merge (array ('hget'), $args));
-  //   else
-  //     return null;//($keys = $this->hkeys ($args[0])) ? $this->command (array_merge (array ('hmget', $args[0]), $keys)) : null;
-  // }
-
-  // public function hkeys ($key) {
-  //   return $this->command ('hkeys ' . trim ($key));
-  // }
+  public function hGetArray ($name) {
+    $values = $this->command ('HGETALL ' . trim ($name));
+    $result = array ();
+    while ($values && list ($key, $value) = array_splice ($values, 0, 2))
+      $result[$key] = $value;
+    return $result;
+  }
 }
