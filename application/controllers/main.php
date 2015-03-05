@@ -11,6 +11,19 @@ class Main extends Site_controller {
     parent::__construct ();
   }
 
+  public function r () {
+    // $this->load->library ('redis');
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($this->redis->keys ('*'));
+    // exit ();;
+    clean_cell ('*');
+    // $this->redis->hmset ('name', 'key1', 'value1', 'key2', 'value2');
+    // $this->redis->hsetnx ('name', 'key1', 'value2');
+
+
+    // $array = $this->redis->hGetArray ('key_1');
+  }
+
   public function index () {
     $this->load_view (null);
     // $this->load_view (null, false, 10);
