@@ -76,7 +76,7 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 
 * <a name="back3"></a>打開終端機，並且在你的 DocumentRoot([註3](#comment3)) 下，輸入 ```git clone https://github.com/comdan66/oaci.git```。
 
-* 進入資料夾，並且下初始指令，終端機輸入 ```php ini```，即完成。
+* 進入資料夾，並且下初始指令，終端機輸入 ```php init```，即完成。
 
 * 更多初始化指令可以 [點我](#初始化指令)。
 
