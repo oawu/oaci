@@ -8,6 +8,9 @@
   include_once 'base.php';
   include_once 'functions/create.php';
 
+  $results = array ();
+  $temp_path = FCPATH . 'command/templates/create/';
+
   //       file     type         name              action
   // =============================================================
   // php   create   controller   controller_name   [site | admin | delay]
@@ -20,7 +23,6 @@
   $type   = array_shift ($argv);
   $name   = array_shift ($argv);
   $action = array_shift ($argv);
-  $temp_path = FCPATH . 'command/templates/create/';
 
   switch (strtolower ($type)) {
     case 'controller':
@@ -43,8 +45,11 @@
       include 'functions/demo.php';
       $results = create_demo ();
       break;
-  }
-  $results = array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, $results);
 
+    default:
+      return console_error ('指令錯誤!', '只接受 controller、model、migration、cell、demo 四種指令。');
+  }
+
+  $results = array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, $results);
   array_unshift ($results, '新增成功!');
   call_user_func_array ('console_log', $results);

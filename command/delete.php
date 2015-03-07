@@ -7,6 +7,8 @@
 
   include_once 'base.php';
   include_once 'functions/delete.php';
+  $results = array ();
+  $temp_path = FCPATH . 'command/templates/create/';
 
   //       file     type         name              action
   // =============================================================
@@ -19,7 +21,6 @@
   $type   = array_shift ($argv);
   $name   = array_shift ($argv);
   $action = array_shift ($argv);
-  $temp_path = FCPATH . 'command/templates/create/';
 
   switch ($type) {
     case 'controller':
@@ -38,10 +39,11 @@
       include 'functions/demo.php';
       $results = delete_demo ();
       break;
+
+    default:
+      return console_error ('指令錯誤!', '只接受 controller、model、cell、demo 三種指令。');
   }
 
   $results = array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, $results);
-
   array_unshift ($results, '刪除成功!');
   call_user_func_array ('console_log', $results);
-
