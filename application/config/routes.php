@@ -39,18 +39,19 @@
 */
 // $route['404_override'] = '';
 
-Route::root ('main');
 // $route['default_controller'] = "main";
+Route::root ('main');
 
 // $route['admin'] = "admin/main";
 Route::get ('admin', 'admin/main@index');
-Route::controller ('xxx', 'main');
 
 // $route['main/index/(:num)/(:num)'] = "main/aaa/$1/$2";
 // Route::get ('main/index/(:num)/(:num)', 'main@aaa($1, $2)');
 // Route::post ('main/index/(:num)/(:num)', 'main@aaa($1, $2)');
 // Route::put ('main/index/(:num)/(:num)', 'main@aaa($1, $2)');
 // Route::delete ('main/index/(:num)/(:num)', 'main@aaa($1, $2)');
+// Route::controller ('main', 'main');
+  // whit get、post、put、delete prefix
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
