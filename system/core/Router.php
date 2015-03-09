@@ -29,7 +29,19 @@ class Route {
 		$array = array ();
 		$controller = array_shift ($controller);
 
-		include_once (APPPATH . 'controllers' . DIRECTORY_SEPARATOR . $controller . EXT);
+		// require_once (APPPATH . 'controllers' . DIRECTORY_SEPARATOR . $controller . EXT);
+		$path = APPPATH . 'controllers' . DIRECTORY_SEPARATOR . $controller . EXT;
+		$data = file_get_contents ($path);
+		// $functionFinder = '/function[\s\n]+(\S+)[\s\n]*\(/';
+// preg_match_all ("/function[\s\n]+(\S+)[\s\n]*\(/", '')
+    preg_match_all ('/public[\s\n]*function[\s\n]*(?P<methods>.*)[\s\n]*\(/', $data, $matches);
+	echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+	var_dump ($matches);
+	exit ();
+
+		echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+		var_dump (preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $path));
+		exit ();
 		$methods = array_diff (get_class_methods ($controller), get_class_methods (get_parent_class ($controller)));
 
 		if ($methods)
