@@ -107,6 +107,8 @@
 		@set_time_limit(300);
 	}
 
+	require_once BASEPATH.'helpers/file_helper.php';
+
 /*
  * ------------------------------------------------------
  *  Start the timer... tick tock tick tock...
@@ -233,8 +235,6 @@
 		return CI_Controller::get_instance();
 	}
 
-	require_once BASEPATH.'helpers/file_helper.php';
-
 	if (($controllers = get_filenames (APPPATH.'core/controllers/')) && sort ($controllers)) {
 		foreach ($controllers as $controller) {
 			if ((('.' . pathinfo ($controller, PATHINFO_EXTENSION)) == EXT) && file_exists (APPPATH . 'core/controllers/' . $controller)) {
@@ -255,7 +255,7 @@
 		show_error('Unable to load your default controller. Please make sure the controller specified in your Routes.php file is valid.');
 	}
 
-	include(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php');
+	include_once (APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php');
 
 	// Set a mark point for benchmarking
 	$BM->mark('loading_time:_base_classes_end');
