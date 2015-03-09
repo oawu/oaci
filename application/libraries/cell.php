@@ -95,7 +95,7 @@ class Cell {
 }
 
 class Cell_Controller {
-  private $CI = null;
+  protected $CI = null;
   private $configs = array ();
 
   public function __construct ($configs = array ()) {
