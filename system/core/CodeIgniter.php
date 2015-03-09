@@ -107,6 +107,8 @@
 		@set_time_limit(300);
 	}
 
+	require_once BASEPATH.'helpers/file_helper.php';
+
 /*
  * ------------------------------------------------------
  *  Start the timer... tick tock tick tock...
@@ -166,6 +168,20 @@
 
 /*
  * ------------------------------------------------------
+ *  Instantiate the routing class and set the routing
+ * ------------------------------------------------------
+ */
+	$RTR =& load_class('Router', 'core');
+	$RTR->_set_routing();
+
+	// Set any routing overrides that may exist in the main index file
+	if (isset($routing))
+	{
+		$RTR->_set_overrides($routing);
+	}
+
+/*
+ * ------------------------------------------------------
  *  Instantiate the output class
  * ------------------------------------------------------
  */
@@ -219,8 +235,6 @@
 		return CI_Controller::get_instance();
 	}
 
-	require_once BASEPATH.'helpers/file_helper.php';
-
 	if (($controllers = get_filenames (APPPATH.'core/controllers/')) && sort ($controllers)) {
 		foreach ($controllers as $controller) {
 			if ((('.' . pathinfo ($controller, PATHINFO_EXTENSION)) == EXT) && file_exists (APPPATH . 'core/controllers/' . $controller)) {
@@ -231,20 +245,6 @@
 		if (file_exists(APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php')) {
 			require APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php';
 		}
-	}
-
-/*
- * ------------------------------------------------------
- *  Instantiate the routing class and set the routing
- * ------------------------------------------------------
- */
-	$RTR =& load_class('Router', 'core');
-	$RTR->_set_routing();
-
-	// Set any routing overrides that may exist in the main index file
-	if (isset($routing))
-	{
-		$RTR->_set_overrides($routing);
 	}
 
 	// Load the local application controller

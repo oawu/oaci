@@ -29,35 +29,27 @@ class Route {
 		$array = array ();
 		$controller = array_shift ($controller);
 
-		// require_once (APPPATH . 'controllers' . DIRECTORY_SEPARATOR . $controller . EXT);
-		$path = APPPATH . 'controllers' . DIRECTORY_SEPARATOR . $controller . EXT;
-		$data = file_get_contents ($path);
-		// $functionFinder = '/function[\s\n]+(\S+)[\s\n]*\(/';
-// preg_match_all ("/function[\s\n]+(\S+)[\s\n]*\(/", '')
-    preg_match_all ('/public[\s\n]*function[\s\n]*(?P<methods>.*)[\s\n]*\(/', $data, $matches);
-	echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-	var_dump ($matches);
-	exit ();
+		$data = read_file (APPPATH . 'controllers' . DIRECTORY_SEPARATOR . $controller . EXT);
+    preg_match_all ('/(public\s+)?function\s*(?P<methods>(^[^_])*[A-Za-z]*)\s*\(/', $data, $matches);
 
-		echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-		var_dump (preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $path));
-		exit ();
-		$methods = array_diff (get_class_methods ($controller), get_class_methods (get_parent_class ($controller)));
-
-		if ($methods)
+		if ($methods = $matches['methods'])
 			foreach ($methods as $method) {
-				$tokens = preg_split ('/(?=[A-Z])/', $method, -1, PREG_SPLIT_NO_EMPTY);
+				$pattern = '/(?P<key>' . implode ('|', array_map (function ($t) { return '^(' . $t . ')'; }, self::$methods)) . ')/';
 
-				if (in_array (strtolower ($action = array_shift ($tokens)), self::$methods)) {
-					$action = strtolower ($action);
+				if (preg_match ($pattern, $method, $matches) && isset ($matches['key'])) {
+					$action = $matches['key'];
+					$matches = array_filter (preg_split ($pattern, $method));
+					$uri = array_shift ($matches);
 				} else {
-					array_unshift ($tokens, $action);
 					$action = 'get';
+					$uri = $method;
 				}
-				$tokens = implode ('', $tokens);
-				// if (() === 'index')
-				// 	$tokens = '';
-				self::$action (implode ('/', array_merge ($path, $tokens === 'index' ? array () : array ($tokens))), $controller . '@' . $tokens);
+
+				if ($uri !== null) {
+					self::$action (implode ('/', array_merge ($path, array ($uri))), $controller . '@' . $method);
+					if ($method === 'index')
+						self::$action (implode ('/', array_merge ($path, array ())), $controller . '@' . $method);
+				}
 			}
 	}
 
