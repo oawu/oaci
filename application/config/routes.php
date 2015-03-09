@@ -43,7 +43,8 @@ Route::root ('main');
 // $route['default_controller'] = "main";
 
 // $route['admin'] = "admin/main";
-Route::get ('admin', 'admin/main');
+Route::get ('admin', 'admin/main@index');
+Route::controller ('xxx', 'main');
 
 // $route['main/index/(:num)/(:num)'] = "main/aaa/$1/$2";
 // Route::get ('main/index/(:num)/(:num)', 'main@aaa($1, $2)');

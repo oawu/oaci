@@ -7,18 +7,51 @@
 
 class Route {
 	static $route = array ();
+	static $methods = array ('get', 'post', 'put', 'delete');
+  // const CRLF = "\r\n";
 
   public function __construct () {
 
 	}
 
 	public static function root ($controller) {
-		$controller = array_filter (explode ('@', $controller));
+		$controller = array_filter (explode ('@', $controller), function ($t) { return $t || $t === '0'; });
 		self::$route['/'] = array ('get' => implode ('/', $controller));
 	}
 
+	public static function controller ($path, $controller) {
+		$path = array_filter (explode ('/', $path));
+		$controller = array_filter (explode ('@', $controller), function ($t) { return $t || $t === '0'; });
+
+		if (!$controller)
+			show_error ("Route 使用方法錯誤!<br/>尚未定義: Route::" . $name . " 的方法!");
+
+		$array = array ();
+		$controller = array_shift ($controller);
+
+		include_once (APPPATH . 'controllers' . DIRECTORY_SEPARATOR . $controller . EXT);
+		$methods = array_diff (get_class_methods ($controller), get_class_methods (get_parent_class ($controller)));
+
+		if ($methods)
+			foreach ($methods as $method) {
+				$tokens = preg_split ('/(?=[A-Z])/', $method, -1, PREG_SPLIT_NO_EMPTY);
+
+				if (in_array (strtolower ($action = array_shift ($tokens)), self::$methods)) {
+					$action = strtolower ($action);
+				} else {
+					array_unshift ($tokens, $action);
+					$action = 'get';
+				}
+				$tokens = implode ('', $tokens);
+				// if (() === 'index')
+				// 	$tokens = '';
+				self::$action (implode ('/', array_merge ($path, $tokens === 'index' ? array () : array ($tokens))), $controller . '@' . $tokens);
+			}
+	}
+
 	public static function __callStatic ($name, $arguments) {
-		if (in_array ($name, array ('get', 'post', 'put', 'delete')) && (count ($arguments) == 2)) {
+
+		if (in_array (strtolower ($name), self::$methods) && (count ($arguments) == 2)) {
 			$path = array_filter (explode ('/', $arguments[0]));
 			$controller = array_filter (preg_split ('/[@,\(\)\s]+/', $arguments[1]), function ($t) { return $t || $t === '0'; });
 
@@ -27,7 +60,7 @@ class Route {
 
 			self::$route[implode ('/', $path)] = array (strtolower ($name) => implode ('/', $controller));
 		} else {
-
+			show_error ("Route 使用方法錯誤!<br/>尚未定義: Route::" . $name . " 的方法!");
 		}
 	}
 

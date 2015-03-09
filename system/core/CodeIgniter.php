@@ -166,20 +166,6 @@
 
 /*
  * ------------------------------------------------------
- *  Instantiate the routing class and set the routing
- * ------------------------------------------------------
- */
-	$RTR =& load_class('Router', 'core');
-	$RTR->_set_routing();
-
-	// Set any routing overrides that may exist in the main index file
-	if (isset($routing))
-	{
-		$RTR->_set_overrides($routing);
-	}
-
-/*
- * ------------------------------------------------------
  *  Instantiate the output class
  * ------------------------------------------------------
  */
@@ -247,6 +233,20 @@
 		}
 	}
 
+/*
+ * ------------------------------------------------------
+ *  Instantiate the routing class and set the routing
+ * ------------------------------------------------------
+ */
+	$RTR =& load_class('Router', 'core');
+	$RTR->_set_routing();
+
+	// Set any routing overrides that may exist in the main index file
+	if (isset($routing))
+	{
+		$RTR->_set_overrides($routing);
+	}
+
 	// Load the local application controller
 	// Note: The Router class automatically validates the controller path using the router->_validate_request().
 	// If this include fails it means that the default controller in the Routes.php file is not resolving to something valid.
@@ -255,7 +255,7 @@
 		show_error('Unable to load your default controller. Please make sure the controller specified in your Routes.php file is valid.');
 	}
 
-	include(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php');
+	include_once (APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php');
 
 	// Set a mark point for benchmarking
 	$BM->mark('loading_time:_base_classes_end');

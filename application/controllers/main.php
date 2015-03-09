@@ -12,6 +12,14 @@ class Main extends Site_controller {
   }
 
   public function index () {
-    $this->load_view (null);
+  }
+  public function x () {
+    echo "string";
+  }
+  public function getXxxx () {
+    echo "xxx";
+  }
+  public function postXxOx () {
+    echo "xxox";
   }
 }
