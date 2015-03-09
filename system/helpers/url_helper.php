@@ -152,7 +152,7 @@ if ( ! function_exists('anchor'))
 		}
 		else
 		{
-			$site_url = site_url($uri);
+			$site_url = base_url($uri);
 		}
 
 		if ($title == '')
@@ -160,7 +160,7 @@ if ( ! function_exists('anchor'))
 			$title = $site_url;
 		}
 
-		if ($attributes != '')
+		if ($attributes)
 		{
 			$attributes = _parse_attributes($attributes);
 		}
