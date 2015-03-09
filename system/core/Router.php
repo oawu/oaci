@@ -8,10 +8,8 @@
 class Route {
 	static $route = array ();
 	static $methods = array ('get', 'post', 'put', 'delete');
-  // const CRLF = "\r\n";
 
   public function __construct () {
-
 	}
 
 	public static function root ($controller) {
