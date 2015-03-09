@@ -437,6 +437,9 @@ class CI_Router {
 	function _parse_routes()
 	{
 		// Turn the segment array into a URI string
+		if (isset ($_REQUEST['_method']) && in_array (strtolower ($_REQUEST['_method']), Route::$methods))
+			$_SERVER['REQUEST_METHOD'] = $_REQUEST['_method'];
+
 		$request_method = strtolower ($_SERVER['REQUEST_METHOD']);
 		$uri = implode('/', $this->uri->segments);
 
