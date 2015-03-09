@@ -38,9 +38,38 @@
 |
 */
 
-$route['default_controller'] = "main";
-$route['admin'] = "admin/main";
-$route['404_override'] = '';
+// $route['default_controller'] = "main";
+// $route['admin'] = "admin/main";
+// $route['404_override'] = '';
+
+// $route['aaa/(:num)/(:num)'] = "main/aaa";
+// $route['product/(:num)'] = "products/content/$1";
+// $route['portfolio/(:num)'] = "portfolios/content/$1";
+// $route['scent/(:num)'] = "scents/content/$1";
+// $route['scents/(:any)'] = "scents/index/$1";
+
+Route::root ('main@index');
+// Route::get ('/xxx', 'main@xxx');
+Route::get ('/aaa/(:num)/(:num)', 'main@aaa($1, $2)');
+// Route::delete ('/user/{id}', 'controller@index');
+
+// Route::default ('controller@index');
+
+// Route::get ('/path', 'controller@index');
+// Route::post ('/path', 'controller@index');
+// Route::put ('/path', 'controller@index');
+// Route::delete ('/path', 'controller@index');
+
+// Route::controller ('/path', 'controller@index');
+// Route::resorce ('/path', 'controller@index');
+// Route::match(['get', 'post'], '/', function()
+// {
+//     return 'Hello World';
+// });
+// Route::any('foo', function()
+// {
+//     return 'Hello World';
+// });
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

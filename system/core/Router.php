@@ -1,4 +1,40 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 OA Wu Design
+ */
+
+class Route {
+	static $route = array ();
+
+  public function __construct () {
+
+	}
+
+	public static function root ($controller) {
+		$controller = array_filter (explode ('@', $controller));
+		self::$route['/'] = array ('get' => implode ('/', $controller));
+	}
+
+	public static function __callStatic ($name, $arguments) {
+		if (in_array ($name, array ('put', 'get', 'post', 'delete')) && (count ($arguments) == 2)) {
+			$path = array_filter (explode ('/', $arguments[0]));
+			$controller = array_filter (preg_split ('/[@,\(\)\s]+/', $arguments[1]), function ($t) { return $t || $t === '0'; });
+
+			if (count ($controller) < 2)
+				array_push ($controller, 'index');
+
+			self::$route[implode ('/', $path)] = array (strtolower ($name) => implode ('/', $controller));
+		} else {
+
+		}
+	}
+
+	public static function getRoute () {
+		return self::$route;
+	}
+}
 /**
  * CodeIgniter
  *
@@ -139,11 +175,14 @@ class CI_Router {
 		}
 
 		$this->routes = ( ! isset($route) OR ! is_array($route)) ? array() : $route;
+		$this->routes = array_merge ($this->routes, Route::getRoute ());
 		unset($route);
 
 		// Set the default controller so we can display it in the event
 		// the URI doesn't correlated to a valid controller.
 		$this->default_controller = ( ! isset($this->routes['default_controller']) OR $this->routes['default_controller'] == '') ? FALSE : strtolower($this->routes['default_controller']);
+		if (!$this->default_controller)
+			$this->default_controller = isset($this->routes['/']['get']) ? $this->routes['/']['get'] : false;
 
 		// Were there any query string segments?  If so, we'll validate them and bail out since we're done.
 		if (count($segments) > 0)
@@ -363,12 +402,15 @@ class CI_Router {
 	function _parse_routes()
 	{
 		// Turn the segment array into a URI string
+		$request_method = strtolower ($_SERVER['REQUEST_METHOD']);
 		$uri = implode('/', $this->uri->segments);
 
 		// Is there a literal match?  If so we're done
-		if (isset($this->routes[$uri]))
+		if (isset($this->routes[$uri]) && is_string ($this->routes[$uri]))
 		{
 			return $this->_set_request(explode('/', $this->routes[$uri]));
+		} else if (isset ($this->routes[$uri]) && is_array ($this->routes[$uri]) && isset ($this->routes[$uri][$request_method])) {
+			return $this->_set_request(explode('/', $this->routes[$uri][$request_method]));
 		}
 
 		// Loop through the route array looking for wild-cards
@@ -378,14 +420,14 @@ class CI_Router {
 			$key = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $key));
 
 			// Does the RegEx match?
-			if (preg_match('#^'.$key.'$#', $uri))
+			if (preg_match('#^'.$key.'$#', $uri) && (is_string ($val) || (is_array ($val) && isset ($val[$request_method]) && ($val = $val[$request_method]))))
 			{
+
 				// Do we have a back-reference?
 				if (strpos($val, '$') !== FALSE AND strpos($key, '(') !== FALSE)
 				{
 					$val = preg_replace('#^'.$key.'$#', $val, $uri);
 				}
-
 				return $this->_set_request(explode('/', $val));
 			}
 		}
