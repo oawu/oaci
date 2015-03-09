@@ -18,7 +18,7 @@ class Route {
 	}
 
 	public static function __callStatic ($name, $arguments) {
-		if (in_array ($name, array ('put', 'get', 'post', 'delete')) && (count ($arguments) == 2)) {
+		if (in_array ($name, array ('get', 'post', 'put', 'delete')) && (count ($arguments) == 2)) {
 			$path = array_filter (explode ('/', $arguments[0]));
 			$controller = array_filter (preg_split ('/[@,\(\)\s]+/', $arguments[1]), function ($t) { return $t || $t === '0'; });
 

@@ -12,17 +12,6 @@ class Main extends Site_controller {
   }
 
   public function index () {
-    $r = new Route();
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ('a');
-    exit ();
-    // $this->load_view (null);
-  }
-
-  public function xxx () {
-    echo "string";
-  }
-  public function aaa ($a, $b) {
-    echo ">" . $b .'<';
+    $this->load_view (null);
   }
 }

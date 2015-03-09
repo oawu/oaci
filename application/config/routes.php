@@ -37,39 +37,19 @@
 | in the URL cannot be matched to a valid route.
 |
 */
-
-// $route['default_controller'] = "main";
-// $route['admin'] = "admin/main";
 // $route['404_override'] = '';
 
-// $route['aaa/(:num)/(:num)'] = "main/aaa";
-// $route['product/(:num)'] = "products/content/$1";
-// $route['portfolio/(:num)'] = "portfolios/content/$1";
-// $route['scent/(:num)'] = "scents/content/$1";
-// $route['scents/(:any)'] = "scents/index/$1";
+Route::root ('main');
+// $route['default_controller'] = "main";
 
-Route::root ('main@index');
-// Route::get ('/xxx', 'main@xxx');
-Route::get ('/aaa/(:num)/(:num)', 'main@aaa($1, $2)');
-// Route::delete ('/user/{id}', 'controller@index');
+// $route['admin'] = "admin/main";
+Route::get ('admin', 'admin/main');
 
-// Route::default ('controller@index');
-
-// Route::get ('/path', 'controller@index');
-// Route::post ('/path', 'controller@index');
-// Route::put ('/path', 'controller@index');
-// Route::delete ('/path', 'controller@index');
-
-// Route::controller ('/path', 'controller@index');
-// Route::resorce ('/path', 'controller@index');
-// Route::match(['get', 'post'], '/', function()
-// {
-//     return 'Hello World';
-// });
-// Route::any('foo', function()
-// {
-//     return 'Hello World';
-// });
+// $route[''main/index/(:num)/(:num)'] = "main/aaa/$1/$2";
+// Route::get ('main/index/(:num)/(:num)', 'main@aaa($1, $2)');
+// Route::post ('main/index/(:num)/(:num)', 'main@aaa($1, $2)');
+// Route::put ('main/index/(:num)/(:num)', 'main@aaa($1, $2)');
+// Route::delete ('main/index/(:num)/(:num)', 'main@aaa($1, $2)');
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
