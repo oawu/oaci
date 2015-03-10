@@ -104,6 +104,8 @@ class Oa_controller extends Root_controller {
   }
 
   protected function load_components () {
+    $this->_combine_static_files ();
+
     $list = array (
         'meta_list'   => array_filter ($this->meta_list),
         'hidden_list' => array_filter ($this->hidden_list),
@@ -183,12 +185,10 @@ class Oa_controller extends Root_controller {
          ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame.js')))))
          ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.js')))));
 
-    $this->_combine_static_files ();
-
     $frame_data = array ();
-    $frame_data = array_merge ($frame_data, $this->load_components ());
     $frame_data['title']   = $this->get_title ();
     $frame_data['content'] = $this->load_content ($data, true);
+    $frame_data = array_merge ($frame_data, $this->load_components ());
 
     if ($return) return $this->load->view ($frame_path, $frame_data, $return);
     else $this->load->view ($frame_path, $frame_data, $return)->cache ($cache_time);

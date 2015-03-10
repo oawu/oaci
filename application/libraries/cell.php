@@ -40,10 +40,16 @@ class Cell {
       $name = array_filter (is_array ($option['key']) ? array_merge (array ($class, $method), $option['key']) : array ($class, $method, $option['key']));
 
       if ($this->configs['driver'] == 'redis') {
-        if ((array_unshift ($name, $this->configs['redis_main_key'])) && ($value = $this->CI->redis->hGetArray ($key = implode (':', $name))) && time () < $value['time'])
-          $view = $value['data'];
-        else
-          $this->CI->redis->hmset ($key, 'data', $view = call_user_func_array (array ($object, $method), $params), 'time', time () + $option['time']);
+        if ((array_unshift ($name, $this->configs['redis_main_key'])) && ($value = $this->CI->redis->hGetArray ($key = implode (':', $name))) && time () < $value['time']) {
+          $js_list = unserialize ($value['js_list']);
+          $css_list = unserialize ($value['css_list']);
+          $view = unserialize ($value['view']);
+        } else {
+          $view = call_user_func_array (array ($object, $method), $params);
+          $js_list = call_user_func_array (array ($object, 'getJsList'), array ());
+          $css_list = call_user_func_array (array ($object, 'getCssList'), array ());
+          $this->CI->redis->hmset ($key, 'view', serialize ($view), 'js_list', serialize ($js_list), 'css_list', serialize ($css_list), 'time', time () + $option['time']);
+        }
       } else {
         $key = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['cache'], $name));
 
@@ -53,12 +59,33 @@ class Cell {
           umask ($oldmask);
         }
 
-        if (!($view = $this->CI->cache->file->get ($name = $this->configs['file_is_md5'] ? md5 (basename ($key) . $this->configs['file_prefix']) : basename ($key) . $this->configs['file_prefix'], dirname ($key) . DIRECTORY_SEPARATOR)))
-          $this->CI->cache->file->save ($name, $view = call_user_func_array (array ($object, $method), $params), $option['time'], dirname ($key) . DIRECTORY_SEPARATOR);
+        if (!($value = $this->CI->cache->file->get ($name = $this->configs['file_is_md5'] ? md5 (basename ($key) . $this->configs['file_prefix']) : basename ($key) . $this->configs['file_prefix'], dirname ($key) . DIRECTORY_SEPARATOR))) {
+          $view = call_user_func_array (array ($object, $method), $params);
+          $js_list = call_user_func_array (array ($object, 'getJsList'), array ());
+          $css_list = call_user_func_array (array ($object, 'getCssList'), array ());
+          $value = array ('view' => serialize ($view), 'js_list' => serialize ($js_list), 'css_list' => serialize ($css_list));
+
+          $this->CI->cache->file->save ($name, $value, $option['time'], dirname ($key) . DIRECTORY_SEPARATOR);
+        }
+        else {
+          $js_list = unserialize ($value['js_list']);
+          $css_list = unserialize ($value['css_list']);
+          $view = unserialize ($value['view']);
+        }
       }
     } else {
       $view = call_user_func_array (array ($object, $method), $params);
+      $js_list = call_user_func_array (array ($object, 'getJsList'), array ());
+      $css_list = call_user_func_array (array ($object, 'getCssList'), array ());
     }
+
+    if ($js_list)
+      foreach ($js_list as $js)
+        $this->CI->add_js ($js['path'], $js['is_minify']);
+
+    if ($css_list)
+      foreach ($css_list as $css)
+        $this->CI->add_css ($css['path'], $css['is_minify']);
 
     return $view;
   }
@@ -95,8 +122,10 @@ class Cell {
 }
 
 class Cell_Controller {
-  private $CI = null;
+  protected $CI = null;
   private $configs = array ();
+  private $js_list = array ();
+  private $css_list = array ();
 
   public function __construct ($configs = array ()) {
     $this->CI =& get_instance ();
@@ -104,8 +133,20 @@ class Cell_Controller {
     $this->configs = array_merge (Cfg::system ('cell'), $configs);
   }
 
-  public function get_CI () {
-    return $this->CI;
+  public function add_js ($path, $is_minify = true) {
+    array_push ($this->js_list, array ('path' => $path, 'is_minify' => $is_minify));
+    return $this;
+  }
+  public function add_css ($path, $is_minify = true) {
+    array_push ($this->css_list, array ('path' => $path, 'is_minify' => $is_minify));
+    return $this;
+  }
+
+  public function getJsList () {
+    return $this->js_list;
+  }
+  public function getCssList () {
+    return $this->css_list;
   }
 
   protected function load_view ($data = array (), $set_method = null, $set_class = null) {
@@ -114,8 +155,14 @@ class Cell_Controller {
     if (!(isset ($trace) && (count ($trace) > 1) && isset ($trace[1]) && isset ($trace[1]['class']) && isset ($trace[1]['function']) && is_string ($class = strtolower ($trace[1]['class'])) && is_string ($method = strtolower ($trace[1]['function'])) && strlen ($class) && strlen ($method)))
       return show_error ('The debug_backtrace Error!');;
 
-    if (!is_readable ($_ci_path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method) . EXT)))))
+    if (!is_readable ($_ci_path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content' . EXT)))))
       return show_error ("The Cell's controllers is not exist or can't read!<br/>File: " . $_ci_path);
+
+    if (is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.js')))))
+      $this->add_js (base_url ($path));
+
+    if (is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.css')))))
+      $this->add_css (base_url ($path));
 
     extract ($data);
     ob_start();
