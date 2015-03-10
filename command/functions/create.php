@@ -166,6 +166,10 @@ if (!function_exists ('create_cell')) {
     if (($controllers && in_array ($file_name = $name . $class_suffix, $controllers)) || ($views && in_array ($file_name, $views)))
       console_error ("名稱錯誤!");
 
+    $oldmask = umask (0);
+    @mkdir ($view_path = $views_path . $file_name . '/', 0777, true);
+    umask ($oldmask);
+
     $date = load_view ($temp_path . 'cell.php', array ('file_name' => $file_name, 'name' => $name, 'methods' => $methods, 'method_prefix' => $method_prefix));
 
     if (!write_file ($controller_path = $controllers_path . $file_name . EXT, $date))
@@ -173,19 +177,32 @@ if (!function_exists ('create_cell')) {
 
     array_push ($results, $controller_path);
 
-    $oldmask = umask (0);
-    @mkdir ($view_path = $views_path . $file_name . '/', 0777, true);
-    umask ($oldmask);
-
     if (!is_writable ($view_path)) {
       delete_file ($controller_path);
-      console_error ("新增 controller 失敗!");
+      console_error ("新增 view 失敗!");
     }
 
+    if (count (array_filter (array_map (function ($method) use ($view_path, $temp_path, &$results) {
+                   $oldmask = umask (0);
+                   @mkdir ($view_path . $method . '/', 0777, true);
+                   umask ($oldmask);
 
-    if (!array_filter (array_map (function ($method) use ($view_path, $temp_path, &$results) { return write_file ($method_path = $view_path . $method . EXT, is_readable ($path = $temp_path . $method . '/content.php') ? load_view ($path) : '') ? array_push ($results, $method_path) : null; }, $methods)) && $methods) {
-      @directory_delete ($view_path);
+                   if (!is_writable ($view_path . $method . '/'))
+                     return null;
+
+                   $files = array ('content.css', 'content.scss', 'content.js', 'content.php');
+                   return count (array_filter (array_map (function ($file) use ($view_path, $method, $temp_path, &$results) {
+                                 $data = !is_readable ($path = $temp_path . $method . '/' . $file) ? is_readable ($path = $temp_path . 'index' . '/' . $file) ? load_view ($path) : '' : load_view ($path);
+                                 if (write_file ($view_path . $method . '/' . $file, $data)) {
+                                   array_push ($results, $view_path . $method . '/' . $file);
+                                   return true;
+                                 } else {
+                                   return false;
+                                 }
+                               }, $files)));
+                 }, $methods))) != count ($methods)) {
       delete_file ($controller_path);
+      directory_delete ($view_path, true);
       console_error ("新增 view 失敗!");
     }
     return $results;
