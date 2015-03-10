@@ -6,18 +6,14 @@
  */
 
 class <?php echo ucfirst ($file_name);?> extends Cell_Controller {
-<?php
-  if ($methods) {
-    foreach ($methods as $method) { ?>
 
-  /* render_cell ('<?php echo $file_name;?>', '<?php echo $method;?>', array ()); */
-  // public function <?php echo $method_prefix . $method;?> () {
+  /* render_cell ('demo_cell', 'main_menu', array ()); */
+  // public function _cache_main_menu () {
   //   return array ('time' => 60 * 60, 'key' => null);
   // }
-  public function <?php echo $method;?> () {
-    return $this->load_view ();
+  public function main_menu () {
+    return $this->setUseJsList (true)
+                ->setUseCssList (true)
+                ->load_view ();
   }
-<?php
-    }
-  } ?>
 }
