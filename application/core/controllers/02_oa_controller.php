@@ -115,7 +115,7 @@ class Oa_controller extends Root_controller {
     $frame_data = array ();
 
     foreach ($list as $key => $value)
-      if (is_readable (FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_componemt_path (), array ($key . EXT)))))
+      if (is_readable (FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_componemt_path (), array ($key . EXT)))))
         $frame_data[$key] = $this->load->view (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_componemt_path (), array ($key . EXT))), array ($key => $value), true);
 
     return $frame_data;
@@ -170,7 +170,7 @@ class Oa_controller extends Root_controller {
   }
 
   protected function load_view ($data = '', $return = false, $cache_time = 0) {
-    if (!is_readable ($path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame' . EXT)))))
+    if (!is_readable ($path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame' . EXT)))))
       return show_error ('Can not find frame file. path: ' . $path);
     else
       $frame_path = implode (DIRECTORY_SEPARATOR, array_merge ($this->get_frame_path (), array ('frame' . EXT)));
@@ -178,12 +178,12 @@ class Oa_controller extends Root_controller {
     if (!($this->get_class () && $this->get_method ()))
       return show_error ('The controller lack of necessary resources!!  Please confirm your program again.');
 
-    $this->add_css (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('public.css')))))
-         ->add_css (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame.css')))))
-         ->add_css (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.css')))))
-         ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('public.js')))))
-         ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame.js')))))
-         ->add_js (base_url (APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.js')))));
+    $this->add_css (base_url (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('public.css')))))
+         ->add_css (base_url (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame.css')))))
+         ->add_css (base_url (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.css')))))
+         ->add_js (base_url (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('public.js')))))
+         ->add_js (base_url (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame.js')))))
+         ->add_js (base_url (implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.js')))));
 
     $frame_data = array ();
     $frame_data['title']   = $this->get_title ();

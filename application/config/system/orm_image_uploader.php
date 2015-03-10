@@ -8,7 +8,7 @@
 $model['uploader']['instances']['directory'] = FCPATH . APPPATH . 'third_party' . DIRECTORY_SEPARATOR . 'orm_image_uploaders' . DIRECTORY_SEPARATOR;
 
 $orm_image_uploader['instance']['class_suffix'] = 'Uploader';
-$orm_image_uploader['instance']['directory'] = array ('third_party', 'orm_image_uploaders');
+$orm_image_uploader['instance']['directory'] = array ('application', 'third_party', 'orm_image_uploaders');
 
 $orm_image_uploader['bucket'] = 'local'; // local、s3
 $orm_image_uploader['default_version'] = array ('' => array ());

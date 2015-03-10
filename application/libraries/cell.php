@@ -24,7 +24,7 @@ class Cell {
     if (!preg_match ('/(' . $this->configs['class_suffix'] . ')$/', $class))
       return show_error ("The class name doesn't have suffix!<br/>class name: " . $class . "<br/>suffix: " . Cfg::system ('cell', 'class_suffix'));
 
-    if (!is_readable ($path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['controller'], array ($class . EXT)))))
+    if (!is_readable ($path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['controller'], array ($class . EXT)))))
       return show_error ("The Cell's controllers is not exist or can't read!<br/>File: " . $path);
 
     include_once ($path);
@@ -51,7 +51,7 @@ class Cell {
           $this->CI->redis->hmset ($key, 'view', serialize ($view), 'js_list', serialize ($js_list), 'css_list', serialize ($css_list), 'time', time () + $option['time']);
         }
       } else {
-        $key = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['cache'], $name));
+        $key = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['cache'], $name));
 
         if (!is_dir (dirname ($key))) {
           $oldmask = umask (0);
@@ -106,7 +106,7 @@ class Cell {
       if (($last = array_pop ($keys)) != '*')
         array_push ($keys, $this->configs['file_is_md5'] ? md5 ($last . $this->configs['file_prefix']) : $last . $this->configs['file_prefix']);
 
-      $keys = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['cache'], $keys));
+      $keys = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['cache'], $keys));
 
       if (is_file ($keys) && !preg_match ('/\*$/', $keys)) {
         @unlink ($keys);
@@ -168,13 +168,13 @@ class Cell_Controller {
     if (!(isset ($trace) && (count ($trace) > 1) && isset ($trace[1]) && isset ($trace[1]['class']) && isset ($trace[1]['function']) && is_string ($class = strtolower ($trace[1]['class'])) && is_string ($method = strtolower ($trace[1]['function'])) && strlen ($class) && strlen ($method)))
       return show_error ('The debug_backtrace Error!');;
 
-    if (!is_readable ($_ci_path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content' . EXT)))))
+    if (!is_readable ($_ci_path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content' . EXT)))))
       return show_error ("The Cell's controllers is not exist or can't read!<br/>File: " . $_ci_path);
 
-    if ($this->is_use_js_list && is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.js')))))
+    if ($this->is_use_js_list && is_readable ($path = implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.js')))))
       $this->add_js (base_url ($path));
 
-    if ($this->is_use_css_list && is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.css')))))
+    if ($this->is_use_css_list && is_readable ($path = implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.css')))))
       $this->add_css (base_url ($path));
 
     extract ($data);

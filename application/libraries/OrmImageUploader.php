@@ -88,7 +88,7 @@ class OrmImageUploader {
     if (!$class_name)
       $class_name = get_class ($orm) . Cfg::system ('orm_image_uploader', 'instance', 'class_suffix');
 
-    if (is_readable ($path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge (Cfg::system ('orm_image_uploader', 'instance', 'directory'), array ($class_name . EXT)))))
+    if (is_readable ($path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge (Cfg::system ('orm_image_uploader', 'instance', 'directory'), array ($class_name . EXT)))))
       require_once $path;
     else
       $class_name = get_called_class ();
