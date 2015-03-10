@@ -6,7 +6,7 @@
  * @resource    https://github.com/joelcox/codeigniter-redis
  */
 
-class Redis {
+class CI_Redis {
   private $CI = null;
   private $connection = null;
   private $error = null;
