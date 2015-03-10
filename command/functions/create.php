@@ -192,7 +192,7 @@ if (!function_exists ('create_cell')) {
 
                    $files = array ('content.css', 'content.scss', 'content.js', 'content.php');
                    return count (array_filter (array_map (function ($file) use ($view_path, $method, $temp_path, &$results) {
-                                 $data = is_readable ($path = $temp_path . $method . '/' . $file) ? load_view ($path) : '';
+                                 $data = !is_readable ($path = $temp_path . $method . '/' . $file) ? is_readable ($path = $temp_path . 'index' . '/' . $file) ? load_view ($path) : '' : load_view ($path);
                                  if (write_file ($view_path . $method . '/' . $file, $data)) {
                                    array_push ($results, $view_path . $method . '/' . $file);
                                    return true;
