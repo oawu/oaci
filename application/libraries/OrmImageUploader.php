@@ -10,7 +10,7 @@ class OrmImageUploader {
 
   public static function bind ($column_name, $instance_class_name = null) {
     if (($trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)))
-      show_error ();
+      error ('OrmImageUploader 錯誤！', '取得 debug_backtrace 發生錯誤!', '請確認 OrmImageUploader::bind 的使用方法的正確性!');
 
 
     if (($trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)) && (count ($trace) > 1) && isset ($trace[1]) && isset ($trace[1]['object']) && is_object ($orm = $trace[1]['object']) && $column_name && strlen ($column_name)) {

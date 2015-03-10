@@ -10,6 +10,32 @@ if (!function_exists ('utilitySameLevelPath')) {
   }
 }
 
+if (!function_exists ('field_array')) {
+  function field_array ($objects, $key) {
+    return array_map (function ($object) use ($key) {
+      return !is_array ($object) ? is_object ($object) ? $object->$key : $object : $object[$key];
+    }, $objects);
+  }
+}
+
+if (!function_exists ('error')) {
+  function error () {
+    $trace = array_filter (array_map (function ($t) { return isset ($t['file']) && isset ($t['line']) ? array ('file' => $t['file'], 'line' => $t['line']) : null; }, debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)));
+    $args = array_filter (func_get_args ());
+    $title = array_shift ($args);
+
+    ob_start ();
+
+    include (FCPATH . APPPATH . 'errors' . DIRECTORY_SEPARATOR . 'error' . EXT);
+
+    $buffer = ob_get_contents ();
+    @ob_end_clean ();
+
+    echo $buffer;
+    exit;
+  }
+}
+
 if (!function_exists ('_config_recursive')) {
   function _config_recursive ($levels, $config) {
     return $levels ? isset ($config[$index = array_shift ($levels)]) ? _config_recursive ($levels, $config[$index]) : null : $config;
@@ -150,14 +176,6 @@ if ( !function_exists ('make_click_able_links')) {
   function make_click_able_links ($text, $is_new_page = true, $class = '', $link_text = '', $max_count_use_link_text = 0) {
     $text = " " .  ($text);
     return preg_replace ('/(((https?:\/\/)[~\S]+))/', '<a href="${1}"' . ($class ? ' class="' . $class . '"' : '') . ($is_new_page ? ' target="_blank"' : '') . '>' . ($link_text ? $link_text : '${1}') . '</a>', $text);
-  }
-}
-
-if (!function_exists ('field_array')) {
-  function field_array ($objects, $key) {
-    return array_map (function ($object) use ($key) {
-      return !is_array ($object) ? is_object ($object) ? $object->$key : $object : $object[$key];
-    }, $objects);
   }
 }
 
