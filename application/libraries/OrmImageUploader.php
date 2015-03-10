@@ -19,34 +19,60 @@ class OrmImageUploader {
     // $this->CI->load->helper ('oa');
     // $this->CI->load->helper ('file');
     // $this->CI->load->library ("cfg");
+    // 檢查 id 欄位
 
     $this->orm = $orm;
     $this->column_name = $column_name;
     $this->column_value = $orm->$column_name;
     $orm->$column_name = $this;
+    $this->configs = Cfg::system ('orm_image_uploader');
     $this->error = null;
-  }
 
+    if (!$this->getColumnValue ($this->configs['unique_column']))
+      return $this->error = array ('OrmImageUploader 錯誤！', '無法取得 unique 欄位資訊！', '請 ORM select，或者修改 unique 欄位名稱(' . $this->configs['unique_column'] . ')！', '修改 unique 欄位名稱至 config/system/orm_image_uploader.php 設定檔修改！');
+  }
 
   public function __toString () {
     return  $this->error ? call_user_func_array ('error', $this->error) : (string)$this->column_value;
   }
+  public function getColumnValue ($column_name) {
+    return isset ($this->orm->$column_name) ? $this->orm->$column_name : '';
+  }
+  public function getTableName () {
+    return $this->orm->table ()->table;
+  }
+  public function getColumnName () {
+    return $this->column_name;
+  }
+  public function getSavePath () {
+    return ($id = $this->getColumnValue ($this->configs['unique_column'])) ? array ($this->getTableName (), $this->getColumnName (), floor ($id / 1000000), floor (($id % 1000000) / 10000), floor ((($id % 1000000) % 10000) / 100), ($id % 100)) : array ($this->getTableName (), $this->getColumnName ());
+  }
+  public function path ($key = '') {
+    if ($this->error)
+      return call_user_func_array ('error', $this->error);
+
+    switch ($this->configs['bucket']) {
+      case 'local':
+      if (($fileName = (string)$this) && ($versions = ($versions = $this->getVersions ()) ? $versions : $this->configs['default_version']) && isset ($versions[$key]) && is_readable (FCPATH . implode(DIRECTORY_SEPARATOR, $path = array_merge ($this->configs['base_directory'][$this->configs['bucket']], $this->getSavePath (), array ($key . $this->configs['separate_symbol'] . $fileName)))))
+        return $path;
+      else
+        return array ();
+        break;
+    }
+    return error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->configs['bucket'] . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！');
+  }
+
   public function url ($key = '') {
     if ($this->error)
       return call_user_func_array ('error', $this->error);
 
-    switch (Cfg::system ('orm_image_uploader', 'bucket')) {
+    switch ($this->configs['bucket']) {
       case 'local':
-        // return ($path = $this->path ($key)) ? base_url ($path) : $this->d4_url ();
+        return ($path = $this->path ($key)) ? base_url ($path) : $this->d4_url ();
         break;
     }
 
-    return error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . Cfg::system ('orm_image_uploader', 'bucket') . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！');
-    // if (Cfg::system ('model', 'uploader', 'bucket', 'type') == 'local') {
-    //   return ($path = $this->path ($key)) ? base_url ($path) : $this->d4_url ();
-    // } else {
-    //   return $this->d4_url ();
-    // }
+    return error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->configs['bucket'] . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！');
   }
 
   public static function bind ($column_name, $class_name = null) {
@@ -77,17 +103,8 @@ class OrmImageUploader {
 
 
 
-//   public function getColumnValue ($column_name) {
-//     return isset ($this->orm->$column_name) ? $this->orm->$column_name : '';
-//   }
 
-//   public function getTableName () {
-//     return $this->orm->table ()->table;
-//   }
 
-//   public function getColumnName () {
-//     return $this->column_name;
-//   }
 
 //   public function getSavePath () {
 //     return ($id = $this->getColumnValue ('id')) ? $this->getTableName () . DIRECTORY_SEPARATOR . $this->getColumnName () . DIRECTORY_SEPARATOR .floor ($id / 1000000) . DIRECTORY_SEPARATOR . floor (($id % 1000000) / 10000) . DIRECTORY_SEPARATOR . floor ((($id % 1000000) % 10000) / 100) . DIRECTORY_SEPARATOR . ($id % 100) . DIRECTORY_SEPARATOR : ($this->getTableName () . DIRECTORY_SEPARATOR . $this->getColumnName () . DIRECTORY_SEPARATOR);
@@ -271,13 +288,6 @@ class OrmImageUploader {
 //     return false;
 //   }
 
-//   public function path ($key = '') {
-//     if (Cfg::system ('model', 'uploader', 'bucket', 'type') == 'local') {
-//       return ($fileName = (string)$this) && (($versions = $this->getVersions ()) || ($versions = Cfg::system ('model', 'uploader', 'default_version'))) && isset ($versions[$key]) && is_readable (utilitySameLevelPath (FCPATH . DIRECTORY_SEPARATOR . ($path = utilitySameLevelPath (Cfg::system ('model', 'uploader', 'bucket', 'local', 'base_directory') . DIRECTORY_SEPARATOR . $this->getSavePath () . DIRECTORY_SEPARATOR . $key . Cfg::system ('model', 'uploader', 'file_name', 'separate_symbol') . $fileName)))) ? $path : '';
-//     } else {
-//       return '';
-//     }
-//   }
 
 
 
