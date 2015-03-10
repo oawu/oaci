@@ -97,6 +97,8 @@ class Cell {
 class Cell_Controller {
   protected $CI = null;
   private $configs = array ();
+  private $js_list = array ();
+  private $css_list = array ();
 
   public function __construct ($configs = array ()) {
     $this->CI =& get_instance ();
@@ -104,8 +106,14 @@ class Cell_Controller {
     $this->configs = array_merge (Cfg::system ('cell'), $configs);
   }
 
-  public function get_CI () {
-    return $this->CI;
+  public function add_js ($path, $is_minify = true) {
+    array_push ($this->js_list, array ('path' => $path, 'is_minify' => $is_minify));
+    return $this;
+  }
+
+  public function add_css ($path, $is_minify = true) {
+    array_push ($this->css_list, array ('path' => $path, 'is_minify' => $is_minify));
+    return $this;
   }
 
   protected function load_view ($data = array (), $set_method = null, $set_class = null) {
@@ -114,7 +122,7 @@ class Cell_Controller {
     if (!(isset ($trace) && (count ($trace) > 1) && isset ($trace[1]) && isset ($trace[1]['class']) && isset ($trace[1]['function']) && is_string ($class = strtolower ($trace[1]['class'])) && is_string ($method = strtolower ($trace[1]['function'])) && strlen ($class) && strlen ($method)))
       return show_error ('The debug_backtrace Error!');;
 
-    if (!is_readable ($_ci_path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method) . EXT)))))
+    if (!is_readable ($_ci_path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content' . EXT)))))
       return show_error ("The Cell's controllers is not exist or can't read!<br/>File: " . $_ci_path);
 
     extract ($data);
