@@ -6,9 +6,9 @@
  */
 
 $cell['folders'] = array (
-    'cache'      => array ('cell', 'cache'),
-    'controller' => array ('cell', 'controllers'),
-    'view'       => array ('cell', 'views')
+    'cache'      => array ('application', 'cell', 'cache'),
+    'controller' => array ('application', 'cell', 'controllers'),
+    'view'       => array ('application', 'cell', 'views')
   );
 
 $cell['is_enabled'] = true;
