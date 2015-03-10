@@ -126,11 +126,15 @@ class Cell_Controller {
   private $configs = array ();
   private $js_list = array ();
   private $css_list = array ();
+  private $is_use_js_list = false;
+  private $is_use_css_list = false;
 
   public function __construct ($configs = array ()) {
     $this->CI =& get_instance ();
     $this->CI->load->library ("cfg");
     $this->configs = array_merge (Cfg::system ('cell'), $configs);
+    $this->setUseJsList (false);
+    $this->setUseCssList (false);
   }
 
   public function add_js ($path, $is_minify = true) {
@@ -149,6 +153,15 @@ class Cell_Controller {
     return $this->css_list;
   }
 
+  public function setUseJsList ($is_use_js_list = false) {
+    $this->is_use_js_list = $is_use_js_list;
+    return $this;
+  }
+  public function setUseCssList ($is_use_css_list = false) {
+    $this->is_use_css_list = $is_use_css_list;
+    return $this;
+  }
+
   protected function load_view ($data = array (), $set_method = null, $set_class = null) {
     $trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
@@ -158,10 +171,10 @@ class Cell_Controller {
     if (!is_readable ($_ci_path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content' . EXT)))))
       return show_error ("The Cell's controllers is not exist or can't read!<br/>File: " . $_ci_path);
 
-    if (is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.js')))))
+    if ($this->is_use_js_list && is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.js')))))
       $this->add_js (base_url ($path));
 
-    if (is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.css')))))
+    if ($this->is_use_css_list && is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.css')))))
       $this->add_css (base_url ($path));
 
     extract ($data);
