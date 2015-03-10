@@ -146,10 +146,10 @@ class Cell_Controller {
       return show_error ("The Cell's controllers is not exist or can't read!<br/>File: " . $_ci_path);
 
     if (is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.js')))))
-      $this->add_js ($path);
+      $this->add_js (base_url ($path));
 
     if (is_readable ($path = APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.css')))))
-      $this->add_css ($path);
+      $this->add_css (base_url ($path));
 
     extract ($data);
     ob_start();
