@@ -14,7 +14,7 @@ $cell['folders'] = array (
 $cell['is_enabled'] = true;
 $cell['d4_cache_time'] = 60;
 
-$cell['driver'] = 'redis'; // 'file', 'redis'
+$cell['driver'] = 'file'; // 'file', 'redis'
 
 $cell['redis_main_key'] = 'cell';
 

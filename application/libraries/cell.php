@@ -43,12 +43,12 @@ class Cell {
         if ((array_unshift ($name, $this->configs['redis_main_key'])) && ($value = $this->CI->redis->hGetArray ($key = implode (':', $name))) && time () < $value['time']) {
           $js_list = unserialize ($value['js_list']);
           $css_list = unserialize ($value['css_list']);
-          $view = unserialize ($value['data']);
+          $view = unserialize ($value['view']);
         } else {
           $view = call_user_func_array (array ($object, $method), $params);
           $js_list = call_user_func_array (array ($object, 'getJsList'), array ());
           $css_list = call_user_func_array (array ($object, 'getCssList'), array ());
-          $this->CI->redis->hmset ($key, 'data', serialize ($view), 'js_list', serialize ($js_list), 'css_list', serialize ($css_list), 'time', time () + $option['time']);
+          $this->CI->redis->hmset ($key, 'view', serialize ($view), 'js_list', serialize ($js_list), 'css_list', serialize ($css_list), 'time', time () + $option['time']);
         }
       } else {
         $key = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['cache'], $name));
@@ -59,11 +59,24 @@ class Cell {
           umask ($oldmask);
         }
 
-        if (!($view = $this->CI->cache->file->get ($name = $this->configs['file_is_md5'] ? md5 (basename ($key) . $this->configs['file_prefix']) : basename ($key) . $this->configs['file_prefix'], dirname ($key) . DIRECTORY_SEPARATOR)))
-          $this->CI->cache->file->save ($name, $view = call_user_func_array (array ($object, $method), $params), $option['time'], dirname ($key) . DIRECTORY_SEPARATOR);
+        if (!($value = $this->CI->cache->file->get ($name = $this->configs['file_is_md5'] ? md5 (basename ($key) . $this->configs['file_prefix']) : basename ($key) . $this->configs['file_prefix'], dirname ($key) . DIRECTORY_SEPARATOR))) {
+          $view = call_user_func_array (array ($object, $method), $params);
+          $js_list = call_user_func_array (array ($object, 'getJsList'), array ());
+          $css_list = call_user_func_array (array ($object, 'getCssList'), array ());
+          $value = array ('view' => serialize ($view), 'js_list' => serialize ($js_list), 'css_list' => serialize ($css_list));
+
+          $this->CI->cache->file->save ($name, $value, $option['time'], dirname ($key) . DIRECTORY_SEPARATOR);
+        }
+        else {
+          $js_list = unserialize ($value['js_list']);
+          $css_list = unserialize ($value['css_list']);
+          $view = unserialize ($value['view']);
+        }
       }
     } else {
       $view = call_user_func_array (array ($object, $method), $params);
+      $js_list = call_user_func_array (array ($object, 'getJsList'), array ());
+      $css_list = call_user_func_array (array ($object, 'getCssList'), array ());
     }
 
     if ($js_list)
