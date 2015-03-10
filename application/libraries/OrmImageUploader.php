@@ -6,30 +6,68 @@
  */
 
 class OrmImageUploader {
+  private $CI = null;
+  private $orm = null;
+  private $column_name = null;
+  private $column_value = null;
+
+  public function __construct ($orm = null, $column_name = null) {
+    if (!($orm && $column_name && in_array ($column_name, array_keys ($orm->attributes ()))))
+      return $this->error = array ('OrmImageUploader 錯誤！', '初始化失敗！', '請檢查建構子參數！');
+
+    $this->CI =& get_instance ();
+    // $this->CI->load->helper ('oa');
+    // $this->CI->load->helper ('file');
+    // $this->CI->load->library ("cfg");
+
+    $this->orm = $orm;
+    $this->column_name = $column_name;
+    $this->column_value = $orm->$column_name;
+    $orm->$column_name = $this;
+    $this->error = null;
+  }
 
 
-  public static function bind ($column_name, $instance_class_name = null) {
-    if (($trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)))
-      error ('OrmImageUploader 錯誤！', '取得 debug_backtrace 發生錯誤!', '請確認 OrmImageUploader::bind 的使用方法的正確性!');
+  public function __toString () {
+    return  $this->error ? call_user_func_array ('error', $this->error) : (string)$this->column_value;
+  }
+  public function url ($key = '') {
+    if ($this->error)
+      return call_user_func_array ('error', $this->error);
 
-
-    if (($trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)) && (count ($trace) > 1) && isset ($trace[1]) && isset ($trace[1]['object']) && is_object ($orm = $trace[1]['object']) && $column_name && strlen ($column_name)) {
-
-      $CI =& get_instance ();
-      $CI->load->helper ('oa');
-
-      if (!$instance_class_name)
-        $instance_class_name = get_class ($orm) . Cfg::system ('model', 'uploader', 'instances', 'class_suffix');
-
-      if (is_readable ($path = utilitySameLevelPath (Cfg::system ('model', 'uploader', 'instances', 'directory') . DIRECTORY_SEPARATOR . $instance_class_name . EXT)))
-        require_once $path;
-      else
-        $instance_class_name = get_called_class ();
-
-      $object = new $instance_class_name ($orm, $column_name);
-    } else {
-      show_error ("The create ModelUploader object happen unknown error...<br/>Please confirm your program again.");
+    switch (Cfg::system ('orm_image_uploader', 'bucket')) {
+      case 'local':
+        // return ($path = $this->path ($key)) ? base_url ($path) : $this->d4_url ();
+        break;
     }
+
+    return error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . Cfg::system ('orm_image_uploader', 'bucket') . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！');
+    // if (Cfg::system ('model', 'uploader', 'bucket', 'type') == 'local') {
+    //   return ($path = $this->path ($key)) ? base_url ($path) : $this->d4_url ();
+    // } else {
+    //   return $this->d4_url ();
+    // }
+  }
+
+  public static function bind ($column_name, $class_name = null) {
+    if (!$column_name)
+      return error ('OrmImageUploader 錯誤！', 'OrmImageUploader::bind 參數錯誤！', '請確認 OrmImageUploader::bind 的使用方法的正確性！');
+
+    if (!($trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)))
+      return error ('OrmImageUploader 錯誤！', '取得 debug_backtrace 發生錯誤，無法取得 debug_backtrace！', '請確認 OrmImageUploader::bind 的使用方法的正確性！');
+
+    if (!(isset ($trace[1]['object']) && is_object ($orm = $trace[1]['object'])))
+      return error ('OrmImageUploader 錯誤！', '取得 debug_backtrace 回傳結構有誤，無法取得上層物件！', '請確認 OrmImageUploader::bind 的使用方法的正確性！');
+
+    if (!$class_name)
+      $class_name = get_class ($orm) . Cfg::system ('orm_image_uploader', 'instance', 'class_suffix');
+
+    if (is_readable ($path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge (Cfg::system ('orm_image_uploader', 'instance', 'directory'), array ($class_name . EXT)))))
+      require_once $path;
+    else
+      $class_name = get_called_class ();
+
+    $object = new $class_name ($orm, $column_name);
   }
 }
 
@@ -38,27 +76,6 @@ class OrmImageUploader {
 
 
 
-
-// class OrmImageUploader {
-//   private $CI = null;
-//   private $orm = null;
-//   private $column_name = null;
-//   private $column_value = null;
-
-//   public function __construct ($orm = null, $column_name = null) {
-//     if ($orm && $column_name && $orm->attributes () && in_array ($column_name, array_keys ($orm->attributes ()))) {
-//       $this->CI =& get_instance ();
-//       $this->CI->load->helper ('oa');
-//       $this->CI->load->helper ('file');
-//       $this->CI->load->library ("cfg");
-
-//       $this->orm = $orm;
-//       $this->column_name = $column_name;
-//       $this->column_value = $orm->$column_name;
-//       $orm->$column_name = $this;
-//       $this->error = null;
-//     }
-//   }
 
 //   public function getColumnValue ($column_name) {
 //     return isset ($this->orm->$column_name) ? $this->orm->$column_name : '';
@@ -262,17 +279,24 @@ class OrmImageUploader {
 //     }
 //   }
 
-//   public function url ($key = '') {
-//     if (Cfg::system ('model', 'uploader', 'bucket', 'type') == 'local') {
-//       return ($path = $this->path ($key)) ? base_url ($path) : $this->d4_url ();
-//     } else {
-//       return $this->d4_url ();
-//     }
-//   }
 
-//   public function __toString () {
-//     return (string)$this->column_value;
-//   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //   public static function bind ($column_name, $instance_class_name = null) {
 //     if (($trace = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)) && (count ($trace) > 1) && isset ($trace[1]) && isset ($trace[1]['object']) && is_object ($orm = $trace[1]['object']) && $column_name && strlen ($column_name)) {
@@ -294,3 +318,26 @@ class OrmImageUploader {
 //     }
 //   }
 // }
+
+
+// // class OrmImageUploader {
+// //   private $CI = null;
+// //   private $orm = null;
+// //   private $column_name = null;
+// //   private $column_value = null;
+
+// //   public function __construct ($orm = null, $column_name = null) {
+// //     if ($orm && $column_name && $orm->attributes () && in_array ($column_name, array_keys ($orm->attributes ()))) {
+// //       $this->CI =& get_instance ();
+// //       $this->CI->load->helper ('oa');
+// //       $this->CI->load->helper ('file');
+// //       $this->CI->load->library ("cfg");
+
+// //       $this->orm = $orm;
+// //       $this->column_name = $column_name;
+// //       $this->column_value = $orm->$column_name;
+// //       $orm->$column_name = $this;
+// //       $this->error = null;
+// //     }
+// //   }
+// -
