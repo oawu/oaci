@@ -28,9 +28,9 @@ class Root_controller extends CI_Controller {
     $this->load->helper ('cell');
     $this->load->library ('cfg');
 
-    $this->set_controllers_path ('controllers')
-         ->set_libraries_path ('libraries')
-         ->set_views_path ('views')
+    $this->set_controllers_path ('application', 'controllers')
+         ->set_libraries_path ('application', 'libraries')
+         ->set_views_path ('application', 'views')
          ->set_class ($this->router->fetch_class ())
          ->set_method ($this->router->fetch_method ());
   }
@@ -95,7 +95,7 @@ class Root_controller extends CI_Controller {
   }
 
   protected function load_content ($data = '', $return = false) {
-    if (!is_readable ($abs_path = FCPATH . APPPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.php')))))
+    if (!is_readable ($abs_path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.php')))))
       return show_error ('Can not find content file. path: ' . $abs_path);
     else
       $path = implode (DIRECTORY_SEPARATOR, array_merge ($this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.php')));

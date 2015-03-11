@@ -10,40 +10,29 @@ if (!function_exists ('utilitySameLevelPath')) {
   }
 }
 
-if (!function_exists ('_config_recursive')) {
-  function _config_recursive ($levels, $config) {
-    return $levels ? isset ($config[$index = array_shift ($levels)]) ? _config_recursive ($levels, $config[$index]) : null : $config;
+if (!function_exists ('field_array')) {
+  function field_array ($objects, $key) {
+    return array_map (function ($object) use ($key) {
+      return !is_array ($object) ? is_object ($object) ? $object->$key : $object : $object[$key];
+    }, $objects);
   }
 }
 
-if (!function_exists ('config')) {
-  function config ($arguments, $forder = 'setting', $is_cache = true) {
-    $data = null;
-    if ($levels = array_filter ($arguments)) {
-      $key = '_config_' . $forder . '_|_' . implode ('_|_', $levels);
+if (!function_exists ('error')) {
+  function error () {
+    $trace = array_filter (array_map (function ($t) { return isset ($t['file']) && isset ($t['line']) ? array ('file' => $t['file'], 'line' => $t['line']) : null; }, debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)));
+    $args = array_filter (func_get_args ());
+    $title = array_shift ($args);
 
-      if ($is_cache && ($CI =& get_instance ()) && !isset ($CI->cache))
-        $CI->load->driver ('cache', array ('adapter' => 'apc', 'backup' => 'file'));
+    ob_start ();
 
-      if ((!$is_cache || !($data = $CI->cache->file->get ($key))) && ($config_name = array_shift ($levels)) && is_readable ($path = utilitySameLevelPath (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . $forder . DIRECTORY_SEPARATOR . $config_name . EXT))) {
-        include $path;
-        $data = ($config_name = $$config_name) ? _config_recursive ($levels, $config_name) : null;
-        $is_cache && $CI->cache->file->save ($key, $data, 60 * 60);
-      }
-    }
-    return $data;
-  }
-}
+    include (FCPATH . APPPATH . 'errors' . DIRECTORY_SEPARATOR . 'error' . EXT);
 
-if (!function_exists ('verifyDimension')) {
-  function verifyDimension ($dimension) {
-    return isset ($dimension['width']) && isset ($dimension['height']) && ($dimension['width'] > 0) && ($dimension['height'] > 0);
-  }
-}
+    $buffer = ob_get_contents ();
+    @ob_end_clean ();
 
-if (!function_exists ('verifyCreateOrm')) {
-  function verifyCreateOrm ($obj) {
-    return is_object ($obj) && $obj->is_valid ();
+    echo $buffer;
+    exit;
   }
 }
 
@@ -96,9 +85,46 @@ if (!function_exists ('download_web_file')) {
     @chmod ($fileName, 0777);
     umask ($oldmask);
 
-    return filesize ($fileName) < 1 ? null : $fileName;
+    return filesize ($fileName) ?  $fileName : null;
   }
 }
+if (!function_exists ('_config_recursive')) {
+  function _config_recursive ($levels, $config) {
+    return $levels ? isset ($config[$index = array_shift ($levels)]) ? _config_recursive ($levels, $config[$index]) : null : $config;
+  }
+}
+
+if (!function_exists ('config')) {
+  function config ($arguments, $forder = 'setting', $is_cache = true) {
+    $data = null;
+    if ($levels = array_filter ($arguments)) {
+      $key = '_config_' . $forder . '_|_' . implode ('_|_', $levels);
+
+      if ($is_cache && ($CI =& get_instance ()) && !isset ($CI->cache))
+        $CI->load->driver ('cache', array ('adapter' => 'apc', 'backup' => 'file'));
+
+      if ((!$is_cache || !($data = $CI->cache->file->get ($key))) && ($config_name = array_shift ($levels)) && is_readable ($path = utilitySameLevelPath (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . $forder . DIRECTORY_SEPARATOR . $config_name . EXT))) {
+        include $path;
+        $data = ($config_name = $$config_name) ? _config_recursive ($levels, $config_name) : null;
+        $is_cache && $CI->cache->file->save ($key, $data, 60 * 60);
+      }
+    }
+    return $data;
+  }
+}
+
+if (!function_exists ('verifyDimension')) {
+  function verifyDimension ($dimension) {
+    return isset ($dimension['width']) && isset ($dimension['height']) && ($dimension['width'] > 0) && ($dimension['height'] > 0);
+  }
+}
+
+if (!function_exists ('verifyCreateOrm')) {
+  function verifyCreateOrm ($obj) {
+    return is_object ($obj) && $obj->is_valid ();
+  }
+}
+
 
 if ( !function_exists ('send_post')) {
   function send_post ($url, $params = array (), $is_wait_log = false, $port = 80, $timeout = 30) {
@@ -150,14 +176,6 @@ if ( !function_exists ('make_click_able_links')) {
   function make_click_able_links ($text, $is_new_page = true, $class = '', $link_text = '', $max_count_use_link_text = 0) {
     $text = " " .  ($text);
     return preg_replace ('/(((https?:\/\/)[~\S]+))/', '<a href="${1}"' . ($class ? ' class="' . $class . '"' : '') . ($is_new_page ? ' target="_blank"' : '') . '>' . ($link_text ? $link_text : '${1}') . '</a>', $text);
-  }
-}
-
-if (!function_exists ('field_array')) {
-  function field_array ($objects, $key) {
-    return array_map (function ($object) use ($key) {
-      return !is_array ($object) ? is_object ($object) ? $object->$key : $object : $object[$key];
-    }, $objects);
   }
 }
 
