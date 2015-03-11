@@ -5,8 +5,6 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-$model['uploader']['instances']['directory'] = FCPATH . APPPATH . 'third_party' . DIRECTORY_SEPARATOR . 'orm_image_uploaders' . DIRECTORY_SEPARATOR;
-
 $orm_image_uploader['debug'] = false;
 
 $orm_image_uploader['instance']['class_suffix'] = 'Uploader';

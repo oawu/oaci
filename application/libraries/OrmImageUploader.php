@@ -10,6 +10,8 @@ class OrmImageUploader {
   private $orm = null;
   private $column_name = null;
   private $column_value = null;
+  private $configs = array ();
+  private $error = null;
 
   public function __construct ($orm = null, $column_name = null) {
     if (!($orm && $column_name && in_array ($column_name, array_keys ($orm->attributes ()))))

@@ -41,4 +41,12 @@ class Main extends Site_controller {
     var_dump ($e->cover->save_as ('100ws', array ('adaptiveResizeQuadrant', 130, 130, 't')));
     exit ();
   }
+  public function b () {
+    $this->load->library ('image/ImageUtility');
+    $file = FCPATH . 'demo.png';
+    $img = ImageUtility::create ($file);
+
+    // $a = new ImageUtility ();
+
+  }
 }
