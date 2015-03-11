@@ -36,43 +36,6 @@ if (!function_exists ('error')) {
   }
 }
 
-if (!function_exists ('_config_recursive')) {
-  function _config_recursive ($levels, $config) {
-    return $levels ? isset ($config[$index = array_shift ($levels)]) ? _config_recursive ($levels, $config[$index]) : null : $config;
-  }
-}
-
-if (!function_exists ('config')) {
-  function config ($arguments, $forder = 'setting', $is_cache = true) {
-    $data = null;
-    if ($levels = array_filter ($arguments)) {
-      $key = '_config_' . $forder . '_|_' . implode ('_|_', $levels);
-
-      if ($is_cache && ($CI =& get_instance ()) && !isset ($CI->cache))
-        $CI->load->driver ('cache', array ('adapter' => 'apc', 'backup' => 'file'));
-
-      if ((!$is_cache || !($data = $CI->cache->file->get ($key))) && ($config_name = array_shift ($levels)) && is_readable ($path = utilitySameLevelPath (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . $forder . DIRECTORY_SEPARATOR . $config_name . EXT))) {
-        include $path;
-        $data = ($config_name = $$config_name) ? _config_recursive ($levels, $config_name) : null;
-        $is_cache && $CI->cache->file->save ($key, $data, 60 * 60);
-      }
-    }
-    return $data;
-  }
-}
-
-if (!function_exists ('verifyDimension')) {
-  function verifyDimension ($dimension) {
-    return isset ($dimension['width']) && isset ($dimension['height']) && ($dimension['width'] > 0) && ($dimension['height'] > 0);
-  }
-}
-
-if (!function_exists ('verifyCreateOrm')) {
-  function verifyCreateOrm ($obj) {
-    return is_object ($obj) && $obj->is_valid ();
-  }
-}
-
 if (!function_exists ('web_file_exists')) {
   function web_file_exists ($url, $cainfo = null) {
     $options = array (CURLOPT_URL => $url, CURLOPT_NOBODY => 1, CURLOPT_FAILONERROR => 1, CURLOPT_RETURNTRANSFER => 1);
@@ -122,9 +85,46 @@ if (!function_exists ('download_web_file')) {
     @chmod ($fileName, 0777);
     umask ($oldmask);
 
-    return filesize ($fileName) < 1 ? null : $fileName;
+    return filesize ($fileName) ?  $fileName : null;
   }
 }
+if (!function_exists ('_config_recursive')) {
+  function _config_recursive ($levels, $config) {
+    return $levels ? isset ($config[$index = array_shift ($levels)]) ? _config_recursive ($levels, $config[$index]) : null : $config;
+  }
+}
+
+if (!function_exists ('config')) {
+  function config ($arguments, $forder = 'setting', $is_cache = true) {
+    $data = null;
+    if ($levels = array_filter ($arguments)) {
+      $key = '_config_' . $forder . '_|_' . implode ('_|_', $levels);
+
+      if ($is_cache && ($CI =& get_instance ()) && !isset ($CI->cache))
+        $CI->load->driver ('cache', array ('adapter' => 'apc', 'backup' => 'file'));
+
+      if ((!$is_cache || !($data = $CI->cache->file->get ($key))) && ($config_name = array_shift ($levels)) && is_readable ($path = utilitySameLevelPath (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . $forder . DIRECTORY_SEPARATOR . $config_name . EXT))) {
+        include $path;
+        $data = ($config_name = $$config_name) ? _config_recursive ($levels, $config_name) : null;
+        $is_cache && $CI->cache->file->save ($key, $data, 60 * 60);
+      }
+    }
+    return $data;
+  }
+}
+
+if (!function_exists ('verifyDimension')) {
+  function verifyDimension ($dimension) {
+    return isset ($dimension['width']) && isset ($dimension['height']) && ($dimension['width'] > 0) && ($dimension['height'] > 0);
+  }
+}
+
+if (!function_exists ('verifyCreateOrm')) {
+  function verifyCreateOrm ($obj) {
+    return is_object ($obj) && $obj->is_valid ();
+  }
+}
+
 
 if ( !function_exists ('send_post')) {
   function send_post ($url, $params = array (), $is_wait_log = false, $port = 80, $timeout = 30) {

@@ -221,6 +221,19 @@ class OrmImageUploader {
     return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->configs['bucket'] . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！') : false;
   }
 
+  // return boolean
+  public function put_url ($url) {
+    if ($this->error)
+      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : false;
+
+    $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['temp_directory'], array ($this->configs['temp_file_name'])));
+    if (($temp = download_web_file ($url, $temp)) && $this->put ($temp, false))
+      return file_exists ($temp) ? @unlink ($temp) : true;
+    else
+      return false;
+    return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->configs['bucket'] . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！') : false;
+  }
+
   public static function bind ($column_name, $class_name = null) {
     if (!$column_name)
       return error ('OrmImageUploader 錯誤！', 'OrmImageUploader::bind 參數錯誤！', '請確認 OrmImageUploader::bind 的使用方法的正確性！');
@@ -253,9 +266,6 @@ class OrmImageUploader {
 
 
 
-//   public function put_url ($url) {
-//     return ($fileName = download_web_file ($url, utilitySameLevelPath (Cfg::system ('model', 'uploader', 'temp_directory') . DIRECTORY_SEPARATOR . Cfg::system ('model', 'uploader', 'temp_file_name')))) && $this->put ($fileName, false) ? file_exists ($fileName) ? @unlink ($fileName) : true : false;
-//   }
 
 //   public function save_as ($key, $version) {
 //     if (Cfg::system ('model', 'uploader', 'bucket', 'type') == 'local') {
