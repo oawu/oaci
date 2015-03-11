@@ -16,10 +16,10 @@ class OrmImageUploader {
       return $this->error = array ('OrmImageUploader 錯誤！', '初始化失敗！', '請檢查建構子參數！');
 
     $this->CI =& get_instance ();
+    $this->CI->load->library ('ImageUtility');
     // $this->CI->load->helper ('directory');
     // $this->CI->load->helper ('file');
     // $this->CI->load->library ("cfg");
-    // 檢查 id 欄位
 
     $this->orm = $orm;
     $this->column_name = $column_name;
@@ -78,6 +78,7 @@ class OrmImageUploader {
         return array ();
         break;
     }
+
     return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->configs['bucket'] . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！') : array ();
   }
 
@@ -132,28 +133,14 @@ class OrmImageUploader {
         umask ($oldmask);
 
         $result = true;
-        $name = $this->getFileName ();
-        $this->CI->load->library ('ImageUtility');
+        $image = ImageUtility::create ($temp, null, array ('resizeUp' => $this->configs['utility']['resizeUp']));
+        $name = $this->getFileName () . ($this->configs['auto_add_format'] ? '.' . $image->getFormat () : '');
 
         foreach ($versions as $key => $version) {
-          $image = ImageUtility::create ($temp, null, array ('resizeUp' => false));
-
-          try {
-            $save = $name . ($this->configs['auto_add_format'] ? '.' . $image->getFormat () : '');
-
-            if ($version)
-              if (is_callable (array ($image, $method = array_shift ($version))))
-                call_user_func_array (array ($image, $method), $version);
-              else
-                return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', 'ImageUtility 無法呼叫的 method，method：' . $method, '請程式設計者確認狀況！') : '';
-
-            $new = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($path, array ($key . $this->configs['separate_symbol'] . $save)));
-            $result &= $image->save ($new, true);
-          } catch (Exception $e) {
-            $result &= false;
-          }
+          $new = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($path, array ($key . $this->configs['separate_symbol'] . $name)));
+          $result &= $this->_utility ($image, $new, $key, $version);
         }
-        return ($result &= @unlink ($temp)) ? $save : '';
+        return ($result &= @unlink ($temp)) ? $name : '';
         break;
     }
     return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->configs['bucket'] . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！') : '';
@@ -227,13 +214,75 @@ class OrmImageUploader {
       return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : false;
 
     $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['temp_directory'], array ($this->configs['temp_file_name'])));
+
     if (($temp = download_web_file ($url, $temp)) && $this->put ($temp, false))
       return file_exists ($temp) ? @unlink ($temp) : true;
     else
       return false;
+
     return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->configs['bucket'] . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！') : false;
   }
 
+  // return boolean
+  private function _utility ($image, $save, $key, $version) {
+    try {
+      if ($version)
+        if (is_callable (array ($image, $method = array_shift ($version))))
+          call_user_func_array (array ($image, $method), $version);
+        else
+          return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', 'ImageUtility 無法呼叫的 method，method：' . $method, '請程式設計者確認狀況！') : '';
+      return $image->save ($save, true);
+    } catch (Exception $e) {
+      return false;
+    }
+  }
+
+  // return array
+  public function save_as ($key, $version) {
+    if ($this->error)
+      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : array ();
+
+    if (!($key && $version))
+      return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '參數錯誤，請檢查 save_as 函式參數！', '請程式設計者確認狀況！') : array ();
+
+    if (!(($versions = ($versions = $this->getVersions ()) ? $versions : $this->configs['default_version'])))
+      return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', 'Versions 格式錯誤，請檢查 getVersions () 或者 default_version！', '預設值 default_version 請檢查 config/system/orm_image_uploader.php 設定檔！') : array ();
+
+    switch ($this->configs['bucket']) {
+      case 'local':
+        if (in_array ($key, array_keys ($versions)))
+          return is_readable (FCPATH . implode (DIRECTORY_SEPARATOR, $ori_path = array_merge ($this->configs['base_directory'][$this->configs['bucket']], $this->getSavePath (), array ($key . $this->configs['separate_symbol'] . (string)$this)))) ? $ori_path : '';
+
+        foreach ($versions as $ori_key => $ori_version)
+          if (is_readable (FCPATH . implode (DIRECTORY_SEPARATOR, $ori_path = array_merge ($this->configs['base_directory'][$this->configs['bucket']], $this->getSavePath (), array ($ori_key . $this->configs['separate_symbol'] . ($name = (string)$this))))))
+            break;
+
+        if (!$ori_path)
+          return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '沒有任何的檔案可以被使用！', '請確認 getVersions () 函式內有存在的檔案可被另存！', '請程式設計者確認狀況！') : array ();
+
+        if (!file_exists (FCPATH . implode (DIRECTORY_SEPARATOR, ($path = array_merge ($this->configs['base_directory'][$this->configs['bucket']], $this->getSavePath ()))))) {
+          $oldmask = umask (0);
+          @mkdir (FCPATH . implode (DIRECTORY_SEPARATOR, $path), 0777, true);
+          umask ($oldmask);
+        }
+
+        if (!is_writable (FCPATH . implode (DIRECTORY_SEPARATOR, $path)))
+          return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '資料夾不能儲存！路徑：' . $path, '請程式設計者確認狀況！') : '';
+
+        $image = ImageUtility::create (FCPATH . implode (DIRECTORY_SEPARATOR, $ori_path), null, array ('resizeUp' => $this->configs['utility']['resizeUp']));
+        $path = array_merge ($path, array ($key . $this->configs['separate_symbol'] . $name));
+
+        if ($this->_utility ($image, FCPATH . implode (DIRECTORY_SEPARATOR, $path), $key, $version))
+          return $path;
+        else
+          return array ();
+        break;
+    }
+
+    return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->configs['bucket'] . ' 的空間！', '請檢查 config/system/orm_image_uploader.php 設定檔！') : '';
+  }
+
+  // return OrmImageUploader object
   public static function bind ($column_name, $class_name = null) {
     if (!$column_name)
       return error ('OrmImageUploader 錯誤！', 'OrmImageUploader::bind 參數錯誤！', '請確認 OrmImageUploader::bind 的使用方法的正確性！');
@@ -252,70 +301,6 @@ class OrmImageUploader {
     else
       $class_name = get_called_class ();
 
-    $object = new $class_name ($orm, $column_name);
+    return $object = new $class_name ($orm, $column_name);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-//   public function save_as ($key, $version) {
-//     if (Cfg::system ('model', 'uploader', 'bucket', 'type') == 'local') {
-//       if (!(is_string ($key) && is_array ($version)))
-//         show_error ("The key and version format error!<br/>Please confirm your program again.");
-
-//       if (!($versions = $this->getVersions ()) && !($versions = Cfg::system ('model', 'uploader', 'default_version')))
-//         show_error ("The versions format error!<br/>Please confirm your program again.");
-
-//       if (in_array ($key, array_keys ($versions)))
-//         return is_readable ($path = utilitySameLevelPath (FCPATH . DIRECTORY_SEPARATOR .Cfg::system ('model', 'uploader', 'bucket', 'local', 'base_directory') . DIRECTORY_SEPARATOR . $this->getSavePath () . DIRECTORY_SEPARATOR . $key . Cfg::system ('model', 'uploader', 'file_name', 'separate_symbol') . (string)$this)) ? $path : '';
-
-//       foreach ($versions as $ori_key => $ori_version)
-//         if (!($path = '') && is_readable ($path = utilitySameLevelPath (FCPATH . DIRECTORY_SEPARATOR .Cfg::system ('model', 'uploader', 'bucket', 'local', 'base_directory') . DIRECTORY_SEPARATOR . $this->getSavePath () . DIRECTORY_SEPARATOR . $ori_key . Cfg::system ('model', 'uploader', 'file_name', 'separate_symbol') . ($fileName = (string)$this))))
-//           break;
-
-//       if (!$path)
-//         show_error ("There is not file can be used!<br/>Please confirm your program again.");
-
-//       $separate_symbol = Cfg::system ('model', 'uploader', 'file_name', 'separate_symbol');
-
-//       $this->CI->load->library ('ImageUtility');
-//       $image = ImageUtility::create ($path, null, array ('resizeUp' => false));
-
-//       try {
-//         if (!is_writable ($path = utilitySameLevelPath (FCPATH . DIRECTORY_SEPARATOR . Cfg::system ('model', 'uploader', 'bucket', 'local', 'base_directory') . DIRECTORY_SEPARATOR)))
-//           show_error ("The save base directory can not be 'write'!<br/>Directory : " . $path . "<br/>Please confirm your program again.");
-
-//         if (!file_exists ($path = utilitySameLevelPath ($path . DIRECTORY_SEPARATOR . $this->getSavePath () . DIRECTORY_SEPARATOR))) {
-//           $oldmask = umask (0);
-//           @mkdir ($path, 0777, true);
-//           umask ($oldmask);
-//         } else if (!is_writable ($path)) {
-//           show_error ("The save base directory can not be 'write'!<br/>Directory : " . $path . "<br/>Please confirm your program again.");
-//         }
-
-//         if (is_callable (array ($image, $method = array_shift ($version))))
-//           call_user_func_array (array ($image, $method), $version);
-
-//         $path = utilitySameLevelPath ($path . DIRECTORY_SEPARATOR . $key . $separate_symbol . $fileName);
-//         if ($image->save ($path, true))
-//           return $path;
-//       } catch (Exception $e) {
-//         return '';
-//       }
-//       return '';
-//     }
-//   }
-
-
-
-
-

@@ -23,3 +23,4 @@ $orm_image_uploader['d4_url'] = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
 
 $orm_image_uploader['temp_directory'] = array ('temp');
 $orm_image_uploader['temp_file_name'] = uniqid (rand () . '_');
+$orm_image_uploader['utility']['resizeUp'] = true;

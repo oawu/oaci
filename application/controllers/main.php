@@ -36,9 +36,9 @@ class Main extends Site_controller {
     exit ();
   }
   public function o () {
-    $e = Event::find (45);
+    $e = Event::find (76);
     echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($e->cover->cleanAllFiles ());
+    var_dump ($e->cover->save_as ('100ws', array ('adaptiveResizeQuadrant', 130, 130, 't')));
     exit ();
   }
 }
