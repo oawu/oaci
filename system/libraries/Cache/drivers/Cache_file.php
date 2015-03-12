@@ -37,7 +37,7 @@ class CI_Cache_file extends CI_Driver {
 		$CI =& get_instance();
 		$CI->load->helper('file');
 		!isset ($CI->cfg) && $CI->load->library ('cfg');
-		$path = Cfg::_system ('cache', 'file');
+  	$path = implode (DIRECTORY_SEPARATOR, Cfg::_system ('cache', 'file')) . DIRECTORY_SEPARATOR;
 		$this->set_cache_path (($path == '') ? APPPATH.'cache/' : $path);
 	}
 

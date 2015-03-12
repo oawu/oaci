@@ -5,5 +5,6 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-$cache['file'] = APPPATH . 'cache' . DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR;
-$cache['output'] = APPPATH . 'cache' . DIRECTORY_SEPARATOR . 'output' . DIRECTORY_SEPARATOR;
+$cache['file'] = array ('application', 'cache', 'file');
+$cache['output'] = array ('application', 'cache', 'output');
+$cache['config'] = array ('application', 'cache', 'config');
