@@ -4,12 +4,13 @@
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
-require_once 'ImageBaseUtility.php';
+
+include_once 'ImageBaseUtility.php';
 
 class ImageImagickUtility extends ImageBaseUtility {
   private $CI = null;
   private $options = null;
-  
+
   public function __construct ($fileName, $options = array ()) {
     parent::__construct ($fileName);
     $this->CI =& get_instance ();
@@ -27,7 +28,7 @@ class ImageImagickUtility extends ImageBaseUtility {
     $newImage = new Imagick ();
     $newImage->newImage (266, 200, new ImagickPixel ('white'));
     $newImage->setFormat (pathinfo ($fileName, PATHINFO_EXTENSION));
-    
+
     $positions = array (
       array ('left' =>   2, 'top' =>   2, 'width' => 130, 'height' => 130),
       array ('left' => 134, 'top' =>   2, 'width' =>  64, 'height' =>  64),
@@ -112,12 +113,12 @@ class ImageImagickUtility extends ImageBaseUtility {
 
     foreach ($datas as $data) {
       $newImage->newImage (400, 20, new ImagickPixel ('white'));
-      
+
       $draw = new ImagickDraw ();
       $draw->setFont ($font);
       $draw->setFontSize ($fontSize);
       $newImage->annotateImage ($draw, 25, 14, 0, 'Percentage of total pixels : ' . (strlen ($data['percent'])<2?' ':'') . $data['percent'] . '% (' . $data['count'] . ')');
-      
+
       $tile = new Imagick ();
       $tile->newImage (20, 20, new ImagickPixel ('rgb(' . $data['color']['r'] . ',' . $data['color']['g'] . ',' . $data['color']['b'] . ')'));
 
@@ -157,8 +158,8 @@ class ImageImagickUtility extends ImageBaseUtility {
   private function _sort2dArray ($key, $list) {
     if ($list) {
       $tmp = array ();
-      foreach ($list as &$ma) $tmp[] = &$ma[$key]; 
-      array_multisort ($tmp, SORT_DESC, $list); 
+      foreach ($list as &$ma) $tmp[] = &$ma[$key];
+      array_multisort ($tmp, SORT_DESC, $list);
     }
     return $list;
   }
@@ -178,7 +179,7 @@ class ImageImagickUtility extends ImageBaseUtility {
 
         $temp->newImage ($this->dimension['width'], $this->dimension['height'], new ImagickPixel ('transparent'));
         $temp->compositeImage ($imagick, imagick::COMPOSITE_DEFAULT, 0, 0);
-         
+
         $newImage->addImage ($temp);
         $newImage->setImageDelay ($imagick->getImageDelay ());
       } while ($imagick->nextImage ());
@@ -204,9 +205,9 @@ class ImageImagickUtility extends ImageBaseUtility {
 
     if (!in_array ($channel, $items))
       show_error ("The filter error.<br/>It must be one of Imagick channel constants of 'CHANNEL_UNDEFINED', 'CHANNEL_RED', 'CHANNEL_GRAY', 'CHANNEL_CYAN',<br/>'CHANNEL_GREEN', 'CHANNEL_MAGENTA', 'CHANNEL_BLUE', 'CHANNEL_YELLOW', 'CHANNEL_ALPHA', 'CHANNEL_OPACITY', 'CHANNEL_MATTE',<br/>'CHANNEL_BLACK', 'CHANNEL_INDEX', 'CHANNEL_ALL' or 'CHANNEL_DEFAULT'!<br/>Please confirm your program again.");
-    
+
     $workingImage = $this->_machiningImageFilter ($radius, $sigma, $channel);
-    
+
     return $this->_updateImage ($workingImage);
   }
 
@@ -231,7 +232,7 @@ class ImageImagickUtility extends ImageBaseUtility {
       show_error ("The new color format error.<br/>It must be an string.<br/>Please confirm your program again.");
 
     if (!($degree % 360)) return $this;
-    
+
     $newImage = $this->_machiningImageRotate ($degree, $color);
 
     return $this->_updateImage ($newImage);
@@ -251,7 +252,7 @@ class ImageImagickUtility extends ImageBaseUtility {
         $newDimension = $this->getDimension ($imagick);
         $temp->newImage ($newDimension['width'], $newDimension['height'], new ImagickPixel ($color));
         $temp->compositeImage ($imagick, imagick::COMPOSITE_DEFAULT, 0, 0);
-         
+
         $newImage->addImage ($temp);
         $newImage->setImageDelay ($imagick->getImageDelay ());
       } while ($imagick->nextImage ());
@@ -286,15 +287,15 @@ class ImageImagickUtility extends ImageBaseUtility {
 
     if (($startX == 0) && ($startY == 0) && ($width == $this->dimension['width']) && ($height == $this->dimension['height']))
       return $this;
-   
+
     $width  = $this->dimension['width'] < $width ? $this->dimension['width'] : $width;
     $height = $this->dimension['height'] < $height ? $this->dimension['height'] : $height;
 
     if (($startX + $width) > $this->dimension['width']) $startX = $this->dimension['width'] - $width;
     if (($startY + $height) > $this->dimension['height']) $startY = $this->dimension['height'] - $height;
-        
+
     $newImage = $this->_machiningImageCrop ($startX, $startY, $width, $height);
-    
+
     return $this->_updateImage ($newImage);
   }
 
@@ -345,7 +346,7 @@ class ImageImagickUtility extends ImageBaseUtility {
     if ($percent == 100)
       return $this;
 
-    if (!verifyDimension ($newDimension = $this->calcImageSizePercent ($percent, $this->dimension))) 
+    if (!verifyDimension ($newDimension = $this->calcImageSizePercent ($percent, $this->dimension)))
       show_error ("The new dimension format error.<br/>It must be a number greater or equal than one.<br/>Please confirm your program again.");
 
     return $this->resize ($newDimension['width'], $newDimension['height']);
@@ -402,7 +403,7 @@ class ImageImagickUtility extends ImageBaseUtility {
         $temp->newImage ($width, $height, new ImagickPixel ($color));
         $imagick->chopImage ($cropX, $cropY, 0, 0);
         $temp->compositeImage ($imagick, imagick::COMPOSITE_DEFAULT, 0, 0);
-         
+
         $newImage->addImage ($temp);
         $newImage->setImageDelay ($imagick->getImageDelay ());
       } while ($imagick->nextImage ());
@@ -422,10 +423,10 @@ class ImageImagickUtility extends ImageBaseUtility {
 
     if (($width == $this->dimension['width']) && ($height == $this->dimension['height']))
       return $this;
-    
+
     if (!is_string ($color))
       show_error ("The new color format error.<br/>It must be an string.<br/>Please confirm your program again.");
-    
+
     if (($width < $this->dimension['width']) || ($height < $this->dimension['height']))
       return $this->resize ($width, $height);
 
@@ -446,7 +447,7 @@ class ImageImagickUtility extends ImageBaseUtility {
       $newImage->newImage ($width, $height, new ImagickPixel ($color));
       $newImage->compositeImage ($this->image->clone (), imagick::COMPOSITE_DEFAULT, intval (($width - $this->dimension['width']) / 2), intval (($height - $this->dimension['height']) / 2));
     }
-    
+
     return $this->_updateImage ($newImage);
   }
 
@@ -456,7 +457,7 @@ class ImageImagickUtility extends ImageBaseUtility {
 
     if (($width == $this->dimension['width']) && ($height == $this->dimension['height']))
       return $this;
- 
+
     $newDimension['width']  = ($this->options['resizeUp'] === false) && ($width > $this->dimension['width']) ? $this->dimension['width'] : $width;
     $newDimension['height'] = ($this->options['resizeUp'] === false) && ($height > $this->dimension['height']) ? $this->dimension['height'] : $height;
 
@@ -490,7 +491,7 @@ class ImageImagickUtility extends ImageBaseUtility {
     $this->dimension = $this->getDimension ($image);
     return $this;
   }
-  
+
   public function save ($fileName, $rawData = true) {
     try {
       return $this->image->writeImages ($fileName, $rawData);
@@ -500,6 +501,9 @@ class ImageImagickUtility extends ImageBaseUtility {
   }
 
   private function _init () {
+    if (!function_exists ('mime_content_type'))
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '尚未找尋到 mime_content_type 函式！', '請確認 php.ini 中的 fileinfo 有開啟！');
+
     if (!$this->mime = mime_content_type ($this->getFileName()))
       show_error ("The file format error!<br/>Please confirm your file format again.");
 
@@ -508,7 +512,7 @@ class ImageImagickUtility extends ImageBaseUtility {
 
     if (!$this->image = new Imagick ($this->getFileName()))
       show_error ("The image is empty!<br/>Please confirm your program again.");
-    
+
     if (!$this->dimension = $this->getDimension ($this->image))
       show_error ("The dimension format error.<br/>It must be a number greater or equal than one.<br/>Please confirm your program again.");
 

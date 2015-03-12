@@ -43,8 +43,19 @@ class Main extends Site_controller {
   }
   public function b () {
     $this->load->library ('image/ImageUtility');
-    $file = FCPATH . 'demo.png';
-    $img = ImageUtility::create ($file);
+    $file = FCPATH . 'temp/demo.png';
+    $save = FCPATH . 'temp/x.png';
+
+    try {
+        $img = ImageUtility::create ($file);
+        $img->adaptiveResizeQuadrant (1000, 100, 't');
+        $img->save ($save);
+
+    } catch (Exception $e) {
+        echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+        var_dump ($e->getMessages());
+        exit ();
+    }
 
     // $a = new ImageUtility ();
 

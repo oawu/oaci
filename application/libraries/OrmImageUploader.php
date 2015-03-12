@@ -18,7 +18,7 @@ class OrmImageUploader {
       return $this->error = array ('OrmImageUploader 錯誤！', '初始化失敗！', '請檢查建構子參數！');
 
     $this->CI =& get_instance ();
-    $this->CI->load->library ('ImageUtility');
+    $this->CI->load->library ('image/ImageUtility');
     // $this->CI->load->helper ('directory');
     // $this->CI->load->helper ('file');
     // $this->CI->load->library ("cfg");
@@ -135,13 +135,19 @@ class OrmImageUploader {
         umask ($oldmask);
 
         $result = true;
-        $image = ImageUtility::create ($temp, null, array ('resizeUp' => $this->configs['utility']['resizeUp']));
-        $name = $this->getFileName () . ($this->configs['auto_add_format'] ? '.' . $image->getFormat () : '');
 
-        foreach ($versions as $key => $version) {
-          $new = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($path, array ($key . $this->configs['separate_symbol'] . $name)));
-          $result &= $this->_utility ($image, $new, $key, $version);
+        try {
+          $image = ImageUtility::create ($temp, null);
+          $name = $this->getFileName () . ($this->configs['auto_add_format'] ? '.' . $image->getFormat () : '');
+
+          foreach ($versions as $key => $version) {
+            $new = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($path, array ($key . $this->configs['separate_symbol'] . $name)));
+            $result &= $this->_utility ($image, $new, $key, $version);
+          }
+        } catch (Exception $e) {
+          return $this->configs['debug'] ? call_user_func_array ('error', $e->getMessages ()) : '';
         }
+
         return ($result &= @unlink ($temp)) ? $name : '';
         break;
     }
@@ -227,16 +233,12 @@ class OrmImageUploader {
 
   // return boolean
   private function _utility ($image, $save, $key, $version) {
-    try {
-      if ($version)
-        if (is_callable (array ($image, $method = array_shift ($version))))
-          call_user_func_array (array ($image, $method), $version);
-        else
-          return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', 'ImageUtility 無法呼叫的 method，method：' . $method, '請程式設計者確認狀況！') : '';
-      return $image->save ($save, true);
-    } catch (Exception $e) {
-      return false;
-    }
+    if ($version)
+      if (is_callable (array ($image, $method = array_shift ($version))))
+        call_user_func_array (array ($image, $method), $version);
+      else
+        return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', 'ImageUtility 無法呼叫的 method，method：' . $method, '請程式設計者確認狀況！') : '';
+    return $image->save ($save, true);
   }
 
   // return array
@@ -271,13 +273,17 @@ class OrmImageUploader {
         if (!is_writable (FCPATH . implode (DIRECTORY_SEPARATOR, $path)))
           return $this->configs['debug'] ? error ('OrmImageUploader 錯誤！', '資料夾不能儲存！路徑：' . $path, '請程式設計者確認狀況！') : '';
 
-        $image = ImageUtility::create (FCPATH . implode (DIRECTORY_SEPARATOR, $ori_path), null, array ('resizeUp' => $this->configs['utility']['resizeUp']));
-        $path = array_merge ($path, array ($key . $this->configs['separate_symbol'] . $name));
+        try {
+          $image = ImageUtility::create (FCPATH . implode (DIRECTORY_SEPARATOR, $ori_path), null);
+          $path = array_merge ($path, array ($key . $this->configs['separate_symbol'] . $name));
 
-        if ($this->_utility ($image, FCPATH . implode (DIRECTORY_SEPARATOR, $path), $key, $version))
-          return $path;
-        else
-          return array ();
+          if ($this->_utility ($image, FCPATH . implode (DIRECTORY_SEPARATOR, $path), $key, $version))
+            return $path;
+          else
+            return array ();
+        } catch (Exception $e) {
+          return $this->configs['debug'] ? call_user_func_array ('error', $e->getMessages ()) : '';
+        }
         break;
     }
 

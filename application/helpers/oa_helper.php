@@ -36,6 +36,16 @@ if (!function_exists ('error')) {
   }
 }
 
+if (!function_exists ('array_2d_to_1d')) {
+  function array_2d_to_1d ($array) {
+    $messages = array ();
+    foreach ($array as $key => $value)
+      if (is_array ($value)) $messages = array_merge ($messages, $value);
+      else array_push ($messages, $value);
+    return $messages;
+  }
+}
+
 if (!function_exists ('web_file_exists')) {
   function web_file_exists ($url, $cainfo = null) {
     $options = array (CURLOPT_URL => $url, CURLOPT_NOBODY => 1, CURLOPT_FAILONERROR => 1, CURLOPT_RETURNTRANSFER => 1);
@@ -88,6 +98,20 @@ if (!function_exists ('download_web_file')) {
     return filesize ($fileName) ?  $fileName : null;
   }
 }
+
+// if (!function_exists ('verifyDimension')) {
+//   function verifyDimension ($dimension) {
+//     return isset ($dimension['width']) && isset ($dimension['height']) && ($dimension['width'] > 0) && ($dimension['height'] > 0);
+//   }
+// }
+
+
+
+
+
+
+
+
 if (!function_exists ('_config_recursive')) {
   function _config_recursive ($levels, $config) {
     return $levels ? isset ($config[$index = array_shift ($levels)]) ? _config_recursive ($levels, $config[$index]) : null : $config;
@@ -113,11 +137,6 @@ if (!function_exists ('config')) {
   }
 }
 
-if (!function_exists ('verifyDimension')) {
-  function verifyDimension ($dimension) {
-    return isset ($dimension['width']) && isset ($dimension['height']) && ($dimension['width'] > 0) && ($dimension['height'] > 0);
-  }
-}
 
 if (!function_exists ('verifyCreateOrm')) {
   function verifyCreateOrm ($obj) {

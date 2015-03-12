@@ -8,8 +8,8 @@
 $model['recycle']['limit'] = 100;
 $model['recycle']['origin_id'] = 'origin_id';
 
-$model['uploader']['temp_directory'] = FCPATH . 'temp' . DIRECTORY_SEPARATOR;
-$model['uploader']['temp_file_name'] = uniqid (rand () . '_');
+// $model['uploader']['temp_directory'] = FCPATH . 'temp' . DIRECTORY_SEPARATOR;
+// $model['uploader']['temp_file_name'] = uniqid (rand () . '_');
 
 // $model['uploader']['file_name']['separate_symbol'] = '_';
 // $model['uploader']['file_name']['auto_add_format'] = true;
