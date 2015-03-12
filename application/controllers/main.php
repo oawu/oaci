@@ -45,16 +45,16 @@ class Main extends Site_controller {
     $this->load->library ('image/ImageUtility');
     $file = FCPATH . 'temp/demo.png';
     $save = FCPATH . 'temp/x.png';
+    $font = FCPATH . 'resource/font/monaco/monaco.ttf';
 
     try {
         $img = ImageUtility::create ($file);
-        $img->adaptiveResizeQuadrant (1000, 100, 't');
+        $img->addFont ('xxxx', $font, '100', '120', '#fff', '12', '1', '580');
+        // exit ();;
         $img->save ($save);
 
     } catch (Exception $e) {
-        echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-        var_dump ($e->getMessages());
-        exit ();
+        error ($e->getMessages());
     }
 
     // $a = new ImageUtility ();

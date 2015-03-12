@@ -15,8 +15,6 @@ class ImageGdUtility extends ImageBaseUtility {
     parent::__construct ($fileName);
 
     $this->configs = Cfg::system ('image_gd_utility');
-    // $this->CI->load->helper ('oa');
-    // $this->CI->load->library ("cfg");
 
     $this->_init ()
          ->_setOptions ($options);
@@ -37,7 +35,7 @@ class ImageGdUtility extends ImageBaseUtility {
       throw new ImageUtilityException ('ImageGdUtility 錯誤！', 'Create image 失敗！', '請程式設計者確認狀況！');
 
     if (!ImageUtility::verifyDimension ($this->dimension = $this->getDimension ($this->image)))
-      throw new ImageUtilityException ('ImageBaseUtility 錯誤！', '取得尺寸失敗！', '請程式設計者確認狀況！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '取得尺寸失敗！', '請程式設計者確認狀況！');
 
     return $this;
   }
@@ -88,7 +86,7 @@ class ImageGdUtility extends ImageBaseUtility {
   // return ImageGdUtility object
   private function _updateImage ($image) {
     $this->image = $image;
-    $this->dimension = $this->getDimension ($this->image = $image);
+    $this->dimension = $this->getDimension ($this->image);
     return $this;
   }
 
@@ -116,7 +114,7 @@ class ImageGdUtility extends ImageBaseUtility {
       return $this;
 
     if (!ImageUtility::verifyColor ($color))
-      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '色碼錯誤！', '請確認色碼格式，目前只支援 HEX、RGB 格式！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '色碼錯誤！', '請確認色碼格式，目前只支援 字串HEX、陣列RGB 格式！');
 
     if (($width < $this->dimension['width']) || ($height < $this->dimension['height']))
       return $this->resize ($width, $height);
@@ -145,7 +143,7 @@ class ImageGdUtility extends ImageBaseUtility {
     }
 
     if (!ImageUtility::verifyDimension ($newDimension))
-      throw new ImageUtilityException ('ImageBaseUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
 
     $newImage = function_exists ('imagecreatetruecolor') ? imagecreatetruecolor ($newDimension['width'], $newDimension['height']) : imagecreate ($newDimension['width'], $newDimension['height']);
     $newImage = $this->_preserveAlpha ($newImage);
@@ -168,7 +166,7 @@ class ImageGdUtility extends ImageBaseUtility {
     $newDimension['height'] = ($this->options['resizeUp'] === false) && ($height > $this->dimension['height']) ? $this->dimension['height'] : $height;
 
     if (!ImageUtility::verifyDimension ($newDimension = $this->calcImageSizeStrict ($this->dimension, $newDimension)))
-      throw new ImageUtilityException ('ImageBaseUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
 
     $this->resize ($newDimension['width'], $newDimension['height']);
 
@@ -176,7 +174,7 @@ class ImageGdUtility extends ImageBaseUtility {
     $newDimension['height'] = ($this->options['resizeUp'] === false) && ($height > $this->dimension['height']) ? $this->dimension['height'] : $height;
 
     if (!ImageUtility::verifyDimension ($newDimension))
-      throw new ImageUtilityException ('ImageBaseUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
 
     $newImage = function_exists ('imagecreatetruecolor') ? imagecreatetruecolor ($newDimension['width'], $newDimension['height']) : imagecreate ($newDimension['width'], $newDimension['height']);
     $newImage = $this->_preserveAlpha ($newImage);
@@ -205,7 +203,7 @@ class ImageGdUtility extends ImageBaseUtility {
       return $this;
 
     if (!ImageUtility::verifyDimension ($newDimension = $this->calcImageSizePercent ($percent, $this->dimension)))
-      throw new ImageUtilityException ('ImageBaseUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
 
     return $this->resize ($newDimension['width'], $newDimension['height']);
   }
@@ -233,6 +231,7 @@ class ImageGdUtility extends ImageBaseUtility {
     return $this->_copyReSampled ($newImage, $this->image, 0, 0, $startX, $startY, $width, $height, $width, $height);
   }
 
+  // return ImageGdUtility object
   public function cropFromCenter ($width, $height) {
     if (!((($width = intval ($width)) > 0) && (($height = intval ($height)) > 0)))
       throw new ImageUtilityException ('ImageGdUtility 錯誤！', '新尺寸錯誤，width：' . $width . '，height：' . $height, '尺寸寬高一定要大於 0！');
@@ -251,6 +250,7 @@ class ImageGdUtility extends ImageBaseUtility {
     return $this->crop ($startX, $startY, $width, $height);
   }
 
+  // return ImageGdUtility object
   public function rotate ($degree, $color = array (255, 255, 255)) {
     if (!function_exists ('imagerotate'))
       throw new ImageUtilityException ('ImageGdUtility 錯誤！', '尚未找尋到 imagerotate 函式！', '請確認 GD 函式庫中是否有支援 imagerotate 函式！');
@@ -259,7 +259,7 @@ class ImageGdUtility extends ImageBaseUtility {
       throw new ImageUtilityException ('ImageGdUtility 錯誤！', '角度一定要是數字，degree：' . $degree, '請確認 GD 函式庫中是否有支援 imagerotate 函式！');
 
     if (!ImageUtility::verifyColor ($color))
-      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '色碼錯誤！', '請確認色碼格式，目前只支援 HEX、RGB 格式！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '色碼錯誤！', '請確認色碼格式，目前只支援 字串HEX、陣列RGB 格式！');
 
     if (!($degree % 360))
       return $this;
@@ -270,6 +270,7 @@ class ImageGdUtility extends ImageBaseUtility {
     return $this->_updateImage ($newImage);
   }
 
+  // return ImageGdUtility object
   public function adaptiveResizeQuadrant ($width, $height, $item = 'c') {
     if (!((($width = intval ($width)) > 0) && (($height = intval ($height)) > 0)))
       throw new ImageUtilityException ('ImageGdUtility 錯誤！', '新尺寸錯誤，width：' . $width . '，height：' . $height, '尺寸寬高一定要大於 0！');
@@ -282,7 +283,7 @@ class ImageGdUtility extends ImageBaseUtility {
 
 
     if (!ImageUtility::verifyDimension ($newDimension = $this->calcImageSizeStrict ($this->dimension, $newDimension)))
-      throw new ImageUtilityException ('ImageBaseUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
 
     $this->resize ($newDimension['width'], $newDimension['height']);
 
@@ -290,7 +291,7 @@ class ImageGdUtility extends ImageBaseUtility {
     $newDimension['height'] = ($this->options['resizeUp'] === false) && ($height > $this->dimension['height']) ? $this->dimension['height'] : $height;
 
     if (!ImageUtility::verifyDimension ($newDimension))
-      throw new ImageUtilityException ('ImageBaseUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '新尺寸錯誤！', '尺寸寬高一定要大於 0！');
 
     $newImage = function_exists ('imagecreatetruecolor') ? imagecreatetruecolor ($newDimension['width'], $newDimension['height']) : imagecreate ($newDimension['width'], $newDimension['height']);
     $newImage = $this->_preserveAlpha ($newImage);
@@ -324,6 +325,7 @@ class ImageGdUtility extends ImageBaseUtility {
 
 
 
+  // return ImageGdUtility object
   // public static function make_block9 ($fileNames, $fileName = null, $interlace = null, $jpegQuality = 100) {
   //   if (count ($fileNames) < 9)
   //     return false;
