@@ -8,18 +8,3 @@
 $image_utility['module'] = 'imgk'; // gd、imgk
 $image_utility['modules'] = array ('gd'   => 'ImageGdUtility',
                                    'imgk' => 'ImageImagickUtility');
-
-
-
-
-
-
-
-
-
-// $image_utility['imgk']['allow_formats'] = array ('gif', 'jpg', 'png');
-// $image_utility['imgk']['mime_formats'] = array ( 'image/gif'   => 'gif',
-//                                                   'image/jpeg'  => 'jpg',
-//                                                   'image/pjpeg' => 'jpg',
-//                                                   'image/png'   => 'png',
-//                                                   'image/x-png' => 'png');

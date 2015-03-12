@@ -29,7 +29,7 @@ class ImageImagickUtility extends ImageBaseUtility {
       throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '取不到檔案的 mime！', '請確認你的檔案格式正確性！');
 
     if (!(isset ($this->configs['mime_formats'][$this->mime]) && ($this->format = $this->configs['mime_formats'][$this->mime]) && in_array ($this->format, $this->configs['allow_formats'])))
-      throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '找尋不到符合的 mime，或者不支援處理的檔案格式！mime：' . $mime, '請檢查 config/system/image_utility.php 設定檔！');
+      throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '找尋不到符合的 mime，或者不支援處理的檔案格式！mime：' . $mime, '請檢查 config/system/image_imgk_utility.php 設定檔！');
 
     if (!$this->image = new Imagick ($this->getFileName()))
       throw new ImageUtilityException ('ImageImagickUtility 錯誤！', 'Create image 失敗！', '請程式設計者確認狀況！');
@@ -158,8 +158,11 @@ class ImageImagickUtility extends ImageBaseUtility {
   }
 
   // return boolean
-  public function save ($fileName, $rawData = true) {
-    return $this->image->writeImages ($fileName, $rawData);
+  public function save ($save, $rawData = true) {
+    if (!$save)
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '錯誤的儲存路徑，save' . $save, '請再次確認儲存路徑！');
+
+    return $this->image->writeImages ($save, $rawData);
   }
 
   // return ImageImagickUtility object
@@ -464,7 +467,7 @@ class ImageImagickUtility extends ImageBaseUtility {
 
     $format = pathinfo ($fileName, PATHINFO_EXTENSION);
     if (!($format && in_array ($format, $this->configs['allow_formats'])))
-      throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '不支援處理的檔案格式！format：' . $format, '請檢查 config/system/image_utility.php 設定檔！');
+      throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '不支援處理的檔案格式！format：' . $format, '請檢查 config/system/image_imgk_utility.php 設定檔！');
 
     if (!$datas = $this->getAnalysisDatas ($maxCount))
       throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '圖像分析錯誤！', '請程式設計者確認狀況！');
@@ -539,41 +542,36 @@ class ImageImagickUtility extends ImageBaseUtility {
     return $this->_updateImage ($newImage);
   }
 
+  // return boolean
+  public function make_block9 ($files, $save = null, $rawData = true) {
+    if (!(count ($files) >= 9))
+      throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '參數錯誤，files count：' . count ($files), '參數 files 數量一定要大於 9！');
 
+    if (!$save)
+      throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '錯誤的儲存路徑，save' . $save, '請再次確認儲存路徑！');
 
+    $newImage = new Imagick ();
+    $newImage->newImage (266, 200, new ImagickPixel ('white'));
+    $newImage->setFormat (pathinfo ($save, PATHINFO_EXTENSION));
 
+    $positions = array (
+      array ('left' =>   2, 'top' =>   2, 'width' => 130, 'height' => 130),
+      array ('left' => 134, 'top' =>   2, 'width' =>  64, 'height' =>  64),
+      array ('left' => 200, 'top' =>   2, 'width' =>  64, 'height' =>  64),
+      array ('left' => 134, 'top' =>  68, 'width' =>  64, 'height' =>  64),
+      array ('left' => 200, 'top' =>  68, 'width' =>  64, 'height' =>  64),
+      array ('left' =>   2, 'top' => 134, 'width' =>  64, 'height' =>  64),
+      array ('left' =>  68, 'top' => 134, 'width' =>  64, 'height' =>  64),
+      array ('left' => 134, 'top' => 134, 'width' =>  64, 'height' =>  64),
+      array ('left' => 200, 'top' => 134, 'width' =>  64, 'height' =>  64),
+    );
 
+    for ($i = 0; $i < 9; $i++)
+      $newImage->compositeImage (ImageUtility::create ($files[$i])->getImage (),
+                                 imagick::COMPOSITE_DEFAULT,
+                                 $positions[$i]['left'],
+                                 $positions[$i]['top']);
 
-
-
-
-
-
-  // return ImageImagickUtility object
-  // public function make_block9 ($fileNames, $fileName = null, $rawData = true) {
-  //   if (count ($fileNames) < 9)
-  //     return false;
-  //   $fileName = $fileName ? $fileName : utilitySameLevelPath (Cfg::system ('model', 'uploader', 'temp_directory') . DIRECTORY_SEPARATOR . Cfg::system ('model', 'uploader', 'temp_file_name')) . '.png';
-
-  //   $newImage = new Imagick ();
-  //   $newImage->newImage (266, 200, new ImagickPixel ('white'));
-  //   $newImage->setFormat (pathinfo ($fileName, PATHINFO_EXTENSION));
-
-  //   $positions = array (
-  //     array ('left' =>   2, 'top' =>   2, 'width' => 130, 'height' => 130),
-  //     array ('left' => 134, 'top' =>   2, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 200, 'top' =>   2, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 134, 'top' =>  68, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 200, 'top' =>  68, 'width' =>  64, 'height' =>  64),
-  //     array ('left' =>   2, 'top' => 134, 'width' =>  64, 'height' =>  64),
-  //     array ('left' =>  68, 'top' => 134, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 134, 'top' => 134, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 200, 'top' => 134, 'width' =>  64, 'height' =>  64),
-  //   );
-
-  //   for ($i = 0; $i < 9; $i++)
-  //     $newImage->compositeImage (ImageUtility::create ($fileNames[$i])->getImage (), imagick::COMPOSITE_DEFAULT, $positions[$i]['left'], $positions[$i]['top']);
-
-  //   return $newImage->writeImages ($fileName, $rawData) ? $fileName : false;
-  // }
+    return $newImage->writeImages ($save, $rawData);
+  }
 }

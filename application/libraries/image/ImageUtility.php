@@ -3,12 +3,13 @@
 /**
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2015 OA Wu Design
+ *
+ * @note        Must use try catch
  */
 
 include_once 'ImageUtilityException.php';
 
 class ImageUtility {
-  private $CI = null;
   private $object = null;
   private $configs = array ();
   private $error = null;
@@ -16,8 +17,6 @@ class ImageUtility {
   public function __construct ($file = '', $module = '', $options = array ()) {
     if (!($file && is_readable ($file)))
       return $this->error = array ('ImageUtility 錯誤！', '初始化失敗！', '檔案不可讀取，或者不存在！file：' . $file, '請檢查建構子參數！');
-
-    $this->CI =& get_instance ();
 
     $this->configs = Cfg::system ('image_utility');
 
@@ -90,29 +89,17 @@ class ImageUtility {
     }
   }
 
+  // return boolean
+  public static function make_block9 ($files, $save) {
+    if (!(count ($files) >= 9))
+      throw new ImageUtilityException ('ImageUtility 錯誤！', '參數錯誤，files count：' . count ($files), '參數 files 數量一定要大於 9！');
 
+    if (!(($module = Cfg::system ('image_utility', 'module')) && in_array ($module, array_keys ($modules = Cfg::system ('image_utility', 'modules')))))
+      throw new ImageUtilityException ('ImageUtility 錯誤！', '預設 module 錯誤！module：' . $module, '請檢查 config/system/image_utility.php 設定檔！');
 
+    if (!class_exists ($modules[$module]))
+      include_once $modules[$module] . EXT;
 
-
-
-
-
-
-
-
-
-  // public static function make_block9 () {
-  //   if (count ($params = func_get_args ()) < 1)
-  //     return false;
-  //   if (!(($module = Cfg::system ('image_utility', 'module')) && in_array ($module, array_keys ($modules = Cfg::system ('image_utility', 'modules')))))
-  //     return show_error ("The file name or module select error, please confirm your program again.");
-
-  //   $CI =& get_instance ();
-  //   if (!is_readable ($path = utilitySameLevelPath (FCPATH . APPPATH . DIRECTORY_SEPARATOR . implode (DIRECTORY_SEPARATOR, $CI->get_libraries_path ()) . DIRECTORY_SEPARATOR . $modules[$module] . EXT)))
-  //     return show_error ("The image utility class array format is error!<br/>It must be 'gd' or 'imgk'!<br/>Please confirm your program again.");
-
-  //   if (!class_exists ($modules[$module]))
-  //     require_once $path;
-  //   return call_user_func_array (array ($modules[$module], 'make_block9'), $params);
-  // }
+    return call_user_func_array (array ($modules[$module], 'make_block9'), array ($files, $save));
+  }
 }

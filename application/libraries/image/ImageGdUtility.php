@@ -29,7 +29,7 @@ class ImageGdUtility extends ImageBaseUtility {
       throw new ImageUtilityException ('ImageGdUtility 錯誤！', '取不到檔案的 mime！', '請確認你的檔案格式正確性！');
 
     if (!(isset ($this->configs['mime_formats'][$this->mime]) && ($this->format = $this->configs['mime_formats'][$this->mime]) && in_array ($this->format, $this->configs['allow_formats'])))
-      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '找尋不到符合的 mime，或者不支援處理的檔案格式！mime：' . $mime, '請檢查 config/system/image_utility.php 設定檔！');
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '找尋不到符合的 mime，或者不支援處理的檔案格式！mime：' . $mime, '請檢查 config/system/image_gd_utility.php 設定檔！');
 
     if (!$this->image = $this->_getOldImage ($this->format))
       throw new ImageUtilityException ('ImageGdUtility 錯誤！', 'Create image 失敗！', '請程式設計者確認狀況！');
@@ -46,7 +46,7 @@ class ImageGdUtility extends ImageBaseUtility {
       case 'gif':  return imagecreatefromgif ($this->getFileName ()); break;
       case 'jpg': return imagecreatefromjpeg ($this->getFileName ()); break;
       case 'png': return imagecreatefrompng ($this->getFileName ()); break;
-      default: throw new ImageUtilityException ('ImageGdUtility 錯誤！', '不支援處理的檔案格式！format：' . $format, '請檢查 config/system/image_utility.php 設定檔！'); return null; break;
+      default: throw new ImageUtilityException ('ImageGdUtility 錯誤！', '不支援處理的檔案格式！format：' . $format, '請檢查 config/system/image_gd_utility.php 設定檔！'); return null; break;
     }
   }
 
@@ -91,16 +91,19 @@ class ImageGdUtility extends ImageBaseUtility {
   }
 
   // return boolean
-  public function save ($fileName) {
+  public function save ($save) {
+    if (!$save)
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '錯誤的儲存路徑，save' . $save, '請再次確認儲存路徑！');
+
     if ($this->options['interlace'] === true)
       imageinterlace ($this->image, 1);
     else if ($this->options['interlace'] === false)
       imageinterlace ($this->image, 0);
 
     switch ($this->format) {
-      case 'jpg': return @imagejpeg ($this->image, $fileName, $this->options['jpegQuality']);
-      case 'gif': return @imagegif ($this->image, $fileName);
-      case 'png': return @imagepng ($this->image, $fileName);
+      case 'jpg': return @imagejpeg ($this->image, $save, $this->options['jpegQuality']);
+      case 'gif': return @imagegif ($this->image, $save);
+      case 'png': return @imagepng ($this->image, $save);
       default: return false;
     }
   }
@@ -315,53 +318,51 @@ class ImageGdUtility extends ImageBaseUtility {
     return $this->_copyReSampled ($newImage, $this->image, 0, 0, $cropX, $cropY, $newDimension['width'], $newDimension['height'], $newDimension['width'], $newDimension['height']);
   }
 
+  // return boolean
+  public static function make_block9 ($files, $save, $interlace = null, $jpegQuality = 100) {
+    if (!(count ($files) >= 9))
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '參數錯誤，files count：' . count ($files), '參數 files 數量一定要大於 9！');
 
+    if (!$save)
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '錯誤的儲存路徑，save' . $save, '請再次確認儲存路徑！');
 
+    if (!class_exists ('ImageUtility'))
+      include_once 'ImageUtility.php';
 
+    $positions = array (
+      array ('left' =>   2, 'top' =>   2, 'width' => 130, 'height' => 130),
+      array ('left' => 134, 'top' =>   2, 'width' =>  64, 'height' =>  64),
+      array ('left' => 200, 'top' =>   2, 'width' =>  64, 'height' =>  64),
+      array ('left' => 134, 'top' =>  68, 'width' =>  64, 'height' =>  64),
+      array ('left' => 200, 'top' =>  68, 'width' =>  64, 'height' =>  64),
+      array ('left' =>   2, 'top' => 134, 'width' =>  64, 'height' =>  64),
+      array ('left' =>  68, 'top' => 134, 'width' =>  64, 'height' =>  64),
+      array ('left' => 134, 'top' => 134, 'width' =>  64, 'height' =>  64),
+      array ('left' => 200, 'top' => 134, 'width' =>  64, 'height' =>  64),
+    );
 
+    $image = imagecreatetruecolor (266, 200);
+    imagefill ($image, 0, 0, imagecolorallocate ($image, 255, 255, 255));
+    for ($i = 0; $i < 9; $i++)
+      imagecopymerge ($image,
+                      ImageUtility::create ($files[$i])->getImage (),
+                      $positions[$i]['left'],
+                      $positions[$i]['top'],
+                      0,
+                      0,
+                      $positions[$i]['width'],
+                      $positions[$i]['height'],
+                      100);
 
+    if ($interlace === true)
+      imageinterlace ($image, 1);
+    else if ($interlace === false)
+      imageinterlace ($image, 0);
 
-
-
-
-
-  // return ImageGdUtility object
-  // public static function make_block9 ($fileNames, $fileName = null, $interlace = null, $jpegQuality = 100) {
-  //   if (count ($fileNames) < 9)
-  //     return false;
-  //   $CI =& get_instance ();
-  //   $CI->load->library ('ImageUtility');
-
-  //   $positions = array (
-  //     array ('left' =>   2, 'top' =>   2, 'width' => 130, 'height' => 130),
-  //     array ('left' => 134, 'top' =>   2, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 200, 'top' =>   2, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 134, 'top' =>  68, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 200, 'top' =>  68, 'width' =>  64, 'height' =>  64),
-  //     array ('left' =>   2, 'top' => 134, 'width' =>  64, 'height' =>  64),
-  //     array ('left' =>  68, 'top' => 134, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 134, 'top' => 134, 'width' =>  64, 'height' =>  64),
-  //     array ('left' => 200, 'top' => 134, 'width' =>  64, 'height' =>  64),
-  //   );
-
-  //   $image = imagecreatetruecolor (266, 200);
-  //   imagefill ($image, 0, 0, imagecolorallocate ($image, 255, 255, 255));
-  //   for ($i = 0; $i < 9; $i++)
-  //     imagecopymerge ($image, ImageUtility::create ($fileNames[$i])->getImage (), $positions[$i]['left'], $positions[$i]['top'], 0, 0, $positions[$i]['width'], $positions[$i]['height'], 100);
-
-  //   if ($interlace === true)
-  //     imageinterlace ($image, 1);
-  //   else if ($interlace === false)
-  //     imageinterlace ($image, 0);
-
-  //   $fileName = $fileName ? $fileName : utilitySameLevelPath (Cfg::system ('model', 'uploader', 'temp_directory') . DIRECTORY_SEPARATOR . Cfg::system ('model', 'uploader', 'temp_file_name')) . '.png';
-
-  //   switch (pathinfo ($fileName, PATHINFO_EXTENSION)) {
-  //     case 'jpg': return @imagejpeg ($image, $fileName, $jpegQuality) ? $fileName : '';
-  //     case 'gif': return @imagegif ($image, $fileName) ? $fileName : '';
-  //     case 'png': return @imagepng ($image, $fileName) ? $fileName : '';
-  //     default: return '';
-  //   }
-  // }
-
+    switch (pathinfo ($save, PATHINFO_EXTENSION)) {
+      case 'jpg': return @imagejpeg ($image, $save, $jpegQuality);
+      case 'gif': return @imagegif ($image, $save);
+      default: case 'png': return @imagepng ($image, $save);
+    }
+  }
 }

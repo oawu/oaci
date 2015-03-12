@@ -3,6 +3,7 @@
 /**
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2015 OA Wu Design
+ *
  * @resource    https://github.com/joelcox/codeigniter-redis
  */
 

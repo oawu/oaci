@@ -43,15 +43,41 @@ class Main extends Site_controller {
   }
   public function b () {
     $this->load->library ('image/ImageUtility');
-    $file = FCPATH . 'temp/demo.png';
+
+    // $files = array ();
+    // $files[] = base_url ('temp', 'demo1.jpg');
+    // $files[] = base_url ('temp', 'demo2.jpg');
+    // $files[] = base_url ('temp', 'demo3.jpg');
+    // $files[] = base_url ('temp', 'demo4.jpg');
+    // $files[] = base_url ('temp', 'demo5.jpg');
+    // $files[] = base_url ('temp', 'demo6.jpg');
+    // $files[] = base_url ('temp', 'demo7.jpg');
+    // $files[] = base_url ('temp', 'demo8.jpg');
+    // $files[] = base_url ('temp', 'demo9.jpg');
+
+
+    // foreach ($files as $key => $value) {
+    //   $e = Event::create (array ('title' => 'x', 'info' => 'x', 'cover' => 'x'));
+    //   $e->cover->put_url ($value);
+    // }
+
+    $es = Event::find ('all', array ('conditions' => array ('id >= ?', 118)));
+
+    $temp_files = array ();
+    foreach ($es as $e)
+      array_push ($temp_files, FCPATH . implode (DIRECTORY_SEPARATOR, !$temp_files ? $e->cover->save_as ('380', array ('adaptiveResizeQuadrant', 130, 130, 't')) : $e->cover->save_as ('63', array ('adaptiveResizeQuadrant', 64, 64, 't'))));
+
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($temp_files);
+    // exit ();
     $save = FCPATH . 'temp/x.png';
-    $font = FCPATH . 'resource/font/monaco/monaco.ttf';
+    // $font = FCPATH . 'resource/font/monaco/monaco.ttf';
 
     try {
-        $img = ImageUtility::create ($file);
-        $img->addFont ('xxxx', $font, '100', '120', '#fff', '12', '1', '580');
+        $img = ImageUtility::make_block9 ($temp_files, $save);
+
         // exit ();;
-        $img->save ($save);
+        // $img->save ($save);
 
     } catch (Exception $e) {
         error ($e->getMessages());
