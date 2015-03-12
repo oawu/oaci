@@ -5,15 +5,15 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-$redis['active_server'] = 'default';
-$redis['servers'] = array (
+return array (
+  'active_server' => 'default',
+  'servers' => array (
     'default' => array (
         'host' => '127.0.0.1',
         'port' => '6379',
         'password' => ''),
-
     'demo' => array (
         'host' => '127.0.0.1',
         'port' => '6379',
         'password' => ''),
-  );
+  ));

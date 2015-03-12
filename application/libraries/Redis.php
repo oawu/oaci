@@ -8,17 +8,17 @@
  */
 
 class CI_Redis {
-  private $CI = null;
+  private $config_path = array ('application', 'config', 'system', 'redis.php');
   private $connection = null;
   private $error = null;
   const CRLF = "\r\n";
 
-  public function __construct ($configs = array ()) {
-    $this->CI =& get_instance ();
-    $this->CI->load->library ("cfg");
+  public function __construct ($params = array ()) {
 
-    if (!(isset ($configs['active_server']) && ($server = Cfg::system ('redis', 'servers')[$configs['active_server']])))
-      $server = Cfg::system ('redis', 'servers')[Cfg::system ('redis', 'active_server')];
+    $configs = (include_once FCPATH . implode (DIRECTORY_SEPARATOR, $this->config_path));
+
+    if (!(isset ($params['active_server']) && ($server = $configs['servers'][$params['active_server']])))
+      $server = $configs['servers'][$configs['active_server']];
 
     $this->connection = @fsockopen ($server['host'], $server['port'], $errno, $errstr, 3);
     if (!$this->connection)

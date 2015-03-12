@@ -12,6 +12,9 @@ class Main extends Site_controller {
   }
 
   public function index () {
-    $this->load_view (null);
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    var_dump (X::system ('test', 'assets_folder'));
+    exit ();
+    // $this->load_view (null);
   }
 }
