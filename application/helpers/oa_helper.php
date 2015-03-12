@@ -117,18 +117,6 @@ if (!function_exists ('verifyCreateOrm')) {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 if (!function_exists ('_config_recursive')) {
   function _config_recursive ($levels, $config) {
     return $levels ? isset ($config[$index = array_shift ($levels)]) ? _config_recursive ($levels, $config[$index]) : null : $config;
@@ -153,9 +141,6 @@ if (!function_exists ('config')) {
     return $data;
   }
 }
-
-
-
 
 if ( !function_exists ('send_post')) {
   function send_post ($url, $params = array (), $is_wait_log = false, $port = 80, $timeout = 30) {
