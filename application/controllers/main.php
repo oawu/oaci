@@ -12,6 +12,15 @@ class Main extends Site_controller {
   }
 
   public function index () {
-    $this->load_view (null);
+    echo "<form action='" . base_url ($this->get_class (), 'a') . "' method='post' enctype='multipart/form-data'>";
+      echo "<input type='file' name='file' />";
+      echo "<button type='submit'>submit</button>";
+    echo "</form>";
+  }
+  public function a () {
+    $file = $this->input_post ('file', true);
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    var_dump ($file);
+    exit ();
   }
 }
