@@ -29,7 +29,7 @@ if (!function_exists ('delete_model')) {
     $results = array ();
     $name = singularize ($name);
 
-    $uploader_class_suffix = 'Uploader';
+    $uploader_class_suffix = 'ImageUploader';
 
     $model_path = FCPATH . 'application/models/' . ucfirst (camelize ($name)) . EXT;
     $content = read_file ($model_path);

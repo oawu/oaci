@@ -7,7 +7,7 @@
 
 $orm_image_uploader['debug'] = false;
 
-$orm_image_uploader['instance']['class_suffix'] = 'Uploader';
+$orm_image_uploader['instance']['class_suffix'] = 'ImageUploader';
 $orm_image_uploader['instance']['directory'] = array ('application', 'third_party', 'orm_image_uploaders');
 
 $orm_image_uploader['bucket'] = 'local'; // local、s3

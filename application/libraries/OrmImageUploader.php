@@ -19,9 +19,6 @@ class OrmImageUploader {
 
     $this->CI =& get_instance ();
     $this->CI->load->library ('image/ImageUtility');
-    // $this->CI->load->helper ('directory');
-    // $this->CI->load->helper ('file');
-    // $this->CI->load->library ("cfg");
 
     $this->orm = $orm;
     $this->column_name = $column_name;
