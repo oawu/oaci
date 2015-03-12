@@ -24,11 +24,8 @@ class ImageUtility {
     if (!(($module = $module ? strtolower ($module) : $this->configs['module']) && in_array ($module, array_keys ($modules = $this->configs['modules']))))
       throw new ImageUtilityException ('ImageUtility 錯誤！', '初始化失敗！', '參數 module 錯誤！module：' . $module, '請檢查建構子參數！');
 
-    if (!is_readable ($path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['module_path'], array ($modules[$module] . EXT)))))
-      throw new ImageUtilityException ('ImageUtility 錯誤！', '初始化失敗！', '不可讀的 module，或者檔案不存在，path：' . $path, '請檢查建構子參數！');
-
     if (!class_exists ($modules[$module]))
-      include_once $path;
+      include_once $modules[$module] . EXT;
 
     $this->object = new $modules[$module] ($file, $options);
     $this->error = null;

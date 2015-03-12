@@ -10,8 +10,6 @@ $image_utility['module'] = 'gd';
 $image_utility['modules'] = array ('gd'   => 'ImageGdUtility',
                                    'imgk' => 'ImageImagickUtility');
 
-$image_utility['module_path'] = array ('application', 'libraries', 'image');
-
 
 
 
