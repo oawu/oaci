@@ -5,13 +5,14 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-class Main extends Site_controller {
+class ImageUtilityException extends Exception {
+  private $messages = array ();
 
   public function __construct () {
-    parent::__construct ();
+    $this->messages = array_2d_to_1d (func_get_args ());
   }
-
-  public function index () {
-    $this->load_view (null);
+  // return array
+  public function getMessages () {
+    return $this->messages;
   }
 }

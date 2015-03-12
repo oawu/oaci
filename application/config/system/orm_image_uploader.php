@@ -5,8 +5,6 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-$model['uploader']['instances']['directory'] = FCPATH . APPPATH . 'third_party' . DIRECTORY_SEPARATOR . 'orm_image_uploaders' . DIRECTORY_SEPARATOR;
-
 $orm_image_uploader['debug'] = false;
 
 $orm_image_uploader['instance']['class_suffix'] = 'Uploader';
@@ -23,4 +21,3 @@ $orm_image_uploader['d4_url'] = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
 
 $orm_image_uploader['temp_directory'] = array ('temp');
 $orm_image_uploader['temp_file_name'] = uniqid (rand () . '_');
-$orm_image_uploader['utility']['resizeUp'] = true;

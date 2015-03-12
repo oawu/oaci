@@ -4,8 +4,10 @@
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
+
 class ImageBaseUtility {
   private $fileName = null;
+  protected $CI = null;
   protected $mime = null;
   protected $format = null;
   protected $image = null;
@@ -13,74 +15,57 @@ class ImageBaseUtility {
 
   public function __construct ($fileName) {
     if (!is_readable ($fileName))
-      return show_error ("The image file : " . $fileName . " not found or not readable!<br/>Please confirm your program again.");
+      throw new ImageUtilityException ('ImageBaseUtility 錯誤！', '檔案不可讀取或不存在，file：' . $fileName);
+
+    $this->CI =& get_instance ();
+
+    if (!class_exists ('ImageUtility'))
+      include_once 'ImageUtility.php';
+
     $this->setFileName ($fileName);
   }
-
+  // return ImageBaseUtility object
   protected function setFileName ($fileName) {
     $this->fileName = $fileName;
     return $this;
   }
-
+  // return string
   public function getFileName () {
     return $this->fileName;
   }
-
+  // return string
   public function getMime () {
     return $this->mime;
   }
-
+  // return string
   public function getFormat () {
     return $this->format;
   }
-
+  // return image object
   public function getImage () {
     return $this->image;
   }
-
-
-  public function colorHex2Rgb ($hex) {
-    if (($hex = str_replace ('#', '', $hex)) && ((strlen ($hex) == 3) || (strlen ($hex) == 6))) {
-      if(strlen ($hex) == 3) {
-        $r = hexdec (substr ($hex, 0, 1) . substr ($hex, 0, 1));
-        $g = hexdec (substr ($hex, 1, 1) . substr ($hex, 1, 1));
-        $b = hexdec (substr ($hex, 2, 1) . substr ($hex, 2, 1));
-      } else {
-        $r = hexdec (substr ($hex, 0, 2));
-        $g = hexdec (substr ($hex, 2, 2));
-        $b = hexdec (substr ($hex, 4, 2));
-      }
-      return array ($r, $g, $b);
-    } else {
-      return array ();
-    }
+  // return dimension format array
+  protected function calcImageSizePercent ($percent, $dimension) {
+    return ImageUtility::createDimension (
+      ceil ($dimension['width'] * $percent / 100),
+      ceil ($dimension['height'] * $percent / 100));
   }
-
-  protected function verifyColor ($color) {
-    return ($color = is_string ($color) ? $this->colorHex2Rgb ($color) : $color) && is_array ($color) && (count ($color) == 3) && ($color[0] >= 0) && ($color[0] <= 255) && ($color[1] >= 0) && ($color[1] <= 255) && ($color[2] >= 0) && ($color[2] <= 255) ? $color : false;
-  }
-
-  protected function createDimension ($width, $height) {
-    return ($width > 0) && ($height > 0) ? array (
-      'width'  => intval ($width),
-      'height' => intval ($height)
-    ) : show_error ("Create dimension Error!<br/>Please confirm your program again.");
-  }
-
+  // return dimension format array
   protected function calcWidth ($oldDimension, $newDimension) {
     $newWidthPercentage = ceil (100 * $newDimension['width'] / $oldDimension['width']);
     $height             = ceil ($oldDimension['height'] * $newWidthPercentage / 100);
-    return $this->createDimension ($newDimension['width'], $height);
+    return ImageUtility::createDimension ($newDimension['width'], $height);
   }
-
+  // return dimension format array
   protected function calcHeight ($oldDimension, $newDimension) {
     $newHeightPercentage  = ceil (100 * $newDimension['height'] / $oldDimension['height']);
     $width                = ceil ($oldDimension['width'] * $newHeightPercentage / 100);
-    return $this->createDimension ($width, $newDimension['height']);
+    return ImageUtility::createDimension ($width, $newDimension['height']);
   }
-
+  // return dimension format array
   protected function calcImageSize ($oldDimension, $newDimension) {
-    $newSize = $this->createDimension ($oldDimension['width'], $oldDimension['height']);
+    $newSize = ImageUtility::createDimension ($oldDimension['width'], $oldDimension['height']);
 
     if ($newDimension['width'] > 0) {
       $newSize = $this->calcWidth ($oldDimension, $newDimension);
@@ -94,20 +79,20 @@ class ImageBaseUtility {
     }
     return $newSize;
   }
-
+  // return dimension format array
   protected function calcImageSizeStrict ($oldDimension, $newDimension) {
-    $newSize = $this->createDimension ($newDimension['width'], $newDimension['height']);
-    
+    $newSize = ImageUtility::createDimension ($newDimension['width'], $newDimension['height']);
+
     if ($newDimension['width'] >= $newDimension['height']) {
       if ($oldDimension['width'] > $oldDimension['height'])  {
         $newSize = $this->calcHeight ($oldDimension, $newDimension);
-        
+
         if ($newSize['width'] < $newDimension['width']) {
           $newSize = $this->calcWidth ($oldDimension, $newDimension);
         }
       } else if ($oldDimension['height'] >= $oldDimension['width']) {
         $newSize = $this->calcWidth ($oldDimension, $newDimension);
-        
+
         if ($newSize['height'] < $newDimension['height']) {
           $newSize = $this->calcHeight ($oldDimension, $newDimension);
         }
@@ -115,22 +100,18 @@ class ImageBaseUtility {
     } else if ($newDimension['height'] > $newDimension['width']) {
       if ($oldDimension['width'] >= $oldDimension['height']) {
         $newSize = $this->calcWidth ($oldDimension, $newDimension);
-        
+
         if ($newSize['height'] < $newDimension['height']) {
           $newSize = $this->calcHeight ($oldDimension, $newDimension);
         }
       } else if ($oldDimension['height'] > $oldDimension['width']) {
         $newSize = $this->calcHeight ($oldDimension, $newDimension);
-        
+
         if ($newSize['width'] < $newDimension['width']) {
           $newSize = $this->calcWidth ($oldDimension, $newDimension);
         }
       }
     }
     return $newSize;
-  }
-
-  protected function calcImageSizePercent ($percent, $dimension) {
-    return $this->createDimension (ceil ($dimension['width'] * $percent / 100), ceil ($dimension['height'] * $percent / 100));
   }
 }

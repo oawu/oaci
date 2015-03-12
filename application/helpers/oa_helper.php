@@ -21,7 +21,7 @@ if (!function_exists ('field_array')) {
 if (!function_exists ('error')) {
   function error () {
     $trace = array_filter (array_map (function ($t) { return isset ($t['file']) && isset ($t['line']) ? array ('file' => $t['file'], 'line' => $t['line']) : null; }, debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)));
-    $args = array_filter (func_get_args ());
+    $args = array_2d_to_1d (array_filter (func_get_args ()));
     $title = array_shift ($args);
 
     ob_start ();
@@ -33,6 +33,16 @@ if (!function_exists ('error')) {
 
     echo $buffer;
     exit;
+  }
+}
+
+if (!function_exists ('array_2d_to_1d')) {
+  function array_2d_to_1d ($array) {
+    $messages = array ();
+    foreach ($array as $key => $value)
+      if (is_array ($value)) $messages = array_merge ($messages, $value);
+      else array_push ($messages, $value);
+    return $messages;
   }
 }
 
@@ -88,6 +98,25 @@ if (!function_exists ('download_web_file')) {
     return filesize ($fileName) ?  $fileName : null;
   }
 }
+
+if (!function_exists ('sort2dArray')) {
+  function sort2dArray ($key, $list) {
+    if ($list) {
+      $tmp = array ();
+      foreach ($list as &$ma) $tmp[] = &$ma[$key];
+      array_multisort ($tmp, SORT_DESC, $list);
+    }
+    return $list;
+  }
+}
+
+
+
+
+
+
+
+
 if (!function_exists ('_config_recursive')) {
   function _config_recursive ($levels, $config) {
     return $levels ? isset ($config[$index = array_shift ($levels)]) ? _config_recursive ($levels, $config[$index]) : null : $config;
@@ -113,11 +142,6 @@ if (!function_exists ('config')) {
   }
 }
 
-if (!function_exists ('verifyDimension')) {
-  function verifyDimension ($dimension) {
-    return isset ($dimension['width']) && isset ($dimension['height']) && ($dimension['width'] > 0) && ($dimension['height'] > 0);
-  }
-}
 
 if (!function_exists ('verifyCreateOrm')) {
   function verifyCreateOrm ($obj) {
