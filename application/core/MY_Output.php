@@ -14,7 +14,7 @@ class MY_Output extends CI_Output {
   if (($CI =& get_instance ()) && !isset ($CI->cfg))
     $CI->load->library ('cfg');
 
-  $path = Cfg::system ('cache', 'output');
+  $path = implode (DIRECTORY_SEPARATOR, Cfg::system ('cache', 'output')) . DIRECTORY_SEPARATOR;
 
   $cache_path = (($path == '') ? APPPATH.'cache/' : $path) . ($cache_append_path == null ? '' : $cache_append_path);
 
@@ -47,7 +47,7 @@ class MY_Output extends CI_Output {
   if (($CI =& get_instance ()) && !isset ($CI->cfg))
     $CI->load->library ('cfg');
 
-  $path = Cfg::system ('cache', 'output');
+  $path = implode (DIRECTORY_SEPARATOR, Cfg::system ('cache', 'output')) . DIRECTORY_SEPARATOR;
 
   $cache_path = (($path == '') ? APPPATH.'cache/' : $path);
 

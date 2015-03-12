@@ -132,10 +132,10 @@ if (!function_exists ('config')) {
       if ($is_cache && ($CI =& get_instance ()) && !isset ($CI->cache))
         $CI->load->driver ('cache', array ('adapter' => 'apc', 'backup' => 'file'));
 
-      if ((!$is_cache || !($data = $CI->cache->file->get ($key))) && ($config_name = array_shift ($levels)) && is_readable ($path = utilitySameLevelPath (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . $forder . DIRECTORY_SEPARATOR . $config_name . EXT))) {
+      if ((!$is_cache || !($data = $CI->cache->file->get ($key, FCPATH . implode (DIRECTORY_SEPARATOR, Cfg::_system ('cache', 'config')) . DIRECTORY_SEPARATOR))) && ($config_name = array_shift ($levels)) && is_readable ($path = utilitySameLevelPath (FCPATH . APPPATH . 'config' . DIRECTORY_SEPARATOR . $forder . DIRECTORY_SEPARATOR . $config_name . EXT))) {
         include $path;
         $data = ($config_name = $$config_name) ? _config_recursive ($levels, $config_name) : null;
-        $is_cache && $CI->cache->file->save ($key, $data, 60 * 60);
+        $is_cache && $CI->cache->file->save ($key, $data, 60 * 60, FCPATH . implode (DIRECTORY_SEPARATOR, Cfg::_system ('cache', 'config')) . DIRECTORY_SEPARATOR);
       }
     }
     return $data;
@@ -156,7 +156,7 @@ if ( !function_exists ('send_post')) {
         if (($CI =& get_instance ()) && !isset ($CI->cfg))
           $CI->load->library ('cfg');
 
-        $log_fp = fopen (Cfg::system ('delay_job', 'log_name'), 'a');
+        $log_fp = fopen (FCPATH . implode (DIRECTORY_SEPARATOR, Cfg::system ('delay_job', 'log_name')), 'a');
         if (flock ($log_fp, LOCK_EX)) {
           @fwrite ($log_fp, sprintf ("\r\n\r\n\r\n==| %21s |" . str_repeat ('=', 86) . "\r\n", date ('Y-m-d H:m:s')) . sprintf ("  | %21s | %s\r\n", 'Path', mb_strimwidth ((string)$url['path'], 0, 65, '…','UTF-8') . "\r\n" . str_repeat ('-', 113)));
           if ($params)
