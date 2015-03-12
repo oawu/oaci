@@ -4,14 +4,9 @@
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
-if (!function_exists ('utilitySameLevelPath')) {
-  function utilitySameLevelPath ($path) {
-    return ($paths = implode ('/', array_filter (func_get_args ()))) ? preg_replace ("/(https?:\/)\/?/", "$1/", preg_replace ('/\/(\.?\/)+/', '/', $paths)) : '';
-  }
-}
 
-if (!function_exists ('field_array')) {
-  function field_array ($objects, $key) {
+if (!function_exists ('array_column')) {
+  function array_column ($objects, $key) {
     return array_map (function ($object) use ($key) {
       return !is_array ($object) ? is_object ($object) ? $object->$key : $object : $object[$key];
     }, $objects);
@@ -110,6 +105,23 @@ if (!function_exists ('sort2dArray')) {
   }
 }
 
+if (!function_exists ('utilitySameLevelPath')) {
+  function utilitySameLevelPath ($path) {
+    return ($paths = implode ('/', array_filter (func_get_args ()))) ? preg_replace ("/(https?:\/)\/?/", "$1/", preg_replace ('/\/(\.?\/)+/', '/', $paths)) : '';
+  }
+}
+
+if (!function_exists ('verifyCreateOrm')) {
+  function verifyCreateOrm ($obj) {
+    return $obj && is_object ($obj) && $obj->is_valid ();
+  }
+}
+
+
+
+
+
+
 
 
 
@@ -143,11 +155,6 @@ if (!function_exists ('config')) {
 }
 
 
-if (!function_exists ('verifyCreateOrm')) {
-  function verifyCreateOrm ($obj) {
-    return is_object ($obj) && $obj->is_valid ();
-  }
-}
 
 
 if ( !function_exists ('send_post')) {
