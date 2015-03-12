@@ -5,7 +5,5 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-return array (
-  'items' => array (
-    'a' => 3,
-    'b' => 2));
+$o['items']['a'] = 3;
+$o['items']['b'] = 2;

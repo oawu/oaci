@@ -7,4 +7,8 @@
 
 return array (
   'driver' => 'redis', // 'file', 'redis'
+  'directory' => array ('application', 'config'),
+  'redis' => array (
+    'keys_prefix' => array ('config')
+    )
   );
