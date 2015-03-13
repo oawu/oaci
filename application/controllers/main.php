@@ -19,17 +19,15 @@ class Main extends Site_controller {
   }
   public function a () {
     $file = $this->input_post ('file', true);
-    $e = Event::create (array ('title' => '', 'cover' => 'x', 'info' => 'x'));
-    // $e->cover->put ($file);
-
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($file);
+    // $e = Event::create (array ('title' => '', 'cover' => 'x', 'info' => 'x'));
+    $e = Event::find ('one', array ('order' => 'id DESC', 'conditions' => array ('')));
+    $e->cover->put ($file);
     exit ();
   }
   public function b () {
     $e = Event::find ('one', array ('order' => 'id DESC', 'conditions' => array ('')));
     echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($e->title->url ());
+    var_dump ($e->cover->getAllPaths ());
     exit ();
   }
 }
