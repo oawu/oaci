@@ -21,9 +21,9 @@ if (!function_exists ('create_demo')) {
     echo implode ("\n", $results) . "\n" . $line;
 
     $results = array ();
-    $models = array ('event' => array ('cover'), 'attendee' => array (), 'tag' => array (), 'tag_event_map' => array ());
+    $models = array ('event' => array ('-p' => array ('cover')), 'attendee' => array (), 'tag' => array (), 'tag_event_map' => array ());
     array_walk ($models, function ($value, $key) use (&$results) {
-      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_model (FCPATH . 'command/templates/demo/' . $key . '/', $key, $value))));
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_model (FCPATH . 'command/templates/demo/' . $key . '/', $key, isset ($value['-p']) ? $value['-p'] : array (), isset ($value['-f']) ? $value['-f'] : array ()))));
     });
     echo implode ("\n", $results) . "\n" . $line;
 
