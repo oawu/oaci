@@ -25,7 +25,7 @@ class OrmImageUploader extends OrmUploader {
   }
   // return array
   public function path ($key = '') {
-    if (($versions = ($versions = $this->getVersions ()) ? $versions : $this->configs['default_version']) && isset ($versions[$key]) && ($fileName = $key . $this->configs['separate_symbol'] . (string)$this))
+    if (($versions = ($versions = $this->getVersions ()) ? $versions : $this->configs['default_version']) && isset ($versions[$key]) && ($fileName = $key . $this->configs['separate_symbol'] . $this->getValue ()))
       return parent::path ($fileName);
     else
       return array ();
@@ -50,7 +50,7 @@ class OrmImageUploader extends OrmUploader {
 
     $paths = array ();
     foreach ($versions as $key => $version)
-      if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($key . $this->configs['separate_symbol'] . (string)$this)))))
+      if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($key . $this->configs['separate_symbol'] . $this->getValue ())))))
         array_push ($paths, $path);
     return $paths;
   }
@@ -116,7 +116,7 @@ class OrmImageUploader extends OrmUploader {
     switch ($this->getBucket ()) {
       case 'local':
         foreach ($versions as $ori_key => $ori_version)
-          if (is_readable (FCPATH . implode (DIRECTORY_SEPARATOR, $ori_path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($ori_key . $this->configs['separate_symbol'] . ($name = (string)$this))))))
+          if (is_readable (FCPATH . implode (DIRECTORY_SEPARATOR, $ori_path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($ori_key . $this->configs['separate_symbol'] . ($name = $this->getValue ()))))))
             break;
 
         if (!$ori_path)

@@ -81,6 +81,10 @@ class OrmUploader {
   }
   // return sring
   public function __toString () {
+    return  $this->getValue ();
+  }
+  // return sring
+  public function getValue () {
     return  $this->error ? call_user_func_array ('error', $this->error) : (string)$this->column_value;
   }
   // return sring
@@ -153,7 +157,7 @@ class OrmUploader {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
-    if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ((string)$this)))))
+    if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($this->getValue ())))))
       return array ($path);
     else
       return array ();
@@ -272,7 +276,8 @@ class OrmUploader {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
-    $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['temp_directory'], array ($this->getRandomName ())));
+    $format = pathinfo ($url, PATHINFO_EXTENSION);
+    $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['temp_directory'], array ($this->getRandomName () . ($format ? '.' . $format : ''))));
 
     if (($temp = download_web_file ($url, $temp)) && $this->put ($temp, false))
       return file_exists ($temp) ? @unlink ($temp) : true;

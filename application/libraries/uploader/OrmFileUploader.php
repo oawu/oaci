@@ -19,6 +19,10 @@ class OrmFileUploader extends OrmUploader {
   }
   // return array
   public function path () {
-    return parent::path ((string)$this);
+    return parent::path ($this->getValue ());
+  }
+  // return sring
+  public function getValue () {
+    return  $this->error ? call_user_func_array ('error', $this->error) : (string)$this->column_value;
   }
 }
