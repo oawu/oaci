@@ -27,6 +27,10 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 * [Demo指令](#demo指令)
 	* [create demo](#create-demo)
 	* [delete demo](#delete-demo)
+	
+* [Gulp](#gulp)
+
+* [Compass](#compass)
 
 <br />
 <br />
@@ -38,12 +42,16 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 * 匯入並且使用 [PHP ActiveRecord](http://www.phpactiverecord.org/) ORM。
 	* 可以與 OrmImageUploader 搭配結合。
 
-* <a name="back1"></a>匯入使用 OrmImageUploader 的 library。([1](#comment1))
-	* 配合使用 ImageGdUtility、ImageImagickUtility 這兩個主要處理圖片的 library。
+* 匯入使用 [Redis](http://redis.io/) cache library。
+
+* <a name="back1"></a>匯入使用 OrmUploader 的 library。([註1](#comment1))
+	* 可搭配 model 使用 ImageUplader、FileUploader 處理上傳表單。
+	* ImageUplader 可配合使用 ImageGdUtility、ImageImagickUtility 處理圖片的 library。
 
 * <a name="back2"></a>匯入使用 cell 的 library。([註2](#comment2))
 	* 加強有層級結構關係。
 	* 加強暫存快娶機制。
+	* 導入可使用 [Redis](http://redis.io/) cache。
 	
 * Identity library 與 identity helper 的使用。
 	* 方便管理權限問題。
@@ -76,7 +84,8 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 
 * <a name="back3"></a>打開終端機，並且在你的 DocumentRoot([註3](#comment3)) 下，輸入 ```git clone https://github.com/comdan66/oaci.git```。
 
-* 進入資料夾，並且下初始指令，終端機輸入 ```php init```，即完成。
+* 進入資料夾，並且下初始指令，終端機輸入 ```php init db_user db_password db_name```，即完成。  
+(參數 **db_user**、**db_password**、**db_name** 分別代表資料庫的 **使用者名稱**、**密碼**、**資料庫名稱**。)
 
 * 更多初始化指令可以 [點我](#初始化指令)。
 
@@ -107,7 +116,7 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 		_  |  file  |    type    |      name       |       action
 -----|--------|------------|-----------------|----------------
 php  | create | controller | controller_name | [site \| admin \| delay]
-php  | create | model      | model_name      | [(-p \| -pic) column_name1, column_name2...]
+php  | create | model      | model_name      | [[(-p | -pic) column_name1, column_name2...] | [(-f | -file) column_name1, column_name2...]]
 php  | create | migration  | table_name      | [(-a \| -add) \| (-e \| -edit) \| (-d \| -delete \| -del \| -drop)]
 php  | create | cell       | cell_name       | [method_name1, method_name2...]
 
@@ -148,10 +157,11 @@ php  | migration | [0 | 1 | 2 |...]
 ![OA's CodeIgniter Create Migration](resource/image/readme/create_migration.png)
 
 #### create model
-基本指令為 ```php create model model_name [(-p | -pic) column_name1, column_name2...]```。
+基本指令為 ```[[(-p | -pic) column_name1, column_name2...] | [(-f | -file) column_name1, column_name2...]]```。
 
 * model_name 為欲建立的 model 名稱。
-* [(-p | -pic) column_name1, column_name2...] 為該 model 使用 OrmImageUploader 的欄位名稱，**可同時為多個**，**預設值為 null，也就是沒有欄位使用**。
+* [(-p | -pic) column_name1, column_name2...] 為該 model 使用 **OrmImageUploader** 的欄位名稱，**可同時為多個**，**預設值為 null，也就是沒有欄位使用**。
+* [(-f | -file) column_name1, column_name2...] 為該 model 使用 **OrmFileUploader** 的欄位名稱，**可同時為多個**，**預設值為 null，也就是沒有欄位使用**。
 * 舉例，若要建立一個名為 test 的 model，則輸入 ```php create model test```，若 test 有兩個圖片欄位名稱分別為 avatar、cover，則是輸入 ```php create model test -p avatar cover```。
 
 [回常用指令 ↩](#常用指令)
@@ -288,6 +298,22 @@ php  | migration | [0 | 1 | 2 |...]
 
 ![OA's CodeIgniter Delete Demo](resource/image/readme/delete_demo.png)
 
+
+<br />
+<br />
+### Gulp
+* [gulp](http://gulpjs.com/) 是一套可以運用一些別人寫好的套件工具，跟 [grunt](http://gruntjs.com/) 相似，相關簡介可以參考[此篇](http://fireqqtw.logdown.com/posts/249086-good-helper-of-gulp-automation)。
+* 資料夾目錄在 ```command/gulp/```，使用前請記得移到該目錄並且下 ```npm install .``` 指令初始。
+* 預設 **package.json** 內已初步加入 **gulp**、**gulp-notify**、**gulp-livereload** 三個 module。
+* 使用 gulp 可搭配使用 **livereload** 以便於開發。
+* 目前預設監聽檔案類型是 css、js、html、php。
+
+<br />
+<br />
+### Compass
+* [compass](http://compass-style.org/) 是一套可以編輯 sass、scss 的編輯工具，可以加快切板速度並且編譯出較優異的 css。
+* 資料夾目錄在 ```command/compass/```，使用前請記得移到該目錄並且下 ```compass watch``` 即可開始。
+* 所有有關於 compass 的設定可在 ```command/compass/config.rb``` 內設定。
 
 <br />
 <br />
