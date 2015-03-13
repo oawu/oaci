@@ -30,7 +30,6 @@ class OrmUploader {
     if (!in_array ($this->configs['unique_column'], array_keys ($orm->attributes ())))
       return $this->error = array ('OrmUploader 錯誤！', '無法取得 unique 欄位資訊！', '請 ORM select，或者修改 unique 欄位名稱(' . $this->configs['unique_column'] . ')！', '修改 unique 欄位名稱至 config/system/orm_uploader.php 設定檔修改！');
   }
-
   // return string
   public function url ($key = '') {
     if ($this->error)
@@ -261,7 +260,6 @@ class OrmUploader {
       $class_name = get_called_class ();
     return $object = new $class_name ($orm, $column_name);
   }
-
   // return boolean
   public function cleanAllFiles ($isSave = true) {
     if ($this->error)
@@ -269,7 +267,6 @@ class OrmUploader {
 
     return $this->uploadColumn ('');
   }
-
   // return boolean
   public function put_url ($url) {
     if ($this->error)
@@ -284,51 +281,6 @@ class OrmUploader {
 
     return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : false;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-  /*
-
-  // return string
-  protected function _createNewFiles ($fileInfo, $isUseMoveUploadedFile = false) {
-    if ($this->error)
-      return $this->getDebug () ? call_user_func_array ('error', $this->error) : '';
-
-    switch ($this->getBucket ()) {
-      case 'local':
-
-
-
-
-        $result = true;
-
-        try {
-          $image = ImageUtility::create ($temp, null);
-          $name = $this->getFileName () . ($this->configs['auto_add_format'] ? '.' . $image->getFormat () : '');
-
-          foreach ($versions as $key => $version) {
-            $new = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($path, array ($key . $this->configs['separate_symbol'] . $name)));
-            $result &= $this->_utility ($image, $new, $key, $version);
-          }
-        } catch (Exception $e) {
-          return $this->getDebug () ? call_user_func_array ('error', $e->getMessages ()) : '';
-        }
-
-        return ($result &= @unlink ($temp)) ? $name : '';
-        break;
-    }
-    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
-  }
-  */
 }
 
 include_once 'OrmImageUploader.php';

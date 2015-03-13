@@ -12,30 +12,6 @@ class Main extends Site_controller {
   }
 
   public function index () {
-    echo "<form action='" . base_url ($this->get_class (), 'a') . "' method='post' enctype='multipart/form-data'>";
-      echo "<input type='file' name='file' />";
-      echo "<button type='submit'>submit</button>";
-    echo "</form>";
-  }
-  public function a () {
-    $file = $this->input_post ('file', true);
-    // $e = Event::create (array ('title' => '', 'cover' => 'x', 'info' => 'x'));
-    $e = Event::find ('one', array ('order' => 'id DESC', 'conditions' => array ('')));
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($e->cover->put_url ('http://oaci.ioa.tw/temp/demo1.jpg'));
-    exit ();;
-    exit ();
-  }
-  public function b () {
-    $e = Event::find ('one', array ('order' => 'id DESC', 'conditions' => array ('')));
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($e->cover->cleanAllFiles ());
-    exit ();
-  }
-  public function c () {
-    $e = Event::find ('one', array ('order' => 'id DESC', 'conditions' => array ('')));
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($e->cover->save_as ('1s00w', array ('adaptiveResizeQuadrant', 130, 130, 't')));
-    exit ();;
+    $this->load_view (null);
   }
 }

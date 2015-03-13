@@ -13,7 +13,6 @@ class OrmFileUploader extends OrmUploader {
 
     $this->configs = Cfg::system ('orm_uploader', 'file_uploader');
   }
-
   // return string
   public function url () {
     return parent::url ('');

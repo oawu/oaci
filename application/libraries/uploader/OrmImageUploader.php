@@ -98,7 +98,6 @@ class OrmImageUploader extends OrmUploader {
 
     return $result;
   }
-
   // return array
   public function save_as ($key, $version) {
     if ($this->error)
