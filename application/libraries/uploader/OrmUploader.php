@@ -34,7 +34,7 @@ class OrmUploader {
   // return string
   public function url ($key = '') {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : '';
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : '';
 
     switch ($this->getBucket ()) {
       case 'local':
@@ -42,12 +42,12 @@ class OrmUploader {
         break;
     }
 
-    return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
   }
   // return array
   public function path ($fileName = '') {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : array ();
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
     switch ($this->getBucket ()) {
       case 'local':
@@ -58,7 +58,7 @@ class OrmUploader {
         break;
     }
 
-    return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
   }
   // return sring
   protected function d4Url () {
@@ -88,13 +88,25 @@ class OrmUploader {
   protected function getRandomName () {
     return uniqid (rand () . '_');
   }
+  // return array
+  protected function getBaseDirectory () {
+    return $this->configs['base_directory'][$this->getBucket ()];
+  }
+  // return array
+  protected function getBucket () {
+    return $this->configs['bucket'];
+  }
+  // return array
+  protected function getDebug () {
+    return $this->configs['debug'];
+  }
   // return sring
   private function _moveOriFile ($fileInfo, $isUseMoveUploadedFile) {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : '';
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : '';
 
     if (!is_writable (FCPATH . implode (DIRECTORY_SEPARATOR, $path = $this->configs['temp_directory'])))
-      return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '暫存資料夾不可讀寫或不存在！', '請檢查暫存資料夾是否存在以及可讀寫！', '預設值 暫存資料夾 請檢查 config/system/orm_uploader.php 設定檔！') : false;
+      return $this->getDebug () ? error ('OrmUploader 錯誤！', '暫存資料夾不可讀寫或不存在！', '請檢查暫存資料夾是否存在以及可讀寫！', '預設值 暫存資料夾 請檢查 config/system/orm_uploader.php 設定檔！') : false;
 
     $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($path, array ($this->getRandomName ())));
 
@@ -104,7 +116,7 @@ class OrmUploader {
       @rename ($fileInfo['tmp_name'], $temp);
 
     if (!is_readable ($temp))
-      return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '移動檔案錯誤！路徑：' . $temp, '請程式設計者確認狀況！') : '';
+      return $this->getDebug () ? error ('OrmUploader 錯誤！', '移動檔案錯誤！路徑：' . $temp, '請程式設計者確認狀況！') : '';
 
     $oldmask = umask (0);
     @chmod ($temp, 0777);
@@ -115,12 +127,12 @@ class OrmUploader {
   // return array ()
   private function _verifySavePath () {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : array ();
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
     switch ($this->getBucket ()) {
       case 'local':
         if (!is_writable ($path = FCPATH . implode (DIRECTORY_SEPARATOR, $this->getBaseDirectory ())))
-          return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '資料夾不能儲存！路徑：' . $path, '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
+          return $this->getDebug () ? error ('OrmUploader 錯誤！', '資料夾不能儲存！路徑：' . $path, '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
 
         if (!file_exists (FCPATH . implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath ())))) {
           $oldmask = umask (0);
@@ -129,26 +141,18 @@ class OrmUploader {
         }
 
         if (!is_writable (FCPATH . implode (DIRECTORY_SEPARATOR, $path)))
-          return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '資料夾不能儲存！路徑：' . $path, '請程式設計者確認狀況！') : array ();
+          return $this->getDebug () ? error ('OrmUploader 錯誤！', '資料夾不能儲存！路徑：' . $path, '請程式設計者確認狀況！') : array ();
         else
           return $path;
         break;
     }
 
-    return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
-  }
-  // return array
-  protected function getBaseDirectory () {
-    return $this->configs['base_directory'][$this->getBucket ()];
-  }
-  // return array
-  protected function getBucket () {
-    return $this->configs['bucket'];
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
   }
   // return array
   public function getAllPaths () {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : array ();
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
     if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ((string)$this)))))
       return array ($path);
@@ -158,7 +162,7 @@ class OrmUploader {
   // return boolean
   protected function _cleanOldFile () {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : false;
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
     switch ($this->getBucket ()) {
       case 'local':
@@ -166,7 +170,7 @@ class OrmUploader {
           foreach ($paths as $path)
             if (file_exists ($path = FCPATH . implode (DIRECTORY_SEPARATOR, $path)) && is_file ($path))
               if (!@unlink ($path))
-                return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '清除檔案發生錯誤！', '請程式設計者確認狀況！') : false;
+                return $this->getDebug () ? error ('OrmUploader 錯誤！', '清除檔案發生錯誤！', '請程式設計者確認狀況！') : false;
         break;
     }
 
@@ -175,10 +179,10 @@ class OrmUploader {
   // return boolean
   protected function uploadColumn ($value, $isSave = true) {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : false;
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
     if (!$this->_cleanOldFile ())
-      return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '清除檔案發生錯誤！', '請程式設計者確認狀況！') : false;
+      return $this->getDebug () ? error ('OrmUploader 錯誤！', '清除檔案發生錯誤！', '請程式設計者確認狀況！') : false;
 
     if ($isSave) {
       $column_name = $this->column_name;
@@ -192,7 +196,7 @@ class OrmUploader {
   // return boolean
   protected function moveFileAndUploadColumn ($temp, $save_path, $ori_name) {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : array ();
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
     switch ($this->getBucket ()) {
       case 'local':
@@ -200,21 +204,21 @@ class OrmUploader {
         if ($this->uploadColumn ('') && @rename ($temp, $save_path = FCPATH . implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name))
           return $this->uploadColumn ($ori_name);
         else
-          return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '搬移預設位置時發生錯誤！', 'temp：' . $temp, 'save_path：' . $save_path, 'name：' . $ori_name, '請程式設計者確認狀況！') : false;
+          return $this->getDebug () ? error ('OrmUploader 錯誤！', '搬移預設位置時發生錯誤！', 'temp：' . $temp, 'save_path：' . $save_path, 'name：' . $ori_name, '請程式設計者確認狀況！') : false;
         break;
     }
 
-    return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
   }
   // return boolean
   public function put ($fileInfo) {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : false;
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
     if (is_array ($fileInfo)) {
       foreach (array ('name', 'type', 'tmp_name', 'error', 'size') as $key)
         if (!isset ($fileInfo[$key]))
-          return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '參數格式錯誤！', '請程式設計者確認狀況！') : false;
+          return $this->getDebug () ? error ('OrmUploader 錯誤！', '參數格式錯誤！', '請程式設計者確認狀況！') : false;
         else ;
       $name = $fileInfo['name'];
       $isUseMoveUploadedFile = true;
@@ -223,17 +227,17 @@ class OrmUploader {
       $fileInfo = array ('name' => 'file', 'type' => '', 'tmp_name' => $fileInfo, 'error' => '', 'size' => '1');
       $isUseMoveUploadedFile = false;
     } else {
-      return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '參數格式錯誤！', '請程式設計者確認狀況！') : false;
+      return $this->getDebug () ? error ('OrmUploader 錯誤！', '參數格式錯誤！', '請程式設計者確認狀況！') : false;
     }
 
     if (!($temp = $this->_moveOriFile ($fileInfo, $isUseMoveUploadedFile)))
-      return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '搬移至暫存資料夾時發生錯誤！', '請檢查暫存資料夾是否存在以及可讀寫！', '預設值 暫存資料夾 請檢查 config/system/orm_uploader.php 設定檔！') : false;
+      return $this->getDebug () ? error ('OrmUploader 錯誤！', '搬移至暫存資料夾時發生錯誤！', '請檢查暫存資料夾是否存在以及可讀寫！', '預設值 暫存資料夾 請檢查 config/system/orm_uploader.php 設定檔！') : false;
 
     if (!($save_path = $this->_verifySavePath ()))
-      return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '確認儲存路徑發生錯誤！', '請程式設計者確認狀況！') : false;
+      return $this->getDebug () ? error ('OrmUploader 錯誤！', '確認儲存路徑發生錯誤！', '請程式設計者確認狀況！') : false;
 
     if (!($result = $this->moveFileAndUploadColumn ($temp, $save_path, $name)))
-      return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '搬移預設位置時發生錯誤！', '請程式設計者確認狀況！') : false;
+      return $this->getDebug () ? error ('OrmUploader 錯誤！', '搬移預設位置時發生錯誤！', '請程式設計者確認狀況！') : false;
 
     return $result;
   }
@@ -261,7 +265,7 @@ class OrmUploader {
   // return boolean
   public function cleanAllFiles ($isSave = true) {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : false;
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
     return $this->uploadColumn ('');
   }
@@ -269,7 +273,7 @@ class OrmUploader {
   // return boolean
   public function put_url ($url) {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : false;
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
     $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['temp_directory'], array ($this->getRandomName ())));
 
@@ -278,7 +282,7 @@ class OrmUploader {
     else
       return false;
 
-    return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : false;
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : false;
   }
 
 
@@ -297,7 +301,7 @@ class OrmUploader {
   // return string
   protected function _createNewFiles ($fileInfo, $isUseMoveUploadedFile = false) {
     if ($this->error)
-      return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : '';
+      return $this->getDebug () ? call_user_func_array ('error', $this->error) : '';
 
     switch ($this->getBucket ()) {
       case 'local':
@@ -316,13 +320,13 @@ class OrmUploader {
             $result &= $this->_utility ($image, $new, $key, $version);
           }
         } catch (Exception $e) {
-          return $this->configs['debug'] ? call_user_func_array ('error', $e->getMessages ()) : '';
+          return $this->getDebug () ? call_user_func_array ('error', $e->getMessages ()) : '';
         }
 
         return ($result &= @unlink ($temp)) ? $name : '';
         break;
     }
-    return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
   }
   */
 }

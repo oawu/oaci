@@ -19,7 +19,6 @@ $orm_uploader['uploader']['temp_directory'] = array ('temp');
 // $orm_uploader['uploader']['temp_file_name'] = uniqid (rand () . '_');
 
 
-$orm_uploader['image_uploader']['debug'] = false;
 $orm_uploader['image_uploader']['separate_symbol'] = '_';
 $orm_uploader['image_uploader']['auto_add_format'] = true;
 $orm_uploader['image_uploader']['temp_directory'] = array ('temp');

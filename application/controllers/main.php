@@ -32,4 +32,10 @@ class Main extends Site_controller {
     var_dump ($e->cover->cleanAllFiles ());
     exit ();
   }
+  public function c () {
+    $e = Event::find ('one', array ('order' => 'id DESC', 'conditions' => array ('')));
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    var_dump ($e->cover->save_as ('1s00w', array ('adaptiveResizeQuadrant', 130, 130, 't')));
+    exit ();;
+  }
 }
