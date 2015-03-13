@@ -85,9 +85,10 @@ class OrmImageUploader extends OrmUploader {
     if (count ($news) != count ($versions))
       return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '不明原因錯誤！', '請程式設計者確認狀況！') : false;
 
-
     switch ($this->getBucket ()) {
       case 'local':
+        @self::uploadColumn ('');
+
         foreach ($news as $new)
           if (!@rename ($new['path'], FCPATH . implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $new['name']))
             return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '不明原因錯誤！', '請程式設計者確認狀況！') : false;
@@ -98,35 +99,11 @@ class OrmImageUploader extends OrmUploader {
     return $result;
   }
 
-  // protected function _createNewFiles ($fileInfo, $isUseMoveUploadedFile = false) {
-
-  // }
 
 
 
 
 
-
-
-  // // return sring
-  // public function getFileName () {
-  //   return uniqid (rand () . '_');
-  // }
-
-  // // return array
-  // // return string
-  // public function url ($key = '') {
-  //   if ($this->error)
-  //     return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : '';
-
-  //   switch ($this->getBucket ()) {
-  //     case 'local':
-  //       return ($path = $this->path ($key)) ? base_url ($path) : $this->d4_url ();
-  //       break;
-  //   }
-
-  //   return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
-  // }
 
 
   // // return boolean
@@ -160,34 +137,7 @@ class OrmImageUploader extends OrmUploader {
   // }
 
 
-  // // return boolean
-  // public function cleanAllFiles ($isAutoSave = true) {
-  //   if ($this->error)
-  //     return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : false;
 
-  //   switch ($this->getBucket ()) {
-  //     case 'local':
-  //       return $this->_cleanOldFiles ('');
-  //       break;
-  //   }
-
-  //   return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : false;
-  // }
-
-  // // return boolean
-  // public function put_url ($url) {
-  //   if ($this->error)
-  //     return $this->configs['debug'] ? call_user_func_array ('error', $this->error) : false;
-
-  //   $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['temp_directory'], array ($this->configs['temp_file_name'])));
-
-  //   if (($temp = download_web_file ($url, $temp)) && $this->put ($temp, false))
-  //     return file_exists ($temp) ? @unlink ($temp) : true;
-  //   else
-  //     return false;
-
-  //   return $this->configs['debug'] ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : false;
-  // }
 
 
   // // return array

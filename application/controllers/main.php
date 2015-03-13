@@ -21,13 +21,15 @@ class Main extends Site_controller {
     $file = $this->input_post ('file', true);
     // $e = Event::create (array ('title' => '', 'cover' => 'x', 'info' => 'x'));
     $e = Event::find ('one', array ('order' => 'id DESC', 'conditions' => array ('')));
-    $e->cover->put ($file);
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    var_dump ($e->cover->put_url ('http://oaci.ioa.tw/temp/demo1.jpg'));
+    exit ();;
     exit ();
   }
   public function b () {
     $e = Event::find ('one', array ('order' => 'id DESC', 'conditions' => array ('')));
     echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($e->cover->getAllPaths ());
+    var_dump ($e->cover->cleanAllFiles ());
     exit ();
   }
 }

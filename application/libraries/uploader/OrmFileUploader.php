@@ -19,7 +19,7 @@ class OrmFileUploader extends OrmUploader {
     return parent::url ('');
   }
   // return array
-  public function path ($key = '') {
+  public function path () {
     return parent::path ((string)$this);
   }
 
