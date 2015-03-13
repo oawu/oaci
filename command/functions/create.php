@@ -70,7 +70,7 @@ if (!function_exists ('create_model')) {
 
     $image_uploader_class_suffix = 'ImageUploader';
     $file_uploader_class_suffix  = 'FileUploader';
-    $uploaders_path = FCPATH . 'application/third_party/orm_image_uploaders/';
+    $uploaders_path = FCPATH . 'application/third_party/orm_uploaders/';
 
     $models_path = FCPATH . 'application/models/';
     $models = array_map (function ($t) { return basename ($t, EXT); }, directory_map ($models_path, 1));

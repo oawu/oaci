@@ -34,7 +34,7 @@ if (!function_exists ('delete_model')) {
     $image_uploader_class_suffix = 'ImageUploader';
     $file_uploader_class_suffix  = 'FileUploader';
 
-    $uploaders_path = FCPATH . 'application/third_party/orm_image_uploaders/';
+    $uploaders_path = FCPATH . 'application/third_party/orm_uploaders/';
 
 
     $model_path = FCPATH . 'application/models/' . ucfirst (camelize ($name)) . EXT;

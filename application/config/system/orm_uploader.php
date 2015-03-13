@@ -10,7 +10,7 @@ $orm_uploader['uploader']['bucket'] = 'local'; // local、s3
 $orm_uploader['uploader']['base_directory']['local'] = array ('upload');
 
 $orm_uploader['uploader']['instance']['class_suffix'] = 'Uploader';
-$orm_uploader['uploader']['instance']['directory'] = array ('application', 'third_party', 'orm_image_uploaders');
+$orm_uploader['uploader']['instance']['directory'] = array ('application', 'third_party', 'orm_uploaders');
 
 $orm_uploader['uploader']['unique_column'] = 'id';
 $orm_uploader['uploader']['d4_url'] = '';
