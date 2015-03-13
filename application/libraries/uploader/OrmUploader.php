@@ -81,6 +81,10 @@ class OrmUploader {
   }
   // return sring
   public function __toString () {
+    return  $this->getValue ();
+  }
+  // return sring
+  public function getValue () {
     return  $this->error ? call_user_func_array ('error', $this->error) : (string)$this->column_value;
   }
   // return sring
@@ -153,7 +157,7 @@ class OrmUploader {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
-    if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ((string)$this)))))
+    if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($this->getValue ())))))
       return array ($path);
     else
       return array ();
@@ -176,20 +180,25 @@ class OrmUploader {
     return true;
   }
   // return boolean
-  protected function uploadColumn ($value, $isSave = true) {
+  protected function uploadColumn ($value) {
+    $column_name = $this->column_name;
+    $this->orm->$column_name = $value;
+    $this->orm->save ();
+    $this->column_value = $value;
+    $this->orm->$column_name = $this;
+    return true;
+  }
+  // return boolean
+  protected function uploadColumnAndUpload ($value, $isSave = true) {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
     if (!$this->_cleanOldFile ())
       return $this->getDebug () ? error ('OrmUploader 錯誤！', '清除檔案發生錯誤！', '請程式設計者確認狀況！') : false;
 
-    if ($isSave) {
-      $column_name = $this->column_name;
-      $this->orm->$column_name = $value;
-      $this->orm->save ();
-      $this->column_value = $value;
-      $this->orm->$column_name = $this;
-    }
+    if ($isSave && $this->uploadColumn ($value))
+      return true;
+
     return true;
   }
   // return boolean
@@ -200,8 +209,8 @@ class OrmUploader {
     switch ($this->getBucket ()) {
       case 'local':
 
-        if ($this->uploadColumn ('') && @rename ($temp, $save_path = FCPATH . implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name))
-          return $this->uploadColumn ($ori_name);
+        if ($this->uploadColumnAndUpload ('') && @rename ($temp, $save_path = FCPATH . implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name))
+          return $this->uploadColumnAndUpload ($ori_name);
         else
           return $this->getDebug () ? error ('OrmUploader 錯誤！', '搬移預設位置時發生錯誤！', 'temp：' . $temp, 'save_path：' . $save_path, 'name：' . $ori_name, '請程式設計者確認狀況！') : false;
         break;
@@ -228,6 +237,11 @@ class OrmUploader {
     } else {
       return $this->getDebug () ? error ('OrmUploader 錯誤！', '參數格式錯誤！', '請程式設計者確認狀況！') : false;
     }
+
+    $format = pathinfo ($name = preg_replace ("/[^a-zA-Z0-9\\._-]/", "", $name), PATHINFO_EXTENSION);
+    if (!($name = pathinfo ($name, PATHINFO_FILENAME)))
+      $name = $this->getRandomName ();
+    $name .= $format ? '.' . $format : '';
 
     if (!($temp = $this->_moveOriFile ($fileInfo, $isUseMoveUploadedFile)))
       return $this->getDebug () ? error ('OrmUploader 錯誤！', '搬移至暫存資料夾時發生錯誤！', '請檢查暫存資料夾是否存在以及可讀寫！', '預設值 暫存資料夾 請檢查 config/system/orm_uploader.php 設定檔！') : false;
@@ -265,14 +279,15 @@ class OrmUploader {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
-    return $this->uploadColumn ('');
+    return $this->uploadColumnAndUpload ('');
   }
   // return boolean
   public function put_url ($url) {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
-    $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['temp_directory'], array ($this->getRandomName ())));
+    $format = pathinfo ($url, PATHINFO_EXTENSION);
+    $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['temp_directory'], array ($this->getRandomName () . ($format ? '.' . $format : ''))));
 
     if (($temp = download_web_file ($url, $temp)) && $this->put ($temp, false))
       return file_exists ($temp) ? @unlink ($temp) : true;
