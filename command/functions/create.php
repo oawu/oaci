@@ -68,7 +68,7 @@ if (!function_exists ('create_model')) {
     $results = array ();
     $name = singularize ($name);
 
-    $uploader_class_suffix = 'Uploader';
+    $uploader_class_suffix = 'ImageUploader';
 
     $models_path = FCPATH . 'application/models/';
     $models = array_map (function ($t) { return basename ($t, EXT); }, directory_map ($models_path, 1));
