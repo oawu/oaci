@@ -310,3 +310,27 @@ if (!function_exists ('camelize')) {
     return $camelized;
   }
 }
+if (!function_exists ('params')) {
+  function params ($params, $keys) {
+    if (!$params)
+      return array ();
+
+    if (!$keys)
+      return $params;
+
+    $result = array ();
+    $key = null;
+
+    foreach ($params as $param)
+      if (in_array ($param, $keys))
+        if (!isset ($result[$key = $param]))
+          $result[$key] = array ();
+        else ;
+      else
+        if (isset ($result[$key]))
+          array_push ($result[$key], $param);
+        else ;
+
+    return $result;
+  }
+}

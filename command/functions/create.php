@@ -64,11 +64,13 @@ if (!function_exists ('create_controller')) {
 }
 
 if (!function_exists ('create_model')) {
-  function create_model ($temp_path, $name, $columns) {
+  function create_model ($temp_path, $name, $images, $files) {
     $results = array ();
     $name = singularize ($name);
 
-    $uploader_class_suffix = 'ImageUploader';
+    $image_uploader_class_suffix = 'ImageUploader';
+    $file_uploader_class_suffix  = 'FileUploader';
+    $uploaders_path = FCPATH . 'application/third_party/orm_image_uploaders/';
 
     $models_path = FCPATH . 'application/models/';
     $models = array_map (function ($t) { return basename ($t, EXT); }, directory_map ($models_path, 1));
@@ -79,22 +81,30 @@ if (!function_exists ('create_model')) {
     if (!is_writable ($models_path))
       console_error ("無法有寫入的權限!");
 
-    $uploaders_path = FCPATH . 'application/third_party/orm_image_uploaders/';
     $uploaders = array_map (function ($t) { return basename ($t, EXT); }, directory_map ($uploaders_path, 1));
 
     if (!is_writable ($uploaders_path))
       console_error ("Uploader 無法有寫入的權限!");
 
-    $columns = array_filter (array_map (function ($column) use ($name, $uploaders_path, $uploaders, $uploader_class_suffix, $temp_path, &$results) {
-      $column = strtolower ($column);
-      $uploader = ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix;
+    $images = array_filter (array_map (function ($image) use ($name, $uploaders_path, $uploaders, $image_uploader_class_suffix, $temp_path, &$results) {
+      $image = strtolower ($image);
+      $uploader = ucfirst (camelize ($name)) . ucfirst ($image) . $image_uploader_class_suffix;
 
-      if (!in_array ($uploader, $uploaders) && write_file ($uploader_path = $uploaders_path . $uploader . EXT, load_view ($temp_path . 'uploader.php', array ('name' => $uploader))) && array_push ($results, $uploader_path))
-        return $column;
+      if (!in_array ($uploader, $uploaders) && write_file ($uploader_path = $uploaders_path . $uploader . EXT, load_view ($temp_path . 'image_uploader.php', array ('name' => $uploader))) && array_push ($results, $uploader_path))
+        return $image;
       return null;
-    }, $columns));
+    }, $images));
 
-    $date = load_view ($temp_path . 'model.php', array ('name' => $name, 'columns' => $columns, 'uploader_class_suffix' => $uploader_class_suffix));
+    $files = array_filter (array_map (function ($file) use ($name, $uploaders_path, $uploaders, $file_uploader_class_suffix, $temp_path, &$results) {
+      $file = strtolower ($file);
+      $uploader = ucfirst (camelize ($name)) . ucfirst ($file) . $file_uploader_class_suffix;
+
+      if (!in_array ($uploader, $uploaders) && write_file ($uploader_path = $uploaders_path . $uploader . EXT, load_view ($temp_path . 'file_uploader.php', array ('name' => $uploader))) && array_push ($results, $uploader_path))
+        return $file;
+      return null;
+    }, $files));
+
+    $date = load_view ($temp_path . 'model.php', array ('name' => $name, 'images' => $images, 'files' => $files, 'image_uploader_class_suffix' => $image_uploader_class_suffix, 'file_uploader_class_suffix' => $file_uploader_class_suffix));
     if (!write_file ($model_path = $models_path . ucfirst (camelize ($name)) . EXT, $date)) {
       array_map (function ($column) use ($name, $uploaders_path, $uploader_class_suffix) { delete_file ($uploaders_path . ucfirst (camelize ($name)) . ucfirst ($column) . $uploader_class_suffix . EXT); }, $columns);
       console_error ("新增 model 失敗!");
@@ -106,7 +116,7 @@ if (!function_exists ('create_model')) {
 }
 
 if (!function_exists ('create_migration')) {
-  function create_migration ($temp_path, $name, $action) {
+  function create_migration ($temp_path, $name) {
     $results = array ();
     $name = strtolower ($name);
 

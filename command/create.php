@@ -14,7 +14,7 @@
   //       file     type         name              action
   // =============================================================
   // php   create   controller   controller_name   [site | admin | delay]
-  // php   create   model        model_name        [(-p | -pic) column_name1, column_name2...]
+  // php   create   model        model_name        [[(-p | -pic) column_name1, column_name2...] | [(-f | -file) column_name1, column_name2...]]
   // php   create   migration    table_name        [(-a | -add) | (-e | -edit) | (-d | -delete | -del | -drop)]
   // php   create   cell         cell_name         [method_name1, method_name2...]
   // php   create   demo
@@ -22,7 +22,7 @@
   $file   = array_shift ($argv);
   $type   = array_shift ($argv);
   $name   = array_shift ($argv);
-  $action = array_shift ($argv);
+  $action = !in_array (strtolower ($type), array('model')) ? array_shift ($argv) : $argv;
 
   switch (strtolower ($type)) {
     case 'controller':
@@ -30,11 +30,15 @@
       break;
 
     case 'model':
-      $results = create_model ($temp_path, $name, (($action == '-p') || ($action == '-pic')) && $argv ? $argv : array ());
+      $params = params ($action, array ('-p', '-f', '-pic', '-file'));
+      $images = array_merge ($images = isset ($params['-p']) ? $params['-p'] : array (), isset ($params['-pic']) ? $params['-pic'] : array ());
+      $files  = array_merge ($files = isset ($params['-f']) ? $params['-f'] : array (), isset ($params['-file']) ? $params['-file'] : array ());
+
+      $results = create_model ($temp_path, $name, $images, $files);
       break;
 
     case 'migration':
-      $results = create_migration ($temp_path, $name, $action);
+      $results = create_migration ($temp_path, $name);
       break;
 
     case 'cell':
