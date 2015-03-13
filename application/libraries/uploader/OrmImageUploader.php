@@ -87,12 +87,12 @@ class OrmImageUploader extends OrmUploader {
 
     switch ($this->getBucket ()) {
       case 'local':
-        @self::uploadColumn ('');
+        @self::uploadColumnAndUpload ('');
 
         foreach ($news as $new)
           if (!@rename ($new['path'], FCPATH . implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $new['name']))
             return $this->getDebug () ? error ('OrmUploader 錯誤！', '不明原因錯誤！', '請程式設計者確認狀況！') : false;
-        return @unlink ($temp) && self::uploadColumn ($name);
+        return @unlink ($temp) && self::uploadColumnAndUpload ($name);
         break;
     }
 
