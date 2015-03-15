@@ -116,7 +116,7 @@ if (!function_exists ('create_model')) {
 }
 
 if (!function_exists ('create_migration')) {
-  function create_migration ($temp_path, $name) {
+  function create_migration ($temp_path, $name, $action) {
     $results = array ();
     $name = strtolower ($name);
 

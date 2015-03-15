@@ -38,7 +38,7 @@
       break;
 
     case 'migration':
-      $results = create_migration ($temp_path, $name);
+      $results = create_migration ($temp_path, $name, $action);
       break;
 
     case 'cell':
