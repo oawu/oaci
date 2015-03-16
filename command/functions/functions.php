@@ -55,7 +55,7 @@ if (!function_exists ('directory_delete')) {
         }
     @closedir ($current_dir);
 
-    return $is_root ? @rmdir ($dir) : false;
+    return $is_root ? @rmdir ($dir) : true;
   }
 }
 if (!function_exists ('read_file')) {
