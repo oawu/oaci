@@ -113,7 +113,7 @@ class Cell {
         return !file_exists ($keys);
       } else if (is_dir ($keys)) {
         $this->CI->load->helper ('directory');
-        return directory_delete ($keys);
+        return directory_delete ($keys, $keys != FCPATH . implode (DIRECTORY_SEPARATOR, $this->configs['folders']['cache']));
       } else {
         return false;
       }

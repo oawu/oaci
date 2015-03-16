@@ -50,12 +50,12 @@ if (!function_exists ('directory_delete')) {
           if (substr ($filename, 0, 1) != '.')
             directory_delete ($dir . DIRECTORY_SEPARATOR . $filename, true, $path);
         } else {
-          if (delete_file ($p = $dir . DIRECTORY_SEPARATOR . $filename))
+          if (delete_file ($p = $dir . DIRECTORY_SEPARATOR . $filename) && ($path !== null))
             array_push ($path, $p);
         }
     @closedir ($current_dir);
 
-    return $is_root ? @rmdir ($dir) : false;
+    return $is_root ? @rmdir ($dir) : true;
   }
 }
 if (!function_exists ('read_file')) {

@@ -85,7 +85,7 @@ if ( ! function_exists('directory_map'))
  * @param    string    path to source dir
  * @param    string    path to destination dir
  * @return    array
- */    
+ */
 if(!function_exists('directory_copy'))
 {
     function directory_copy($srcdir, $dstdir, $mode = 0777)
@@ -99,7 +99,7 @@ if(!function_exists('directory_copy'))
           mkdir($dstdir, $mode);
           @chmod ($dstdir, $mode);
         }
-        
+
         //Mapping the directory
         $dir_map=directory_map($srcdir);
 
@@ -146,7 +146,7 @@ if(!function_exists('directory_delete'))
         }
         @closedir($current_dir);
 
-        return $is_root ? @rmdir($dir) : false;
+        return $is_root ? @rmdir($dir) : true;
     }
 }
 
