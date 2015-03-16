@@ -21,6 +21,8 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 	* [delete controller](#delete-controller)
 	* [delete model](#delete-model)
 	* [delete cell](#delete-cell)
+	* [migration](#migration)
+	* [clean cache](#clean-cache)
 	
 * [初始化指令](#初始化指令)
 
@@ -107,8 +109,10 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 	* [model](#delete-model)
 	* [cell](#delete-cell)
 
-* migration
-	* [migration](#migration)
+* [migration](#migration)
+
+* clean
+	* [cache](#clean-cache)
 
 * 語法表格
 	* 新增 - create
@@ -130,9 +134,16 @@ php  | delete | cell       | cell_name       |
 
 	* migration
 
-		_  |   file    |  type
+		_  |   file    |  version
 -----|-----------|--------------------
 php  | migration | [0 | 1 | 2 |...]
+
+
+	* 清除 - clean
+
+	  _  |  file  |    type   |      name       
+-----|--------|-----------|-----------------------------------
+php  | clean  |   cache   | [cell | file | [assets | static]]
 
 #### create controller
 基本指令為 ```php create controller controller_name [site | admin | delay]```。
@@ -221,7 +232,18 @@ php  | migration | [0 | 1 | 2 |...]
 
 [回常用指令 ↩](#常用指令)
 
-![OA's CodeIgniter Delete Cell](resource/image/readme/migration.png)
+![OA's CodeIgniter Migration](resource/image/readme/migration.png)
+
+
+#### clean cache
+基本指令為 ```php clean cache [cell | file | [assets | static]]```。
+
+* 預設會執行清除所有 cache，指令只要```php clean cache```。
+* [cell | file | [assets | static]] 參數則代表分別要細清除的項目。
+
+[回常用指令 ↩](#常用指令)
+
+![OA's CodeIgniter Clean Cache](resource/image/readme/clean_cache.png)
 
 <br />
 <br />
