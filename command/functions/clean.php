@@ -50,7 +50,6 @@ if (!function_exists ('clean_cache')) {
     $results = array ();
     $CI = new CI_Controller ();
 
-
     switch (strtolower ($name)) {
       case 'cell':
         array_push ($results, clean_cache_cell ($CI));

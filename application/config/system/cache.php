@@ -5,6 +5,8 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-$cache['file'] = array ('application', 'cache', 'file');
-$cache['output'] = array ('application', 'cache', 'output');
-$cache['config'] = array ('application', 'cache', 'config');
+$cache = array (
+  'file'   => array ('application', 'cache', 'file'),
+  'output' => array ('application', 'cache', 'output'),
+  'config' => array ('application', 'cache', 'config')
+);

@@ -23,4 +23,3 @@ $cell['file_is_md5'] = true;
 
 $cell['class_suffix']  = '_cell';
 $cell['method_prefix'] = '_cache_';
-//*** command 也要改
