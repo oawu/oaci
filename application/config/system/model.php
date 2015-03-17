@@ -8,6 +8,7 @@
 $model['recycle']['limit'] = 100;
 $model['recycle']['origin_id'] = 'origin_id';
 
+$model['cache']['is_enabled'] = true;
 $model['cache']['driver'] = 'file'; // 'file', 'redis'
 $model['cache']['file_path'] = Cfg::_system ('cache', 'model');
 $model['cache']['redis_main_key'] = array ('model');

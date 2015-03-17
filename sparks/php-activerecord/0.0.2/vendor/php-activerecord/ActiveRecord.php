@@ -66,6 +66,8 @@ function activerecord_autoload($class_name)
       }
     }
   }
-  $cfg_ar = ActiveRecord\Config::instance ();
-  $cfg_ar->set_cache ("OrmCache://localhost");
+  if (ENVIRONMENT === 'production') {
+    $cfg_ar = ActiveRecord\Config::instance ();
+    $cfg_ar->set_cache ("OrmCache://localhost");
+  }
 }

@@ -51,9 +51,12 @@ class OrmCache {
   }
 
   public function write ($key, $value, $expire = null) {
+    if (!$this->configs['is_enabled'])
+      return;
+
     if ($this->configs['driver'] == 'redis')
-      $this->redis->hmset (implode (':', $this->configs['redis_main_key']) . ':' . $key, 'value', serialize ($value), 'time', time () + ($expire ? $expire : $this->configs['d4_cache_time']));
+      return $this->redis->hmset (implode (':', $this->configs['redis_main_key']) . ':' . $key, 'value', serialize ($value), 'time', time () + ($expire ? $expire : $this->configs['d4_cache_time']));
     else
-      $this->CI->cache->file->save ($key, $value, $expire ? $expire : $this->configs['d4_cache_time'], FCPATH . implode (DIRECTORY_SEPARATOR, $this->configs['file_path']) . DIRECTORY_SEPARATOR);
+      return $this->CI->cache->file->save ($key, $value, $expire ? $expire : $this->configs['d4_cache_time'], FCPATH . implode (DIRECTORY_SEPARATOR, $this->configs['file_path']) . DIRECTORY_SEPARATOR);
   }
 }
