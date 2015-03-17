@@ -17,8 +17,9 @@ class CI_Redis {
     $this->CI =& get_instance ();
     $this->CI->load->library ("cfg");
 
-    if (!(isset ($configs['active_server']) && ($server = Cfg::system ('redis', 'servers')[$configs['active_server']])))
-      $server = Cfg::system ('redis', 'servers')[Cfg::system ('redis', 'active_server')];
+    $system = isset ($configs['no_cfg_cache']) && $configs['no_cfg_cache'] ? '_system' : 'system';
+      if (!(isset ($configs['active_server']) && ($server = Cfg::$system ('redis', 'servers')[$configs['active_server']])))
+        $server = Cfg::$system ('redis', 'servers')[Cfg::$system ('redis', 'active_server')];
 
     $this->connection = @fsockopen ($server['host'], $server['port'], $errno, $errstr, 3);
     if (!$this->connection)

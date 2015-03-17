@@ -12,11 +12,11 @@ $cell['folders'] = array (
   );
 
 $cell['is_enabled'] = true;
-$cell['d4_cache_time'] = 60;
+$cell['d4_cache_time'] = 60; // sec
 
 $cell['driver'] = 'file'; // 'file', 'redis'
 
-$cell['redis_main_key'] = 'cell';
+$cell['redis_main_key'] = array ('cell');
 
 $cell['file_prefix'] = '_cell';
 $cell['file_is_md5'] = true;
