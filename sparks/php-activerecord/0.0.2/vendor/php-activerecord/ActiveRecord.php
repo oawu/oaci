@@ -66,4 +66,6 @@ function activerecord_autoload($class_name)
       }
     }
   }
+  // $cfg_ar = ActiveRecord\Config::instance();
+  // $cfg_ar->set_cache("file://localhost",array("expire" => 300));
 }
