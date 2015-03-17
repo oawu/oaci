@@ -21,7 +21,7 @@
         -o-font-smoothing: $val;
 }
 
-@mixin clearfix () {
+@mixin fix-float () {
   *zoom: 1;
 
   &:after {
