@@ -136,14 +136,14 @@ php  | delete | cell       | cell_name       |
 
 		_  |   file    |  version
 -----|-----------|--------------------
-php  | migration | [0 | 1 | 2 |...]
+php  | migration | [0 \| 1 \| 2 \|...]
 
 
 	* 清除 - clean
 
 	  _  |  file  |    type   |      name       
 -----|--------|-----------|-----------------------------------
-php  | clean  |   cache   | [cell | file | [assets | static]]
+php  | clean  |   cache   | [cell \| file \| [assets \| static]]
 
 #### create controller
 基本指令為 ```php create controller controller_name [site | admin | delay]```。
