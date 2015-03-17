@@ -42,7 +42,7 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 基本改寫項目如下:
 
 * 匯入並且使用 [PHP ActiveRecord](http://www.phpactiverecord.org/) ORM。
-	* 可以與 OrmImageUploader 搭配結合。
+	* 可以與 OrmUploader 搭配結合。
 
 * 匯入使用 [Redis](http://redis.io/) cache library。
 
@@ -143,7 +143,7 @@ php  | migration | [0 \| 1 \| 2 \|...]
 
 	  _  |  file  |    type   |      name       
 -----|--------|-----------|-----------------------------------
-php  | clean  |   cache   | [cell \| file \| [assets \| static]]
+php  | clean  |   cache   | [cell \| file \| model \| [assets \| static]]
 
 #### create controller
 基本指令為 ```php create controller controller_name [site | admin | delay]```。
@@ -236,10 +236,10 @@ php  | clean  |   cache   | [cell \| file \| [assets \| static]]
 
 
 #### clean cache
-基本指令為 ```php clean cache [cell | file | [assets | static]]```。
+基本指令為 ```php clean cache [cell | file | model | [assets | static]]```。
 
 * 預設會執行清除所有 cache，指令只要```php clean cache```。
-* [cell | file | [assets | static]] 參數則代表分別要細清除的項目。
+* [cell | file | model | [assets | static]] 參數則代表分別要細清除的項目。
 
 [回常用指令 ↩](#常用指令)
 
