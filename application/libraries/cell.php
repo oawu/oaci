@@ -40,7 +40,7 @@ class Cell {
       $name = array_filter (is_array ($option['key']) ? array_merge (array ($class, $method), $option['key']) : array ($class, $method, $option['key']));
 
       if ($this->configs['driver'] == 'redis') {
-        if ((array_unshift ($name, $this->configs['redis_main_key'])) && ($value = $this->CI->redis->hGetArray ($key = implode (':', $name))) && time () < $value['time']) {
+        if ((array_unshift ($name, implode (':', $this->configs['redis_main_key']))) && ($value = $this->CI->redis->hGetArray ($key = implode (':', $name))) && (time () < $value['time'])) {
           $js_list = unserialize ($value['js_list']);
           $css_list = unserialize ($value['css_list']);
           $view = unserialize ($value['view']);
@@ -66,8 +66,7 @@ class Cell {
           $value = array ('view' => serialize ($view), 'js_list' => serialize ($js_list), 'css_list' => serialize ($css_list));
 
           $this->CI->cache->file->save ($name, $value, $option['time'], dirname ($key) . DIRECTORY_SEPARATOR);
-        }
-        else {
+        } else {
           $js_list = unserialize ($value['js_list']);
           $css_list = unserialize ($value['css_list']);
           $view = unserialize ($value['view']);

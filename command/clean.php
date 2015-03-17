@@ -10,7 +10,7 @@
 
   //       file     type         name                               action
   // =======================================================================
-  // php   clean    cache        [cell | file | [assets | static]]
+  // php   clean    cache        [cell | file | model | [assets | static]]
 
   $file = array_shift ($argv);
   $type = array_shift ($argv);
@@ -22,7 +22,7 @@
       break;
 
     default:
-      return console_error ('指令錯誤!', '只接受 cache 四種指令。');
+      return console_error ('指令錯誤!', '只接受 cache 指令。');
   }
 
 

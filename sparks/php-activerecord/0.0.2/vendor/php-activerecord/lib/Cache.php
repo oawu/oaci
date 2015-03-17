@@ -56,13 +56,13 @@ class Cache
 	public static function flush()
 	{
 		if (static::$adapter)
-			static::$adapter->flush();
+			return static::$adapter->flush();
 	}
 
 	public static function get($key, $closure)
 	{
 		$key = static::get_namespace() . $key;
-		
+
 		if (!static::$adapter)
 			return $closure();
 
