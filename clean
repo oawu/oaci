@@ -7,6 +7,6 @@
 
   //       file     type         name                               action
   // =======================================================================
-  // php   clean    cache        [cell | file | [assets | static]]
+  // php   clean    cache        [cell | file | model | [assets | static]]
 
   include 'command/clean.php';
