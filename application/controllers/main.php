@@ -12,6 +12,7 @@ class Main extends Site_controller {
   }
 
   public function index () {
-    $this->load_view (null);
+    $this->add_js (base_url ('resource', 'javascript', 'jQueryMousewheel_v3.1.12', 'jquery.mousewheel.min.js'))
+         ->load_view (null);
   }
 }
