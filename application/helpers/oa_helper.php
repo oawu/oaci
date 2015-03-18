@@ -5,8 +5,8 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-if (!function_exists ('array_column')) {
-  function array_column ($objects, $key) {
+if (!function_exists ('column_array')) {
+  function column_array ($objects, $key) {
     return array_map (function ($object) use ($key) {
       return !is_array ($object) ? is_object ($object) ? $object->$key : $object : $object[$key];
     }, $objects);

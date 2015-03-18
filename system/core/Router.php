@@ -440,7 +440,7 @@ class CI_Router {
 		if (isset ($_REQUEST['_method']) && in_array (strtolower ($_REQUEST['_method']), Route::$methods))
 			$_SERVER['REQUEST_METHOD'] = $_REQUEST['_method'];
 
-		$request_method = strtolower ($_SERVER['REQUEST_METHOD']);
+		$request_method = isset ($_SERVER['REQUEST_METHOD']) ? strtolower ($_SERVER['REQUEST_METHOD']) : 'get';
 		$uri = implode('/', $this->uri->segments);
 
 		// Is there a literal match?  If so we're done
