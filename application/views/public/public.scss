@@ -8,12 +8,11 @@
 @include font-face("Monaco", font-files("/resource/font/monaco/monaco.ttf", "/resource/font/monaco/monaco.otf"));
 
 * {
-  vertical-align: top;
-  @include selection(rgba(150, 180, 230, 1.0000), rgba(237, 239, 244, 1.0000));
-  @include font-smoothing(antialiased);
-
   &, &:after, &:before {
+    vertical-align: top;
     @include box-sizing(border-box);
+    @include font-smoothing(antialiased);
+    @include selection(rgba(150, 180, 230, 1.0000), rgba(237, 239, 244, 1.0000));
   }
 }
 
