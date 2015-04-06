@@ -35,7 +35,7 @@
       {<{<{ if ($tags = Tag::all ()) {
               foreach ($tags as $tag) { ?>
                 <div class='checkbox'>
-                  <input type='checkbox' name='tag_ids[]' id='tag_{<{<{ echo $tag->id;?>' value='{<{<{ echo $tag->id;?>'{<{<{ echo $event->tag_event_maps && in_array($tag->id, field_array ($event->tag_event_maps, 'tag_id')) ? ' checked' : '';?> />
+                  <input type='checkbox' name='tag_ids[]' id='tag_{<{<{ echo $tag->id;?>' value='{<{<{ echo $tag->id;?>'{<{<{ echo $event->tag_event_maps && in_array($tag->id, column_array ($event->tag_event_maps, 'tag_id')) ? ' checked' : '';?> />
                   <span class='ckb-check'></span>
                   <label for='tag_{<{<{ echo $tag->id;?>'>{<{<{ echo $tag->name;?></label>
                 </div>

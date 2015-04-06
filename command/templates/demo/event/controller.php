@@ -90,7 +90,7 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
     $event->title = $title;
     $event->info = $info;
 
-    $old_tag_ids = field_array ($event->tag_event_maps, 'tag_id');
+    $old_tag_ids = column_array ($event->tag_event_maps, 'tag_id');
     if ($delete_tag_ids = array_diff ($old_tag_ids, $tag_ids))
       TagEventMap::delete_all (array ('conditions' => array ('tag_id IN (?)', $delete_tag_ids)));
 
@@ -99,7 +99,7 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
         return verifyCreateOrm (TagEventMap::create (array ('tag_id' => $tag->id, 'event_id' => $event->id)));
       }, Tag::find ('all', array ('select' => 'id', 'conditions' => array ('id IN (?)', $create_tag_ids))));
 
-    if ($delete_attendee_ids = array_diff (field_array ($event->attendees, 'id'), field_array ($old_attendees, 'id')))
+    if ($delete_attendee_ids = array_diff (column_array ($event->attendees, 'id'), column_array ($old_attendees, 'id')))
       Attendee::delete_all (array ('conditions' => array ('id IN (?)', $delete_attendee_ids)));
 
     if ($old_attendees)
@@ -125,10 +125,10 @@ class <?php echo ucfirst ($name);?> extends <?php echo ucfirst ($action);?>_cont
     if (!$event = Event::find_by_id ($id))
       redirect (array ($this->get_class (), 'index'));
 
-    if ($old_tag_ids = field_array ($event->tag_event_maps, 'tag_id'))
+    if ($old_tag_ids = column_array ($event->tag_event_maps, 'tag_id'))
       TagEventMap::delete_all (array ('conditions' => array ('tag_id IN (?)', $old_tag_ids)));
 
-    if ($old_attendee_ids = field_array ($event->attendees, 'id'))
+    if ($old_attendee_ids = column_array ($event->attendees, 'id'))
       Attendee::delete_all (array ('conditions' => array ('id IN (?)', $old_attendee_ids)));
 
     if ($event->cover->cleanAllFiles () && $event->delete ())
