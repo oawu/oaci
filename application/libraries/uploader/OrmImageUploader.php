@@ -70,10 +70,9 @@ class OrmImageUploader extends OrmUploader {
 
     $news = array ();
     try {
-      $image = ImageUtility::create ($temp, null);
-      $name = $this->getRandomName () . ($this->configs['auto_add_format'] ? '.' . $image->getFormat () : '');
-
       foreach ($versions as $key => $version) {
+        $image = ImageUtility::create ($temp, null);
+        $name = $this->getRandomName () . ($this->configs['auto_add_format'] ? '.' . $image->getFormat () : '');
         $new_name = $key . $this->configs['separate_symbol'] . $name;
         $new_path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($path, array ($new_name)));
         array_push ($news, array ('name' => $new_name, 'path' => $new_path));
