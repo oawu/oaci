@@ -480,7 +480,7 @@ if ( ! function_exists('script_tag')) {
             }
 
             $script .= 'language="'.$language.'" type="'.$type.'"';
-            $script .= ' /></scr'.'ipt>'."";
+            $script .= '></scr'.'ipt>'."";
         }
         return $script;
     }
