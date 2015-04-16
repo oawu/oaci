@@ -107,6 +107,19 @@ class Main extends Site_controller {
     // var_dump ($put);
     // exit ();
     $event = Event::find (1);
-    $event->cover->url ();
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    var_dump ($event->cover->put_url ('http://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Nelumno_nucifera_open_flower_-_botanic_garden_adelaide2.jpg/1024px-Nelumno_nucifera_open_flower_-_botanic_garden_adelaide2.jpg'));
+    exit ();;
+
+    // $this->load->library ('S3', Cfg::system ('s3', 'buckets', 'ioa'));
+    // $a = S3::deleteObject ('ioa', 'upload/events/cover/0/0/0/1/ajax-loader.gif');
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ();
+    // exit ();
+    // $a = S3::getObject ('ioa', 'upload/events/cover/0/0/0/1/ajax-loader.gi');
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($a);
+    exit ();
+
   }
 }

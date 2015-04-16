@@ -42,6 +42,10 @@ class OrmUploader {
       case 'local':
         return ($path = $this->path ($key)) ? base_url ($path) : $this->d4Url ();
         break;
+      
+      case 's3':
+        return implode ('/', array_merge (array (rtrim ($this->configs['s3']['url'], '/')) , $this->path ($key)));
+        break;
     }
 
     return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
@@ -57,6 +61,10 @@ class OrmUploader {
           return $path;
         else
           return array ();
+        break;
+
+      case 's3':
+        return array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($fileName));
         break;
     }
 
@@ -164,10 +172,18 @@ class OrmUploader {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
-    if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($this->getValue ())))))
-      return array ($path);
-    else
-      return array ();
+    switch ($this->getDriver ()) {
+      case 'local':
+        if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($this->getValue ())))))
+          return array ($path);
+        else
+          return array ();
+      case 's3':
+        return array ($path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($this->getValue ())));
+        break;
+    }
+
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
   }
   // return boolean
   protected function _cleanOldFile () {
@@ -181,10 +197,19 @@ class OrmUploader {
             if (file_exists ($path = FCPATH . implode (DIRECTORY_SEPARATOR, $path)) && is_file ($path))
               if (!@unlink ($path))
                 return $this->getDebug () ? error ('OrmUploader 錯誤！', '清除檔案發生錯誤！', '請程式設計者確認狀況！') : false;
+        return true;
+        break;
+      
+      case 's3':
+        if ($paths = $this->getAllPaths ())
+          foreach ($paths as $path)
+            if (!S3::deleteObject ($this->configs['s3']['bucket'], implode (DIRECTORY_SEPARATOR, $path)))
+              return $this->getDebug () ? error ('OrmUploader 錯誤！', '清除檔案發生錯誤！', '請程式設計者確認狀況！') : false;
+        return true;
         break;
     }
 
-    return true;
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : false;
   }
   // return boolean
   protected function uploadColumn ($value) {
