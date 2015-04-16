@@ -122,7 +122,7 @@ $autoload['model'] = array();
 |
 */
 
-$autoload['sparks'] = array('php-activerecord/0.0.2');
+$autoload['sparks'] = array('php-activerecord/0.0.2', 'amazon-s3/1.0.0');
 
 
 /* End of file autoload.php */
