@@ -31,7 +31,7 @@ class OrmUploader {
       return $this->error = array ('OrmUploader 錯誤！', '無法取得 unique 欄位資訊！', '請 ORM select，或者修改 unique 欄位名稱(' . $this->configs['unique_column'] . ')！', '修改 unique 欄位名稱至 config/system/orm_uploader.php 設定檔修改！');
 
     if ($this->getDriver () == 's3')
-      $this->CI->load->library ('S3', Cfg::system ('s3', 'buckets', $this->configs['s3']['bucket']));
+      $this->CI->load->library ('S3', Cfg::system ('s3', 'buckets', $this->getS3Bucket ()));
   }
   // return string
   public function url ($key = '') {
@@ -111,15 +111,23 @@ class OrmUploader {
     return $this->configs['driver'];
   }
   // return array
+  protected function getS3Bucket () {
+    return $this->configs['s3']['bucket'];
+  }
+  // return array
   protected function getDebug () {
     return $this->configs['debug'];
+  }
+  // return array
+  protected function getTempDirectory () {
+    return $this->configs['temp_directory'];
   }
   // return sring
   private function _moveOriFile ($fileInfo, $isUseMoveUploadedFile) {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : '';
 
-    if (!is_writable (FCPATH . implode (DIRECTORY_SEPARATOR, $path = $this->configs['temp_directory'])))
+    if (!is_writable (FCPATH . implode (DIRECTORY_SEPARATOR, $path = $this->getTempDirectory ())))
       return $this->getDebug () ? error ('OrmUploader 錯誤！', '暫存資料夾不可讀寫或不存在！', '請檢查暫存資料夾是否存在以及可讀寫！', '預設值 暫存資料夾 請檢查 config/system/orm_uploader.php 設定檔！') : false;
 
     $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($path, array ($this->getRandomName ())));
@@ -174,10 +182,9 @@ class OrmUploader {
 
     switch ($this->getDriver ()) {
       case 'local':
-        if (is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($this->getValue ())))))
-          return array ($path);
-        else
-          return array ();
+        return is_writable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($this->getValue ())))) ? array ($path) : array ();
+        break;
+
       case 's3':
         return array ($path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($this->getValue ())));
         break;
@@ -203,7 +210,7 @@ class OrmUploader {
       case 's3':
         if ($paths = $this->getAllPaths ())
           foreach ($paths as $path)
-            if (!S3::deleteObject ($this->configs['s3']['bucket'], implode (DIRECTORY_SEPARATOR, $path)))
+            if (!S3::deleteObject ($this->getS3Bucket (), implode (DIRECTORY_SEPARATOR, $path)))
               return $this->getDebug () ? error ('OrmUploader 錯誤！', '清除檔案發生錯誤！', '請程式設計者確認狀況！') : false;
         return true;
         break;
@@ -240,7 +247,6 @@ class OrmUploader {
 
     switch ($this->getDriver ()) {
       case 'local':
-
         if ($this->uploadColumnAndUpload ('') && @rename ($temp, $save_path = FCPATH . implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name))
           return $this->uploadColumnAndUpload ($ori_name);
         else
@@ -248,8 +254,8 @@ class OrmUploader {
         break;
 
       case 's3':
-        if ($this->uploadColumnAndUpload ('') && S3::putObjectFile ($temp, $this->configs['s3']['bucket'], implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name, S3::ACL_PUBLIC_READ, array (), array ('Cache-Control' => 'max-age=315360000', 'Expires' => gmdate ('D, d M Y H:i:s T', strtotime ('+5 years')))))
-          return $this->uploadColumnAndUpload ($ori_name);
+        if ($this->uploadColumnAndUpload ('') && S3::putObjectFile ($temp, $this->getS3Bucket (), implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name, S3::ACL_PUBLIC_READ, array (), array ('Cache-Control' => 'max-age=315360000', 'Expires' => gmdate ('D, d M Y H:i:s T', strtotime ('+5 years')))))
+          return $this->uploadColumnAndUpload ($ori_name) && @unlink ($temp);
         else
           return $this->getDebug () ? error ('OrmUploader 錯誤！', '搬移預設位置時發生錯誤！', 'temp：' . $temp, 'save_path：' . $save_path, 'name：' . $ori_name, '請程式設計者確認狀況！') : false;
         break;
@@ -326,7 +332,7 @@ class OrmUploader {
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
     $format = pathinfo ($url, PATHINFO_EXTENSION);
-    $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['temp_directory'], array ($this->getRandomName () . ($format ? '.' . $format : ''))));
+    $temp = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->getTempDirectory (), array ($this->getRandomName () . ($format ? '.' . $format : ''))));
 
     if (($temp = download_web_file ($url, $temp)) && $this->put ($temp, false))
       return file_exists ($temp) ? @unlink ($temp) : true;

@@ -57,12 +57,12 @@ class Main extends Site_controller {
     // $event = Event::create (array ('title' => '', 'cover' => '', 'info' => ''));
     
     // $fileName = FCPATH . 'temp/S__7880806.jpg';
-    // $file = $this->input_post ('file', true);
+    $file = $this->input_post ('file', true);
 
-    // $event = Event::find (1);
-    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    // var_dump ($event->cover->put ($file));
-    // exit ();;
+    $event = Event::find (1);
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    var_dump ($event->cover->put ($file));
+    exit ();;
   }
   public function x () {
     echo "<form action='" . base_url ('main', 'index') . "' method='post' enctype='multipart/form-data'>
@@ -106,20 +106,21 @@ class Main extends Site_controller {
     // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
     // var_dump ($put);
     // exit ();
-    $event = Event::find (1);
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($event->cover->put_url ('http://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Nelumno_nucifera_open_flower_-_botanic_garden_adelaide2.jpg/1024px-Nelumno_nucifera_open_flower_-_botanic_garden_adelaide2.jpg'));
-    exit ();;
+    // $event = Event::find (1);
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($event->cover->save_as ('asd', array ('resize', 500, 500, 'width')));
+    // exit ();;
 
     // $this->load->library ('S3', Cfg::system ('s3', 'buckets', 'ioa'));
     // $a = S3::deleteObject ('ioa', 'upload/events/cover/0/0/0/1/ajax-loader.gif');
     // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
     // var_dump ();
     // exit ();
-    // $a = S3::getObject ('ioa', 'upload/events/cover/0/0/0/1/ajax-loader.gi');
+    // $fileName = FCPATH . 'temp/xxx.jpg';
+    // $a = S3::getObject ('ioa', 'upload/events/cover/0/0/0/1/100w_1989619737_552fc5676d2ba.jpg', $fileName);
     // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
     // var_dump ($a);
-    exit ();
+    // exit ();
 
   }
 }
