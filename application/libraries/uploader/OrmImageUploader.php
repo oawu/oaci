@@ -32,7 +32,7 @@ class OrmImageUploader extends OrmUploader {
       return parent::path ($fileName);
     else
       return array ();
-    return $this->getDebug () ? error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
+    return $this->getDebug () ? error ('OrmImageUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
   }
   // return boolean
   private function _utility ($image, $save, $key, $version) {
@@ -87,7 +87,7 @@ class OrmImageUploader extends OrmUploader {
     if (count ($news) != count ($versions))
       return $this->getDebug () ? error ('OrmImageUploader 錯誤！', '不明原因錯誤！', '請程式設計者確認狀況！') : false;
 
-    switch ($this->getBucket ()) {
+    switch ($this->getDriver ()) {
       case 'local':
         @self::uploadColumnAndUpload ('');
 
@@ -115,7 +115,7 @@ class OrmImageUploader extends OrmUploader {
       return $this->getDebug () ? error ('OrmImageUploader 錯誤！', '已經有相符合的 key 名稱，key：' . $key, '目前的 key 有：' . implode (', ', $keys)) : array ();
 
 
-    switch ($this->getBucket ()) {
+    switch ($this->getDriver ()) {
       case 'local':
         foreach ($versions as $ori_key => $ori_version)
           if (is_readable (FCPATH . implode (DIRECTORY_SEPARATOR, $ori_path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($ori_key . $this->configs['separate_symbol'] . ($name = $this->getValue ()))))))
@@ -151,6 +151,6 @@ class OrmImageUploader extends OrmUploader {
           break;
     }
 
-    return $this->getDebug () ? error ('OrmImageUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
+    return $this->getDebug () ? error ('OrmImageUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
   }
 }

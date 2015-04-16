@@ -29,26 +29,29 @@ class OrmUploader {
 
     if (!in_array ($this->configs['unique_column'], array_keys ($orm->attributes ())))
       return $this->error = array ('OrmUploader 錯誤！', '無法取得 unique 欄位資訊！', '請 ORM select，或者修改 unique 欄位名稱(' . $this->configs['unique_column'] . ')！', '修改 unique 欄位名稱至 config/system/orm_uploader.php 設定檔修改！');
+
+    if ($this->getDriver () == 's3')
+      $this->CI->load->library ('S3', $this->configs['s3']['bucket']);
   }
   // return string
   public function url ($key = '') {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : '';
 
-    switch ($this->getBucket ()) {
+    switch ($this->getDriver ()) {
       case 'local':
         return ($path = $this->path ($key)) ? base_url ($path) : $this->d4Url ();
         break;
     }
 
-    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : '';
   }
   // return array
   public function path ($fileName = '') {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
-    switch ($this->getBucket ()) {
+    switch ($this->getDriver ()) {
       case 'local':
         if (is_readable (FCPATH . implode(DIRECTORY_SEPARATOR, $path = array_merge ($this->getBaseDirectory (), $this->getSavePath (), array ($fileName)))))
           return $path;
@@ -57,7 +60,7 @@ class OrmUploader {
         break;
     }
 
-    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
   }
   // return sring
   protected function d4Url () {
@@ -93,11 +96,11 @@ class OrmUploader {
   }
   // return array
   protected function getBaseDirectory () {
-    return $this->configs['base_directory'][$this->getBucket ()];
+    return $this->configs[$this->getDriver ()]['base_directory'];
   }
   // return array
-  protected function getBucket () {
-    return $this->configs['bucket'];
+  protected function getDriver () {
+    return $this->configs['driver'];
   }
   // return array
   protected function getDebug () {
@@ -132,7 +135,7 @@ class OrmUploader {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
-    switch ($this->getBucket ()) {
+    switch ($this->getDriver ()) {
       case 'local':
         if (!is_writable ($path = FCPATH . implode (DIRECTORY_SEPARATOR, $this->getBaseDirectory ())))
           return $this->getDebug () ? error ('OrmUploader 錯誤！', '資料夾不能儲存！路徑：' . $path, '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
@@ -148,9 +151,12 @@ class OrmUploader {
         else
           return $path;
         break;
+      case 's3':
+        return array_merge ($this->getBaseDirectory (), $this->getSavePath ());
+        break;
     }
 
-    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
   }
   // return array
   public function getAllPaths () {
@@ -167,7 +173,7 @@ class OrmUploader {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : false;
 
-    switch ($this->getBucket ()) {
+    switch ($this->getDriver ()) {
       case 'local':
         if ($paths = $this->getAllPaths ())
           foreach ($paths as $path)
@@ -206,7 +212,7 @@ class OrmUploader {
     if ($this->error)
       return $this->getDebug () ? call_user_func_array ('error', $this->error) : array ();
 
-    switch ($this->getBucket ()) {
+    switch ($this->getDriver ()) {
       case 'local':
 
         if ($this->uploadColumnAndUpload ('') && @rename ($temp, $save_path = FCPATH . implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name))
@@ -214,9 +220,13 @@ class OrmUploader {
         else
           return $this->getDebug () ? error ('OrmUploader 錯誤！', '搬移預設位置時發生錯誤！', 'temp：' . $temp, 'save_path：' . $save_path, 'name：' . $ori_name, '請程式設計者確認狀況！') : false;
         break;
+
+      case 's3':
+        // if ($this->uploadColumnAndUpload ('') && @rename ($temp, $save_path = FCPATH . implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name))
+
     }
 
-    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();
   }
   // return boolean
   public function put ($fileInfo) {
@@ -294,7 +304,7 @@ class OrmUploader {
     else
       return false;
 
-    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 bucket，系統尚未支援' . $this->getBucket () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : false;
+    return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : false;
   }
 }
 
