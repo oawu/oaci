@@ -11,7 +11,7 @@ $orm_uploader['uploader']['driver'] = 's3'; // local、s3
 $orm_uploader['uploader']['local']['base_directory'] = array ('upload');
 
 $orm_uploader['uploader']['s3']['base_directory'] = array ('upload');
-$orm_uploader['uploader']['s3']['bucket'] = Cfg::_system ('s3', 'buckets', 'ioa');
+$orm_uploader['uploader']['s3']['bucket'] = 'ioa';
 
 $orm_uploader['uploader']['instance']['class_suffix'] = 'Uploader';
 $orm_uploader['uploader']['instance']['directory'] = array ('application', 'third_party', 'orm_uploaders');

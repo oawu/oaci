@@ -31,7 +31,7 @@ class OrmUploader {
       return $this->error = array ('OrmUploader 錯誤！', '無法取得 unique 欄位資訊！', '請 ORM select，或者修改 unique 欄位名稱(' . $this->configs['unique_column'] . ')！', '修改 unique 欄位名稱至 config/system/orm_uploader.php 設定檔修改！');
 
     if ($this->getDriver () == 's3')
-      $this->CI->load->library ('S3', $this->configs['s3']['bucket']);
+      $this->CI->load->library ('S3', Cfg::system ('s3', 'buckets', $this->configs['s3']['bucket']));
   }
   // return string
   public function url ($key = '') {
@@ -151,6 +151,7 @@ class OrmUploader {
         else
           return $path;
         break;
+
       case 's3':
         return array_merge ($this->getBaseDirectory (), $this->getSavePath ());
         break;
@@ -222,8 +223,11 @@ class OrmUploader {
         break;
 
       case 's3':
-        // if ($this->uploadColumnAndUpload ('') && @rename ($temp, $save_path = FCPATH . implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name))
-
+        if ($this->uploadColumnAndUpload ('') && S3::putObjectFile ($temp, $this->configs['s3']['bucket'], implode (DIRECTORY_SEPARATOR, $save_path) . DIRECTORY_SEPARATOR . $ori_name, S3::ACL_PUBLIC_READ, array (), array ('Cache-Control' => 'max-age=315360000', 'Expires' => gmdate ('D, d M Y H:i:s T', strtotime ('+5 years')))))
+          return $this->uploadColumnAndUpload ($ori_name);
+        else
+          return $this->getDebug () ? error ('OrmUploader 錯誤！', '搬移預設位置時發生錯誤！', 'temp：' . $temp, 'save_path：' . $save_path, 'name：' . $ori_name, '請程式設計者確認狀況！') : false;
+        break;
     }
 
     return $this->getDebug () ? error ('OrmUploader 錯誤！', '未知的 driver，系統尚未支援 ' . $this->getDriver () . ' 的空間！', '請檢查 config/system/orm_uploader.php 設定檔！') : array ();

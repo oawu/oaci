@@ -37,7 +37,7 @@ class Main extends Site_controller {
 
 // $put = false;
 // if ($input) {
-//   $put = S3::putObject(
+//   $put = S3::putObjectFile(
 //     $input,
 //     $bucket,
 //     $uri,
@@ -57,12 +57,12 @@ class Main extends Site_controller {
     // $event = Event::create (array ('title' => '', 'cover' => '', 'info' => ''));
     
     // $fileName = FCPATH . 'temp/S__7880806.jpg';
-    $file = $this->input_post ('file', true);
+    // $file = $this->input_post ('file', true);
 
-    $event = Event::find (1);
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($event->cover->put ($file));
-    exit ();;
+    // $event = Event::find (1);
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($event->cover->put ($file));
+    // exit ();;
   }
   public function x () {
     echo "<form action='" . base_url ('main', 'index') . "' method='post' enctype='multipart/form-data'>
@@ -76,18 +76,37 @@ class Main extends Site_controller {
     //         <button type='submit'>submit</button>
     //       </form>";
 
-    $params = array (
-      'access_key' => '',
-      'secret_key' => '',
-      'use_ssl' => false,
-      'verify_peer' => true
-      );
-    $this->load->library ('S3', $params);
+    // $params = array (
+    //   'access_key' => '',
+    //   'secret_key' => '',
+    //   'use_ssl' => false,
+    //   'verify_peer' => true
+    //   );
+    // $this->load->library ('S3', $params);
+    // // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // // var_dump (S3::listDistributions ());
+    // // exit ();;
     // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    // var_dump (S3::listDistributions ());
+    // var_dump (S3::getObject ('ioa', '123/234'));
     // exit ();;
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump (S3::getObject ('ioa', '123/234'));
-    exit ();;
+
+    // $this->load->library ('S3', Cfg::system ('orm_uploader', 'uploader', 's3', 'bucket'));
+    // $fileName = FCPATH . 'temp/S__7880806.jpg';
+    // $put = S3::putObjectFile(
+    //   $fileName,
+    //   'ioa',
+    //   'aa/cc/S__7880806.jpg',
+    //   S3::ACL_PUBLIC_READ,
+    //   array(),
+    //   array( // Custom $requestHeaders
+    //     "Cache-Control" => "max-age=315360000",
+    //     "Expires" => gmdate("D, d M Y H:i:s T", strtotime("+5 years"))
+    //   )
+    // );
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($put);
+    // exit ();
+    $event = Event::find (1);
+    $event->cover->url ();
   }
 }
