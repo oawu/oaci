@@ -5,8 +5,8 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-$orm_uploader['uploader']['debug'] = true;
-$orm_uploader['uploader']['driver'] = 's3'; // local、s3
+$orm_uploader['uploader']['debug'] = false;
+$orm_uploader['uploader']['driver'] = 'local'; // local、s3
 
 $orm_uploader['uploader']['local']['base_directory'] = array ('upload');
 
