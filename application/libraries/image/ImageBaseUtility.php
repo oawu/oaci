@@ -53,13 +53,14 @@ class ImageBaseUtility {
   }
   // return dimension format array
   protected function calcWidth ($oldDimension, $newDimension) {
-    $newWidthPercentage = ceil (100 * $newDimension['width'] / $oldDimension['width']);
+    $newWidthPercentage = 100 * $newDimension['width'] / $oldDimension['width'];
     $height             = ceil ($oldDimension['height'] * $newWidthPercentage / 100);
+
     return ImageUtility::createDimension ($newDimension['width'], $height);
   }
   // return dimension format array
   protected function calcHeight ($oldDimension, $newDimension) {
-    $newHeightPercentage  = ceil (100 * $newDimension['height'] / $oldDimension['height']);
+    $newHeightPercentage  = 100 * $newDimension['height'] / $oldDimension['height'];
     $width                = ceil ($oldDimension['width'] * $newHeightPercentage / 100);
     return ImageUtility::createDimension ($width, $newDimension['height']);
   }
