@@ -65,10 +65,10 @@ class ImageImagickUtility extends ImageBaseUtility {
 
     if ($this->format == 'gif')
       do {
-        $newImage->resizeImage ($newDimension['width'], $newDimension['height'], Imagick::FILTER_LANCZOS, 0.8, true);
+        $newImage->thumbnailImage ($newDimension['width'], $newDimension['height'], false);
       } while ($newImage->nextImage () || !$newImage = $newImage->deconstructImages ());
     else
-      $newImage->resizeImage ($newDimension['width'], $newDimension['height'], Imagick::FILTER_LANCZOS, 0.8, true);
+      $newImage->thumbnailImage ($newDimension['width'], $newDimension['height'], false);
 
     return $newImage;
   }
