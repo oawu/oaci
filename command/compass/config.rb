@@ -9,6 +9,12 @@ sass_dir = "../../application"
 add_import_path = "./imports"
 additional_import_paths = ["./imports"]
 
+images_dir = "resource/image"
+images_path = "../../resource/image/"
+
+fonts_dir = "resource/font"
+fonts_path = "../../resource/font/"
+
 # images_dir = "images"
 # javascripts_dir = "javascripts"
 
