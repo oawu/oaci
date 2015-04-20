@@ -1903,5 +1903,6 @@ class Model
 	}
 
 	public static function trace ($str) { static::connection()->trace ($str);	}
+	public static function escape ($str) { return static::connection()->escape ($str);	}
 };
 ?>
