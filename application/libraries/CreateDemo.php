@@ -12,6 +12,22 @@ class CreateDemo {
   public function __construct () {
   }
 
+  public static function email () {
+    $elements = array_merge (range ('a', 'z'));
+    shuffle ($elements);
+    return implode (array_slice ($elements, 0, $length = rand (3, 8))) . '@' . implode (array_slice ($elements, 0, $length = rand (3, 5))) . '.' . implode (array_slice ($elements, 0, $length = rand (3, 5))) . '.' . implode (array_slice ($elements, 0, $length = rand (3, 5)));
+  }
+
+  public static function password ($length = 8) {
+    $elements = array_merge (
+                  range ('A', 'Z'),
+                  range ('a', 'z'),
+                  range ('0', '9'),
+                  array ('_', '+'));
+    shuffle ($elements);
+    return implode (array_slice ($elements, 0, $length));
+  }
+
   public static function pics ($min = 1, $max = 4, $tags = array ('台灣之美')) {
     if (!count (self::$pics))
       self::$pics = self::rand_pics ($tags);
