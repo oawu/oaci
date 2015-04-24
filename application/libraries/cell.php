@@ -182,7 +182,7 @@ class Cell_Controller {
     if (((bool)@ini_get ('short_open_tag') === FALSE) && (config_item ('rewrite_short_tags') == TRUE))
       echo eval ('?>'.preg_replace ("/;*\s*\?>/", "; ?>", str_replace ('<?=', '<?php echo ', file_get_contents ($_ci_path))));
     else
-      include_once ($_ci_path);
+      include ($_ci_path);
 
     $buffer = ob_get_contents ();
     @ob_end_clean ();
