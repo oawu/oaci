@@ -170,11 +170,11 @@ class Cell_Controller {
     if (!is_readable ($_ci_path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content' . EXT)))))
       return show_error ("The Cell's controllers is not exist or can't read!<br/>File: " . $_ci_path);
 
-    if ($this->is_use_js_list && is_readable ($path = implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.js')))))
-      $this->add_js (base_url ($path));
+    if ($this->is_use_js_list && is_readable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.js')))))
+      $this->add_js (base_url (implode ('/', $path)));
 
-    if ($this->is_use_css_list && is_readable ($path = implode (DIRECTORY_SEPARATOR, array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.css')))))
-      $this->add_css (base_url ($path));
+    if ($this->is_use_css_list && is_readable (implode (DIRECTORY_SEPARATOR, $path = array_merge ($this->configs['folders']['view'], array ($set_class ? $set_class : $class, ($set_method ? $set_method : $method), 'content.css')))))
+      $this->add_css (base_url (implode ('/', $path)));
 
     extract ($data);
     ob_start();
