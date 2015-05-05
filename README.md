@@ -4,8 +4,7 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 
 ---
 ## 聲明
-本作品只限分享於研究、研討性質之使用，並不提供任何有營利效益之使用。
-如有營利用途，務必告知作者 [OA](http://www.ioa.tw/)(<comdan66@gmail.com>)，並且經由作者同意。
+本作品授權採用 姓名標示-非商業性 2.0 台灣 (CC BY-NC 2.0 TW) 授權，詳見 [http://creativecommons.org/licenses/by-nc/2.0/tw/](http://creativecommons.org/licenses/by-nc/2.0/tw/) 
 
 <br />
 ## 目錄
