@@ -5,6 +5,26 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
+if (!function_exists ('conditions')) {
+  function conditions (&$columns, &$configs, $model_name, $inputs = null) {
+    $inputs = $inputs === null ? $_GET : $inputs;
+
+    $strings = array_keys (array_filter ($columns, function ($column) { return in_array (strtolower ($column), array ('string', 'str', 'varchar', 'text')); }));
+    $columns = array_filter (array_combine ($columns = array_keys ($columns),array_map (function ($q) use ($inputs) { return isset ($inputs[$q]) ? $inputs[$q] : null; }, $columns)), function ($t) { return is_numeric ($t) ? true : $t; });
+    $conditions = array_slice ($columns, 0);
+    array_walk ($conditions, function (&$v, $k) { $v = $k . '=' . $v; });
+    $q_string = implode ('&amp;', $conditions);
+
+    $conditions = array_slice ($columns, 0);
+    array_walk ($conditions, function (&$v, $k) use ($strings, $model_name) { $v = in_array ($k, $strings) ? ($k . ' LIKE ' . $model_name::escape ('%' . $v . '%')) : ($k . ' = ' . $model_name::escape ($v)); });
+
+    $configs = array (
+        'uri_segment' => count ($configs),
+        'base_url' => base_url (array_merge ($configs, array ($q_string ? '?' . $q_string : '')))
+      );
+    return $conditions;
+  }
+}
 if (!function_exists ('column_array')) {
   function column_array ($objects, $key) {
     return array_map (function ($object) use ($key) {

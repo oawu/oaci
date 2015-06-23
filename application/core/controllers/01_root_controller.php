@@ -79,6 +79,13 @@ class Root_controller extends CI_Controller {
   public function get_views_path () {
     return $this->views_path;
   }
+  
+  protected function input_gets ($xss_clean = true) {
+    $security = $this->security;
+    return ($gets = $this->input->get ()) ? array_filter ($this->input->get (), function ($get) use ($xss_clean, $security) {
+      return $xss_clean ? $security->xss_clean ($get) : $get;
+    }) : array ();
+  }
 
   protected function input_get ($index = null, $xss_clean = true) {
     return $index = trim ($index) && ($gets = $this->input->get ()) && isset ($gets[$index]) ? $xss_clean ? $this->security->xss_clean ($gets[$index]) : $gets[$index] : null;
