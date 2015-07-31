@@ -10,7 +10,7 @@ class <?php echo ucfirst ($file_name);?> extends Cell_Controller {
   if ($methods) {
     foreach ($methods as $method) { ?>
 
-  /* render_cell ('<?php echo $file_name;?>', '<?php echo $method;?>', array ()); */
+  /* render_cell ('<?php echo $file_name;?>', '<?php echo $method;?>', var1, ..); */
   // public function <?php echo $method_prefix . $method;?> () {
   //   return array ('time' => 60 * 60, 'key' => null);
   // }
