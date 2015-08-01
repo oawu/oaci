@@ -107,8 +107,8 @@ class Oa_controller extends Root_controller {
     $this->_combine_static_files ();
 
     $list = array (
-        'meta_list'   => array_unique (array_filter ($this->meta_list)),
-        'hidden_list' => array_unique (array_filter ($this->hidden_list)),
+        'meta_list'   => array_filter ($this->meta_list),
+        'hidden_list' => array_filter ($this->hidden_list),
         'js_list'  => array_unique (array_filter (array_map (function ($js) { return isset ($js['path']) ? $js['path'] : $js; }, $this->js_list))),
         'css_list' => array_unique (array_filter (array_map (function ($css) { return isset ($css['path']) ? $css['path'] : $css; }, $this->css_list)))
       );
