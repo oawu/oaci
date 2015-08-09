@@ -18,7 +18,13 @@
   .create {
     @include button('blue', false);
   }
-  .table-list {
-    @include table-list();
+  .table-list-rwd {
+    @include table-list-rwd();
+    text-align: center;
+    margin-top: 15px;
+
+    a {
+      @include a(rgba(50, 50, 50, 0.7), rgba(50, 50, 50, 0.9), false);
+    }
   }
 }

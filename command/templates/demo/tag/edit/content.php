@@ -1,11 +1,18 @@
 <div class='container'>
+<!-- 呼叫 cell 導入 main menu -->
 {<{<{ echo render_cell ('demo_cell', 'main_menu', array ()); ?>
+  
+  <!-- 回列表按鈕 -->
   <a class='list' href='{<{<{ echo base_url (array ('tags', 'index'));?>'>列表</a>
+  
   {<{<{
+    // 印出 session flash data 資訊
     if (isset ($message) && $message) { ?>
       <div class='error'>{<{<{ echo $message;?></div>
   {<{<{
     } ?>
+  
+  <!-- form 表單 -->
   <form action='{<{<{ echo base_url (array ('tags', 'update', $tag->id));?>' method='post' enctype='multipart/form-data'>
     <table class='table-form'>
       <tbody>

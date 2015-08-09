@@ -15,6 +15,7 @@
   }
   .table-form {
     @include table-form();
+    margin-top: 15px;
 
     .units {
       padding-top: 5px;

@@ -1,7 +1,11 @@
 <div class='container'>
+<!-- 呼叫 cell 導入 main menu -->
 {<{<{ echo render_cell ('demo_cell', 'main_menu', array ()); ?>
+  
+  <!-- 回列表按鈕 -->
   <a class='list' href='{<{<{ echo base_url (array ('events', 'index'));?>'>列表</a>
 
+  <!-- 資料詳細內容 -->
   <table class='table-form'>
     <tbody>
       <tr>
