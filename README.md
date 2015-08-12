@@ -9,7 +9,9 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 <br />
 ## DEMO
 
-<a href="https://www.youtube.com/watch?&v=svomGfqxZvg" target="_blank"><img width='100%' src="http://img.youtube.com/vi/svomGfqxZvg/0.jpg" alt="OA's Blog youtube demo!" /></a>
+點我 Youtube 觀賞 demo 影片！  
+
+<a href="https://www.youtube.com/watch?&v=svomGfqxZvg" target="_blank"><img width='100%' src="http://img.youtube.com/vi/svomGfqxZvg/0.jpg" alt="OACI Blog youtube demo!" /></a>
 
 
 <br />
