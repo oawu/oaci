@@ -1,7 +1,7 @@
 <?php
 /**
  * $Header$
- * $Horde: horde/lib/Log.php,v 1.15 2000/06/29 23:39:45 jon Exp $
+ * $Horde: horde/lib/log.php,v 1.15 2000/06/29 23:39:45 jon Exp $
  *
  * @version $Revision: 310238 $
  * @package Log
@@ -141,7 +141,7 @@ class Log
     {
         $handler = strtolower($handler);
         $class = 'Log_' . $handler;
-        $classfile = 'system/Log/' . $handler . '.php';
+        $classfile = $handler . '.php';
 
         /*
          * Attempt to include our version of the named class, but don't treat

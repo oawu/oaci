@@ -58,7 +58,7 @@ class PHPActiveRecord {
                 // directory, then uncomment the following block:
                 if (is_writable (APPPATH . 'logs/query.log')) {
                     $log_file = APPPATH . 'logs/query.log';
-                    include_once (FCPATH . 'Log.php');
+                    include_once (BASEPATH . 'log/log.php');
                     $logger = Log::singleton ('file', $log_file, 'ident', array('mode' => 0664, 'timeFormat' => '%Y-%m-%d %H:%M:%S'));
                     $cfg->set_logging (true);
                     $cfg->set_logger ($logger);
