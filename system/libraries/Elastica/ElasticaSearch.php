@@ -92,7 +92,7 @@ class ElasticaSearch extends Elastica_Core {
     return array ();
   }
 
-  public static function destroy ($ids = array ()) {
+  protected static function destroy ($ids = array ()) {
     return $ids ? parent::destroy (self::typeName (), $ids) : true;
   }
 
@@ -140,5 +140,8 @@ class ElasticaSearch extends Elastica_Core {
     if (!isset ($this->fields[self::primaryKey ()]))
       return false;
     return self::destroy (array ($this->fields[self::primaryKey ()]));
+  }
+  public static function deleteMany ($ids) {
+    return self::destroy ($ids);
   }
 }
