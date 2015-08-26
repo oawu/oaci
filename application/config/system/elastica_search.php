@@ -9,4 +9,4 @@ $elastica_search['is_enabled'] = true;
 $elastica_search['ip']     = 'localhost';
 $elastica_search['port']   = '9200';
 $elastica_search['index']  = 'oatest';
-$elastica_search['limit']  = 1000;
+$elastica_search['create_limit']  = 1000;

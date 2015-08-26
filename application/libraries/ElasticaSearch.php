@@ -20,68 +20,142 @@ class ElasticaSearch {
     spl_autoload_register (array ('Autoload', '__autoload_elastica'));
   }
 
-  protected static function index () {
-    return self::$index ? self::$index : self::$index = Cfg::system ('elastica_search', 'index');
-  }
   protected static function client () {
-    return self::$client ? self::$client : self::$client = new Elastica_Client (array (
+    if (self::$client)
+      return self::$client;
+
+    if (self::$client = new Elastica_Client (array (
         'host' => Cfg::system ('elastica_search', 'ip'),
         'port' => Cfg::system ('elastica_search', 'port')
-      ));
+      )))
+      return self::$client;
+
+    return null;
   }
+  protected static function index () {
+    if (self::$index)
+      return self::$index;
 
+    if (!($client = self::client ()))
+      return null;
 
+    if (self::$index = new Elastica_Index ($client, Cfg::system ('elastica_search', 'index')))
+      return self::$index;
+
+    return null;
+  }
 
   public static function clean_index () {
     if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
       return false;
 
-    $index = self::index ();
-    $client = self::client ();
+    if (!($index = self::index ()))
+      return false;
 
-    $index = new Elastica_Index ($client, $index);
+    if (!$index->exists ())
+      return false;
 
-    if ($index)
-      $index->delete ();
-
-    return true;
+    return !$index->delete ()->hasError ();
   }
 
-  public static function create ($type, $datas = array ()) {
+  public static function create ($type, $column, $datas = array ()) {
     if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
       return false;
 
-    $index = self::index ();
-    $client = self::client ();
+    if (!($index = self::index ()))
+      return false;
 
-    $limit = Cfg::system ('elastica_search', 'limit');
-    $type = $client->getIndex ($index)
-                   ->getType ($type);
+    if (!($type = $index->getType ($type)))
+      return false;
 
     $length = count ($datas);
+    $limit = Cfg::system ('elastica_search', 'create_limit');
 
     for ($offset = 0; $offset < $length; $offset += $limit)
-      if ($data = array_filter (array_map (function ($data) { return isset ($data['id']) ? new Elastica_Document ($data['id'], $data) : null; }, array_slice ($datas, $offset, $limit))))
+      if ($data = array_filter (array_map (function ($data) use ($column) { return isset ($data[$column]) ? new Elastica_Document ($data[$column], $data) : null; }, array_slice ($datas, $offset, $limit))))
         $type->addDocuments ($data);
 
-    $type->getIndex ()->refresh ();
+    return !$type->getIndex ()
+                 ->refresh ()
+                 ->hasError ();
   }
 
-  public static function delete ($type, $ids = array ()) {
+  public static function delete ($type, $ids) {
     if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
       return false;
 
-    $index = self::index ();
-    $client = self::client ();
+    if (!($index = self::index ()))
+      return false;
 
-    return $client->getIndex ($index)
-                  ->getType ($type)
-                  ->deleteIds ($ids);
+    return !$index->getType ($type)
+                  ->deleteIds ($ids)
+                  ->hasError ();
   }
-  private static function _build_query ($keywords, $option) {
+
+  public static function find ($type, $option = array ()) {
+    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
+      return array ();
+
+
+    if (!($index = self::index ()))
+      return array ();
+
+
+    try {
+      self::_modify_option ($option);
+      $query = self::_build_query ($option);
+
+      $search = new Elastica_Search (self::client ());
+      $result = $search->addIndex (self::index ())
+                       ->addType ($type)
+                       ->search ($query);
+
+      return array_filter (array_map (function ($result) use ($option) {
+                return array_filter (array_map (function ($t) { return isset ($t[0]) ? $t[0] : null; }, $result->getData ()));
+              }, $result->getResults ()));
+    } catch (Exception $e) {
+      return array ();
+    }
+  }
+
+  public static function count ($type, $option = array ()) {
+    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
+      return 0;
+
+    if (!($index = self::index ()))
+      return 0;
+
+    try {
+      self::_modify_option ($option);
+      $query = self::_build_query ($option);
+
+      return $index->getType ($type)
+                   ->count ($query);
+
+    } catch (Exception $e) {
+      return 0;
+    }
+  }
+  private static function _modify_option (&$option) {
+    $option['must']          = isset ($option['must'])          ? array_filter ($option['must']) : array ();
+    $option['limit']         = isset ($option['limit'])         ? $option['limit'] : 100;
+    $option['range']         = isset ($option['range'])         ? array_filter ($option['range']) : array ();
+    $option['offset']        = isset ($option['offset'])        ? $option['offset'] : 0;
+    $option['select']        = isset ($option['select'])        ? array_filter ($option['select']) : array ();
+    $option['should']        = isset ($option['should'])        ? array_filter ($option['should']) : array ();
+    $option['must_not']      = isset ($option['must_not'])      ? array_filter ($option['must_not']) : array ();
+    $option['script_fields'] = isset ($option['script_fields']) ? array_filter ($option['script_fields']) : array ();
+
+    $sort = array ();
+    if (isset ($option['sort']))
+      foreach ($option['sort'] as $key => $order)
+        $sort[$key] = array ('order' => strtolower ($order));
+
+    $option['sort'] = $sort;
+  }
+  private static function _build_query ($option) {
     $bool = null;
 
-    // 加入必要條件
     if ($option['must'])
       foreach ($option['must'] as $field => $values)
         if ($values = !is_array ($values) ? array ($values) : $values)
@@ -92,7 +166,6 @@ class ElasticaSearch {
             $bool->addMust ($text);
           }
 
-    // 加入非必要條件
     if ($option['must_not'])
       foreach ($option['must_not'] as $field => $values)
         if ($values = !is_array ($values) ? array ($values) : $values)
@@ -103,6 +176,16 @@ class ElasticaSearch {
             $bool->addMustNot ($text);
           }
 
+    if ($option['should'])
+      foreach ($option['should'] as $field => $values)
+        if ($values = !is_array ($values) ? array ($values) : $values)
+          foreach ($values as $value) {
+            $bool = !$bool ? new Elastica_Query_Bool () : $bool;
+            $text = new Elastica_Query_Match ();
+            $text->setMatch ($field, $value);
+            $bool->addShould ($text);
+          }
+
     if ($option['range'])
       foreach ($option['range'] as $field => $values) {
           $bool = !$bool ? new Elastica_Query_Bool () : $bool;
@@ -111,24 +194,19 @@ class ElasticaSearch {
           $bool->addMust ($text);
       }
 
-    if ($keywords && $option['fields'])
-      foreach ($option['fields'] as $field)
-        foreach ($keywords as $keyword) {
-          $bool = !$bool ? new Elastica_Query_Bool () : $bool;
-          $text = new Elastica_Query_Match ();
-          $text->setMatch ($field, $keyword);
-          $bool->addShould ($text);
-        }
-
     $query = $bool ? new Elastica_Query ($bool) : new Elastica_Query ();
 
-    $query->setFields ($option['select'])
-          ->setSort ($option['sort'])
-          ->setFrom ($option['offset']);
+    if ($option['sort'])
+      $query->setSort ($option['sort']);
+
+    if ($option['offset'])
+      $query->setFrom ($option['offset']);
+
+    if ($option['select'])
+      $query->setFields ($option['select']);
 
     if ($option['limit'] > 0)
       $query->setSize ($option['limit']);
-
 
     if ($option['script_fields'])
       foreach ($option['script_fields'] as $name => $script_field) {
@@ -144,258 +222,4 @@ class ElasticaSearch {
 
     return $query;
   }
-
-  private static function _modify_option (&$option) {
-
-    $option['offset'] = isset ($option['offset']) ? $option['offset'] : 0;
-    $option['limit'] = isset ($option['limit']) ? $option['limit'] : 100;
-    $option['fields'] = isset ($option['fields']) ? $option['fields'] : array();
-    $option['select'] = isset ($option['select']) ? $option['select'] : array('id');
-    $option['must'] = isset ($option['must']) ? $option['must'] : array();
-    $option['must_not'] = isset ($option['must_not']) ? $option['must_not'] : array();
-    $option['range'] = isset ($option['range']) ? $option['range'] : array();
-    $option['script_fields'] = isset ($option['script_fields']) ? $option['script_fields'] : array();
-
-    $sort = array ();
-    if (isset ($option['sort']))
-      foreach ($option['sort'] as $key => $order)
-        $sort[$key] = array ('order' => strtolower ($order));
-
-    $option['sort'] = $sort;
-  }
-
-  public static function find ($type, $keywords = array (), $option = array ()) {
-    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
-      return array();
-
-    $keywords = is_string ($keywords) ? array ($keywords) : $keywords;
-    self::_modify_option ($option);
-
-    try {
-      $client = self::client ();
-      $index = self::index ();
-      $query = self::_build_query ($keywords, $option);
-
-      $search = new Elastica_Search ($client);
-      $search->addIndex ($index);
-      $search->addType ($type);
-      $result = $search->search ($query);
-
-      return array_filter (array_map (function ($result) use ($option) {
-                return array_filter (array_map (function ($t) { return isset ($t[0]) ? $t[0] : null; }, $result->getData ()));
-              }, $result->getResults ()));
-    } catch (Exception $e) {
-      return array ();
-    }
-  }
-
-  public static function count ($type, $keywords = array (), $option = array ()) {
-    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
-      return 0;
-
-    $keywords = is_string ($keywords) ? array ($keywords) : $keywords;
-    self::_modify_option ($option);
-    $option['select'] = array ('id');
-
-    try {
-      $client = self::client ();
-      $index = self::index ();
-      $query = self::_build_query ($keywords, $option);
-
-      $index = new Elastica_Index ($client, $index);
-      return $index->getType ($type)
-                   ->count ($query);
-
-    } catch (Exception $e) {
-      return 0;
-    }
-  }
-
-
-  // public se
-
-
-  // public function add_datas ($type, $datas = array ()) {
-  //   if (!$this->client)
-  //     return;
-
-
-  // }
-
-  // private function _get_query ($type, $keywords = array (), $offset = 0, $limit = 100, $sort = array ('_score' => array ('order' => 'desc')), $compare_fields = array (), $include = array (), $exclude = array (), $fields = array ('id')) {
-  //   if (verifyObject ($this->client)) {
-  //     if (count ($include)) {
-  //       foreach ($include as $field => $values) {
-  //         if (count ($values = !is_array ($values) ? array ($values) : $values)) {
-  //           foreach ($values as $value) {
-  //             $bool = isset ($bool) ? $bool : new Elastica_Query_Bool ();
-  //             $text = new Elastica_Query_Text ();
-  //             $text->setFieldQuery ($field, $value);
-  //             $bool->addMust ($text);
-  //           }
-  //         }
-  //       }
-  //     }
-
-  //     if (count ($exclude)) {
-  //       foreach ($exclude as $field => $values) {
-  //         if (count ($values = !is_array ($values) ? array ($values) : $values)) {
-  //           foreach ($values as $value) {
-  //             $bool = isset ($bool) ? $bool : new Elastica_Query_Bool ();
-  //             $text = new Elastica_Query_Text ();
-  //             $text->setFieldQuery ($field, $value);
-  //             $bool->addMustNot ($text);
-  //           }
-  //         }
-  //       }
-  //     }
-
-  //     if ((count ($keywords) > 0) && (count ($compare_fields) > 0)) {
-  //       foreach ($compare_fields as $field) {
-  //         foreach ($keywords as $keyword) {
-  //           $bool = isset ($bool) ? $bool : new Elastica_Query_Bool ();
-  //           $text = new Elastica_Query_Text ();
-  //           $text->setFieldQuery ($field, $keyword)->setFieldParam ($field, 'operator', 'and')->setFieldType ($field, 'phrase');
-  //           $bool->addShould ($text);
-  //         }
-  //       }
-  //     }
-
-  //     $query = isset ($bool) ? new Elastica_Query ($bool) : new Elastica_Query ();
-
-  //     $query->setFields (count ($fields) ? $fields : array ('id'))
-  //           ->setSort (count ($sort) ? $sort : array ('_score' => array ('order' => 'desc')))
-  //           ->setFrom ($offset);
-
-  //     if ($limit > 0) $query->setSize ($limit);
-
-  //     return $query;
-  //   } else { return null; }
-  // }
-
-  // public function get_datas ($type, $keywords = array (), $offset = 0, $limit = 100, $sort = array ('_score' => array ('order' => 'desc')), $compare_fields = array (), $include = array (), $exclude = array (), $fields = array ('id')) {
-  //   if (verifyObject ($this->client)) {
-  //     try {
-  //       $fields = count ($fields) ? $fields : array ('id');
-  //       $search = new Elastica_Search ($this->client);
-  //       $search->addIndex ($this->index);
-  //       $search->addType ($this->types[$type]);
-  //       $result = $search->search ($this->_get_query ($type, $keywords, $offset, $limit, $sort, $compare_fields, $include, $exclude, $fields));
-  //       return array_filter (array_map (function ($result) use ($fields) { return ($data = $result->getData ()) ? (count ($fields) > 1 ? array_combine ($fields, array_map (function ($field) use ($data) { return $data[$field]; }, $fields)) : $data[$fields[0]]) : null; }, $result->getResults ()));
-  //     } catch (Exception $e) { return array (); }
-  //   } else { return array (); }
-  // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  public static function create_index () {
-    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
-      return ;
-
-    $client = self::client ();
-    $index = self::index ();
-
-    $index = new Elastica_Index ($client, $index);
-
-    $index->create (array (
-      'settings' => array (
-          'number_of_shards'   => 5,
-          'number_of_replicas' => 1,
-        )
-    ));
-  }
-
-  // public static function type () {
-  //   if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
-  //     return array();
-
-  //   $client = self::client ();
-  //   $index = self::index ();
-
-  //   $index = new Elastica_Index ($client, $index);
-  //   echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-  //   var_dump ($index->getMapping ());
-  //   exit ();
-  // }
-
-
-
-
-  public function rebuild_index () {
-    if (!($this->client && $this->index))
-      return;
-
-    $index = new Elastica_Index ($this->client, $this->index);
-
-    // $index->delete ();
-
-    $index->create (array (
-      'settings' => array (
-          'number_of_shards'   => 5,
-          'number_of_replicas' => 1,
-        )
-    ));
-  }
-
-  public function rebuild_type ($type_name) {
-    if (verifyObject ($this->client)) {
-      $mapping = config ('search_config', 'mappings', $this->types[$type_name]);
-
-      $index = new Elastica_Index ($this->client,$this->index);
-      $type = $index->getType ($this->types[$type_name]);
-      $type->delete ();
-
-      $index = new Elastica_Index ($this->client, $this->index);
-      $type = $index->getType ($this->types[$type_name]);
-      $type->setMapping ($mapping);
-    }
-  }
-
-
-
-  public function get_datas_count ($type, $keywords = array (), $offset = 0, $limit = 100, $sort = array ('_score' => array ('order' => 'desc')), $compare_fields = array (), $include = array (), $exclude = array ()) {
-    if (verifyObject ($this->client)) {
-      $index = new Elastica_Index ($this->client, $this->index);
-      $result = $index->getType ($this->types[$type])->count ($this->_get_query ($type, $keywords, $offset, $limit, $sort, $compare_fields, $include, $exclude, $fields = array ('id')));
-      return $result;
-    } else { return 0; }
-  }
-
-  // public function count ($type, $keyword) {
-  //   if (verifyObject ($this->client)) {
-  //     $index = new Elastica_Index ($this->client, $this->index);
-  //     $result = $index->getType ($this->types[$type])->count ($keyword);
-  //     return $result;
-  //   } else { return 0; }
-  // }
-
-  public function get_tokens_array ($text) {
-    try {
-      if (is_array ($text)) $text = implode (' ', $text);
-      $text = rawurlencode (strtolower ($text));
-
-      $CURL = curl_init ();
-      curl_setopt ($CURL, CURLOPT_URL, 'http://search.fashionguide.com.tw/fgapi/search/get_tokens/?t=' . $text . '&a=ik');
-      curl_setopt ($CURL, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt ($CURL, CURLOPT_CONNECTTIMEOUT, 10);
-      $response = curl_exec ($CURL);
-      $response = preg_match ('/Severity: Warning/', $response) ? array () : array_unique (array_filter (array_map (function ($value) { return strlen (trim ($value)) ? trim ($value) : null; }, explode (',', str_replace ('p2q', '', $response)))));
-
-    } catch (Exception $e) { $response = array (); }
-    return $response;
-  }
-
 }
