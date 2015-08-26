@@ -59,31 +59,67 @@ class Main extends Site_controller {
     // $this->load_view ();
 
 
-    $this->load->library ('ElasticaSearch');
+    $this->load->library ('Elastica/ElasticaSearch');
+    include_once FCPATH . 'application/searches/StoreSearch.php';
+
+// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+// var_dump (StoreSearch::primaryKey ());
+// exit ();
 
     // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
     // var_dump (ElasticaSearch::clean_index ());
     // var_dump (ElasticaSearch::clean_index ());
     // exit ();;
 
-    // $a = ElasticaSearch::create ('stores', 'id', array (
-    //   array('id' => '1', 'name' => "2", 'lat' => '3', 'lng' => '4')
+    // $a = StoreSearch::createMany (array (
+    //   array('id' => '1', 'name' => "a", 'account' => 'aa', 'location' => array (
+    //         'lat' => '1',
+    //         'lng' => '3'
+    //     )),
+    //   array('id' => '2', 'name' => "b", 'account' => 'bb', 'location' => array (
+    //         'lat' => '2',
+    //         'lng' => '4'
+    //     )),
     // ));
 
+    // $a = StoreSearch::updateMany (
+    //     array (array('id' => '1', 'name' => "a", ''),
+    //     ;
+
+    $a = StoreSearch::find ('one', array ('must' => array ('id' => 2), 'select' => array ()));
+    // $a->name = 'xxx';
+    // $a->dasdasd = 'xxx';
+echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+var_dump ($a);
+exit ();
+    // $a = StoreSearch::find ('one', array ('must' => array ('id' => '1'), 'select' => array ('id')));
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($a->fields);
+    // exit ();
+    // $a->name = 'xxx';
+    // $a->save ();
+    // $a->id = 'sxx';
+    // $a->ndamew = 'xxw';
+    // $a->account = 'AAd';
+    // $a->overwrite ();
+
+// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+// var_dump ($a->location['lat']);
+// exit ();
     // $a = ElasticaSearch::delete ('stores', array(1));
 
-    $conditions = array (
-        'select' => array ('id', 'name'),
-        'offset' => 0,
-        'limit' => 100,
-        'range' => array ('id' => array ('form' => 1, 'to' => 100)),
-        'must' => array ('name' => '咖啡'),
-      );
-    $stores = ElasticaSearch::find ('stores', $conditions);
+    // $conditions = array (
+    //     'select' => array ('id', 'name'),
+    //     'offset' => 0,
+    //     'limit' => 100,
+    //     'range' => array ('id' => array ('form' => 1, 'to' => 100)),
+    //     'must' => array ('name' => '咖啡'),
+    //   );
+    // $stores = ElasticaSearch::find ('stores', $conditions);
 
-    foreach ($stores as $store)
-      $store->name;
-
+//     foreach ($stores as $store)
+//       $store->name;
+// $store->save ();
     // $a = ElasticaSearch::find ('stores', array (
     //     'select' => array ('id', 'name'),
     //     // 'range' => array ('id' => array ('from' => 1, 'to' => 100)),
@@ -95,9 +131,9 @@ class Main extends Site_controller {
     //     // 'should' => array ('name' => '賢'),
     //   ));
     // ElasticaSearch::delete ('stores');
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump ($a);
-    exit ();
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($stores);
+    // exit ();
 
 
 
