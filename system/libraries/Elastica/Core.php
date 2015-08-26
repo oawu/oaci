@@ -5,15 +5,23 @@
  * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
-class ElasticaSearch {
-  private $CI     = null;
-  private static $index = null;
-  private static $client = null;
+class Elastica_Core {
+  protected $CI     = null;
+  protected static $index = null;
+  protected static $client = null;
+  protected static $config = array (
+                      'is_enabled' => true,
+                      'ip' => 'localhost',
+                      'port' => '9200',
+                      'index' => 'oatest',
+                      'create_limit' => 1000);
 
-  function __construct () {
+  public function __construct () {
     $this->CI =& get_instance ();
 
-    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
+    self::$config = Cfg::system ('elastica_search');
+
+    if (!(self::$config['is_enabled']))
       return;
 
     $this->CI->load->library ('autoload');
@@ -25,8 +33,8 @@ class ElasticaSearch {
       return self::$client;
 
     if (self::$client = new Elastica_Client (array (
-        'host' => Cfg::system ('elastica_search', 'ip'),
-        'port' => Cfg::system ('elastica_search', 'port')
+        'host' => self::$config['ip'],
+        'port' => self::$config['port']
       )))
       return self::$client;
 
@@ -39,14 +47,14 @@ class ElasticaSearch {
     if (!($client = self::client ()))
       return null;
 
-    if (self::$index = new Elastica_Index ($client, Cfg::system ('elastica_search', 'index')))
+    if (self::$index = new Elastica_Index ($client, self::$config['index']))
       return self::$index;
 
     return null;
   }
 
-  public static function clean_index () {
-    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
+  private static function delete_index () {
+    if (!($isUse = self::$config['is_enabled']))
       return false;
 
     if (!($index = self::index ()))
@@ -58,8 +66,8 @@ class ElasticaSearch {
     return !$index->delete ()->hasError ();
   }
 
-  public static function create ($type, $column, $datas = array ()) {
-    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
+  protected static function create ($type, $column, $datas = array ()) {
+    if (!($isUse = self::$config['is_enabled']))
       return false;
 
     if (!($index = self::index ()))
@@ -69,7 +77,7 @@ class ElasticaSearch {
       return false;
 
     $length = count ($datas);
-    $limit = Cfg::system ('elastica_search', 'create_limit');
+    $limit = self::$config['create_limit'];
 
     for ($offset = 0; $offset < $length; $offset += $limit)
       if ($data = array_filter (array_map (function ($data) use ($column) { return isset ($data[$column]) ? new Elastica_Document ($data[$column], $data) : null; }, array_slice ($datas, $offset, $limit))))
@@ -80,8 +88,8 @@ class ElasticaSearch {
                  ->hasError ();
   }
 
-  public static function delete ($type, $ids) {
-    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
+  protected static function destroy ($type, $ids) {
+    if (!($isUse = self::$config['is_enabled']))
       return false;
 
     if (!($index = self::index ()))
@@ -92,14 +100,12 @@ class ElasticaSearch {
                   ->hasError ();
   }
 
-  public static function find ($type, $option = array ()) {
-    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
+  protected static function find ($type, $option = array ()) {
+    if (!($isUse = self::$config['is_enabled']))
       return array ();
-
 
     if (!($index = self::index ()))
       return array ();
-
 
     try {
       self::_modify_option ($option);
@@ -111,15 +117,15 @@ class ElasticaSearch {
                        ->search ($query);
 
       return array_filter (array_map (function ($result) use ($option) {
-                return array_filter (array_map (function ($t) { return isset ($t[0]) ? $t[0] : null; }, $result->getData ()));
+                return array_filter (array_map (function ($t) use ($option) { return $option['select'] ? $t[0] : $t; }, $result->getData ()));
               }, $result->getResults ()));
     } catch (Exception $e) {
       return array ();
     }
   }
 
-  public static function count ($type, $option = array ()) {
-    if (!($isUse = Cfg::system ('elastica_search', 'is_enabled')))
+  protected static function count ($type, $option = array ()) {
+    if (!($isUse = self::$config['is_enabled']))
       return 0;
 
     if (!($index = self::index ()))

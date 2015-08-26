@@ -9,7 +9,7 @@ class Autoload {
   static function __autoload_elastica ($class) {
     if (stripos ($class, 'Elastica') !== FALSE) {
       $path = str_replace ('_', DIRECTORY_SEPARATOR, $class);
-      require_once FCPATH . 'application' . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . $path . EXT;
+      require_once FCPATH . 'system' . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . $path . EXT;
     }
   }
 }
