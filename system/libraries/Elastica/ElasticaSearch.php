@@ -17,8 +17,13 @@ class ElasticaSearch extends Elastica_Core {
     parent::__construct ();
 
     $this->columns = $data;
+    spl_autoload_register (array ('ElasticaSearch', '__autoload_search'));
   }
 
+  public static function __autoload_search ($class) {
+    if (!class_exists ($class) && preg_match ("/" . parent::$config['class_suffix'] . "$/", $class) && is_readable ($file = implode (DIRECTORY_SEPARATOR, array_merge (array (FCPATH), parent::$config['class_directory'], array ($class . EXT)))))
+      require_once $file;
+  }
   public function __get ($column) {
     if (isset ($this->columns[$column]))
       return $this->columns[$column];
@@ -39,18 +44,6 @@ class ElasticaSearch extends Elastica_Core {
       return $this->notColumns[$column] = $value;
   }
 
-  public static function typeName () {
-    if (self::$type_name)
-      return self::$type_name;
-
-    self::$type_name = static::$type_name;
-
-    if (!self::$type_name)
-      self::$type_name = get_called_class ();
-
-    return self::$type_name;
-  }
-
   public static function primaryKey () {
     if (self::$primary_key)
       return self::$primary_key;
@@ -63,15 +56,16 @@ class ElasticaSearch extends Elastica_Core {
     return self::$primary_key;
   }
 
-  public static function find ($unit, $option = array ()) {
-    if ($unit == 'one')
-      return ($datas = parent::find (self::typeName (), array_merge ($option, array ('limit' => 1, 'offset' => 0)))) ? new self ($datas[0]) : null;
-    else
-      return array_map (function ($data) { return new self ($data); }, parent::find (self::typeName (), $option));
-  }
+  public static function typeName () {
+    if (self::$type_name)
+      return self::$type_name;
 
-  public static function count ($option = array ()) {
-    return parent::count (self::typeName (), $option);
+    self::$type_name = static::$type_name;
+
+    if (!self::$type_name)
+      self::$type_name = get_called_class ();
+
+    return self::$type_name;
   }
 
   public static function create ($data = array ()) {
@@ -92,8 +86,15 @@ class ElasticaSearch extends Elastica_Core {
     return array ();
   }
 
-  protected static function destroy ($ids = array ()) {
-    return $ids ? parent::destroy (self::typeName (), $ids) : true;
+  public static function find ($unit, $option = array ()) {
+    if ($unit == 'one')
+      return ($datas = parent::find (self::typeName (), array_merge ($option, array ('limit' => 1, 'offset' => 0)))) ? new self ($datas[0]) : null;
+    else
+      return array_map (function ($data) { return new self ($data); }, parent::find (self::typeName (), $option));
+  }
+
+  public function save () {
+    return self::update ($this->fields);
   }
 
   public static function update ($data = array ()) {
@@ -132,16 +133,34 @@ class ElasticaSearch extends Elastica_Core {
     return self::createMany ($columnsList);
   }
 
-  public function save () {
-    return self::update ($this->fields);
-  }
-
   public function delete () {
     if (!isset ($this->fields[self::primaryKey ()]))
       return false;
     return self::destroy (array ($this->fields[self::primaryKey ()]));
   }
+
   public static function deleteMany ($ids) {
     return self::destroy ($ids);
+  }
+
+  protected static function destroy ($ids = array ()) {
+    return $ids ? parent::destroy (self::typeName (), $ids) : true;
+  }
+
+  public static function clean () {
+    return self::deleteType (self::$type_name);
+  }
+
+  public static function count ($option = array ()) {
+    return parent::count (self::typeName (), $option);
+  }
+
+  protected static function deleteType ($type) {
+    return parent::deleteType ($type);
+  }
+
+  public static function deleteIndex () {
+    return parent::deleteIndex ();
+
   }
 }

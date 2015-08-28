@@ -10,3 +10,5 @@ $elastica_search['ip']     = 'localhost';
 $elastica_search['port']   = '9200';
 $elastica_search['index']  = 'oatest';
 $elastica_search['create_limit']  = 1000;
+$elastica_search['class_directory']  = array ('application', 'searches');
+$elastica_search['class_suffix']  = 'Search';

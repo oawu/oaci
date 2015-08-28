@@ -7,25 +7,30 @@
 
 class Elastica_Core {
   protected $CI     = null;
+  protected static $path = null;
   protected static $index = null;
   protected static $client = null;
-  protected static $config = array (
-                      'is_enabled' => true,
-                      'ip' => 'localhost',
-                      'port' => '9200',
-                      'index' => 'oatest',
-                      'create_limit' => 1000);
+  protected static $config = array ();
 
   public function __construct () {
     $this->CI =& get_instance ();
 
-    self::$config = Cfg::system ('elastica_search');
+    if (!self::$config)
+      self::$config = Cfg::system ('elastica_search');
 
     if (!(self::$config['is_enabled']))
       return;
 
-    $this->CI->load->library ('autoload');
-    spl_autoload_register (array ('Autoload', '__autoload_elastica'));
+    if (self::$path === null)
+      array_pop (self::$path = explode (DIRECTORY_SEPARATOR, pathinfo (__FILE__, PATHINFO_DIRNAME)));
+
+    spl_autoload_register (array ('Elastica_Core', '__autoload_elastica'));
+  }
+  static function __autoload_elastica ($class) {
+    if (stripos ($class, 'Elastica') !== FALSE) {
+      $path = str_replace ('_', DIRECTORY_SEPARATOR, $class);
+      require_once implode (DIRECTORY_SEPARATOR, self::$path) . DIRECTORY_SEPARATOR . $path . EXT;
+    }
   }
 
   protected static function client () {
@@ -40,6 +45,7 @@ class Elastica_Core {
 
     return null;
   }
+
   protected static function index () {
     if (self::$index)
       return self::$index;
@@ -51,19 +57,6 @@ class Elastica_Core {
       return self::$index;
 
     return null;
-  }
-
-  private static function delete_index () {
-    if (!($isUse = self::$config['is_enabled']))
-      return false;
-
-    if (!($index = self::index ()))
-      return false;
-
-    if (!$index->exists ())
-      return false;
-
-    return !$index->delete ()->hasError ();
   }
 
   protected static function create ($type, $column, $datas = array ()) {
@@ -86,18 +79,6 @@ class Elastica_Core {
     return !$type->getIndex ()
                  ->refresh ()
                  ->hasError ();
-  }
-
-  protected static function destroy ($type, $ids) {
-    if (!($isUse = self::$config['is_enabled']))
-      return false;
-
-    if (!($index = self::index ()))
-      return false;
-
-    return !$index->getType ($type)
-                  ->deleteIds ($ids)
-                  ->hasError ();
   }
 
   protected static function find ($type, $option = array ()) {
@@ -124,6 +105,18 @@ class Elastica_Core {
     }
   }
 
+  protected static function destroy ($type, $ids) {
+    if (!($isUse = self::$config['is_enabled']))
+      return false;
+
+    if (!($index = self::index ()))
+      return false;
+
+    return !$index->getType ($type)
+                  ->deleteIds ($ids)
+                  ->hasError ();
+  }
+
   protected static function count ($type, $option = array ()) {
     if (!($isUse = self::$config['is_enabled']))
       return 0;
@@ -142,6 +135,37 @@ class Elastica_Core {
       return 0;
     }
   }
+
+  protected static function deleteIndex () {
+    if (!($isUse = self::$config['is_enabled']))
+      return false;
+
+    if (!($index = self::index ()))
+      return false;
+
+    if (!$index->exists ())
+      return false;
+
+    return !$index->delete ()->hasError ();
+  }
+
+  protected static function deleteType ($type) {
+    if (!($isUse = self::$config['is_enabled']))
+      return false;
+
+    if (!($index = self::index ()))
+      return false;
+
+    if (!$index->exists ())
+      return false;
+
+    if (!($type = $index->getType ($type)))
+      return false;
+
+    return !$type->delete ()
+                 ->hasError ();
+  }
+
   private static function _modify_option (&$option) {
     $option['must']          = isset ($option['must'])          ? array_filter ($option['must']) : array ();
     $option['limit']         = isset ($option['limit'])         ? $option['limit'] : 100;
