@@ -83,6 +83,8 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 
 * 匯入並且可使用 compass, gulp.. 等。
 
+* 匯入 [OA-ElasticaSearch](https://github.com/comdan66/OA-ElasticaSearch) 加入 Elastica Search 的使用以及 command。
+
 
 <br />
 <br />
@@ -110,11 +112,13 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 	* [migration](#create-migration)
 	* [model](#create-model)
 	* [cell](#create-cell)
+	* search
 	
 * delete
 	* [controller](#delete-controller)
 	* [model](#delete-model)
 	* [cell](#delete-cell)
+	* search
 
 * [migration](#migration)
 
@@ -130,6 +134,7 @@ php  | create | controller | controller_name | [site \| admin \| delay]
 php  | create | model      | model_name      | [[(-p | -pic) column_name1, column_name2...] | [(-f | -file) column_name1, column_name2...]]
 php  | create | migration  | table_name      | [(-a \| -add) \| (-e \| -edit) \| (-d \| -delete \| -del \| -drop)]
 php  | create | cell       | cell_name       | [method_name1, method_name2...]
+php  | create | search     | search_name
 
 	* 刪除 - delete
 
@@ -138,6 +143,7 @@ php  | create | cell       | cell_name       | [method_name1, method_name2...]
 php  | delete | controller | controller_name | [site \| admin \| delay]
 php  | delete | model      | model_name      |
 php  | delete | cell       | cell_name       |
+php  | delete | search     | search_name
 
 	* migration
 
