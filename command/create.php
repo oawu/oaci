@@ -18,6 +18,7 @@
   // php   create   migration    table_name        [(-a | -add) | (-e | -edit) | (-d | -delete | -del | -drop)]
   // php   create   cell         cell_name         [method_name1, method_name2...]
   // php   create   demo
+  // php   create   search       search_name
 
   $file   = array_shift ($argv);
   $type   = array_shift ($argv);
@@ -50,8 +51,12 @@
       $results = create_demo ();
       break;
 
+    case 'search':
+      $results = create_search ($temp_path, $name);
+      break;
+
     default:
-      return console_error ('指令錯誤!', '只接受 controller、model、migration、cell、demo 四種指令。');
+      return console_error ('指令錯誤!', '只接受 controller、model、migration、cell、demo、search 指令。');
   }
 
   $results = array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, $results);

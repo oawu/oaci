@@ -94,3 +94,17 @@ if (!function_exists ('delete_cell')) {
     return $results;
   }
 }
+
+if (!function_exists ('delete_search')) {
+  function delete_search ($name) {
+    $results = array ();
+    $name = singularize ($name);
+    $class_suffix = 'Search';
+
+    $search_path = FCPATH . 'application/searches/' . ucfirst (camelize ($name . $class_suffix)) . EXT;
+
+    if (delete_file ($search_path))
+      array_push ($results, $search_path);
+    return $results;
+  }
+}

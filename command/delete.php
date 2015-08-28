@@ -16,6 +16,7 @@
   // php   delete   model        model_name
   // php   delete   cell         cell_name
   // php   delete   demo
+  // php   delete   search       search_name
 
   $file   = array_shift ($argv);
   $type   = array_shift ($argv);
@@ -40,8 +41,12 @@
       $results = delete_demo ();
       break;
 
+    case 'search':
+      $results = delete_search ($name);
+      break;
+
     default:
-      return console_error ('指令錯誤!', '只接受 controller、model、cell、demo 三種指令。');
+      return console_error ('指令錯誤!', '只接受 controller、model、cell、demo、search 指令。');
   }
 
   $results = array_map (function ($result) { $count = 1; return color ('Delete: ', 'r') . str_replace (FCPATH, '', $result, $count); }, $results);
