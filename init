@@ -9,4 +9,4 @@
   // =============================================================
   // php   init
 
-  include 'command/init.php';
+  include 'system/cmd/init.php';

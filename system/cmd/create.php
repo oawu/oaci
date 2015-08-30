@@ -9,7 +9,7 @@
   include_once 'functions/create.php';
 
   $results = array ();
-  $temp_path = FCPATH . 'command/templates/create/';
+  $temp_path = BASEPATH . 'cmd/templates/create/';
 
   //       file     type         name              action
   // =============================================================

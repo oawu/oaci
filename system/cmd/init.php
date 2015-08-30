@@ -17,7 +17,7 @@
   $password = ($password = array_shift ($argv)) ? $password : 'password';
   $database = ($database = array_shift ($argv)) ? $database : 'table';
   $hostname = ($hostname = array_shift ($argv)) ? $hostname : '127.0.0.1';
-  $temp_path = FCPATH . 'command/templates/init/';
+  $temp_path = BASEPATH . 'cmd/templates/init/';
 
   $results = array ();
 

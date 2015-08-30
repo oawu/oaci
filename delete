@@ -12,4 +12,4 @@
   // php   delete   cell         cell_name
   // php   delete   search       search_name
 
-  include 'command/delete.php';
+  include 'system/cmd/delete.php';

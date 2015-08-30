@@ -16,21 +16,21 @@ if (!function_exists ('create_demo')) {
     $results = array ();
     $migrations = array ('event' => array (), 'attendee' => array (), 'tag' => array (), 'tag_event_map' => array ());
     array_walk ($migrations, function ($value, $key) use (&$results) {
-      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('  Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_migration (FCPATH . 'command/templates/demo/' . $key . '/', $key, 'add'))));
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('  Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_migration (BASEPATH . 'cmd/templates/demo/' . $key . '/', $key, 'add'))));
     });
     echo implode ("\n", $results) . "\n" . $line;
 
     $results = array ();
     $models = array ('event' => array ('-p' => array ('cover')), 'attendee' => array (), 'tag' => array (), 'tag_event_map' => array ());
     array_walk ($models, function ($value, $key) use (&$results) {
-      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('  Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_model (FCPATH . 'command/templates/demo/' . $key . '/', $key, isset ($value['-p']) ? $value['-p'] : array (), isset ($value['-f']) ? $value['-f'] : array ()))));
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('  Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_model (BASEPATH . 'cmd/templates/demo/' . $key . '/', $key, isset ($value['-p']) ? $value['-p'] : array (), isset ($value['-f']) ? $value['-f'] : array ()))));
     });
     echo implode ("\n", $results) . "\n" . $line;
 
     $results = array ();
     $cells = array ('demo' => array ('main_menu'));
     array_walk ($cells, function ($value, $key) use (&$results) {
-      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('  Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_cell (FCPATH . 'command/templates/demo/cell/', $key, $value))));
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('  Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_cell (BASEPATH . 'cmd/templates/demo/cell/', $key, $value))));
     });
     echo implode ("\n", $results) . "\n" . $line;
 
@@ -38,7 +38,7 @@ if (!function_exists ('create_demo')) {
     $results = array ();
     $controllers = array ('events' => array (), 'tags' => array ());
     array_walk ($controllers, function ($value, $key) use (&$results) {
-      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('  Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_controller (FCPATH . 'command/templates/demo/' . singularize ($key) . '/', $key, 'site', array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy')))));
+      array_push ($results, implode ("\n", array_map (function ($result) { $count = 1; return color ('  Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, create_controller (BASEPATH . 'cmd/templates/demo/' . singularize ($key) . '/', $key, 'site', array ('index', 'show', 'add', 'create', 'edit', 'update', 'destroy')))));
     });
     echo implode ("\n", $results) . "\n" . $line;
 

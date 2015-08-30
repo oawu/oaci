@@ -8,7 +8,6 @@
   include_once 'base.php';
   include_once 'functions/delete.php';
   $results = array ();
-  $temp_path = FCPATH . 'command/templates/create/';
 
   //       file     type         name              action
   // =============================================================

@@ -9,9 +9,14 @@
 
   define ('EXT', '.php');
   define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));
-  define ('FCPATH', dirname (str_replace (SELF, '', __FILE__)) . '/');
 
+  $path = explode (DIRECTORY_SEPARATOR, dirname (str_replace (SELF, '', __FILE__)));
+  array_pop($path);
+
+  define ('FCPATH', implode (DIRECTORY_SEPARATOR, $path) . '/');
+
+  define ('APPPATH', FCPATH . 'application/');
   define ('BASEPATH', FCPATH . 'system/');
-  define ('APPPATH', 'application/');
 
   define ('ENVIRONMENT', 'console');
+
