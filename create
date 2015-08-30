@@ -14,4 +14,4 @@
   // php   create   demo
   // php   create   search       search_name
 
-  include 'command/create.php';
+  include 'system/cmd/create.php';

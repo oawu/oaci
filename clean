@@ -9,4 +9,4 @@
   // =======================================================================
   // php   clean    cache        [cell | file | model | [assets | static]]
 
-  include 'command/clean.php';
+  include 'system/cmd/clean.php';

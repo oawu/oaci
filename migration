@@ -9,4 +9,4 @@
   // ==========================================
   // php   migration  [0 | 1 | 2...]
 
-  include 'command/migration.php';
+  include 'system/cmd/migration.php';

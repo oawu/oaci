@@ -19,8 +19,8 @@ upload/*
 
 assets/*
 
-command/compass/.sass-cache/*
+cmd
 
-command/gulp/node_modules/*
-command/gulp/.sass-cache/*
-command/gulp/npm-debug.log
+system/cmd/.sass-cache/*
+system/cmd/node_modules/*
+system/cmd/npm-debug.log
