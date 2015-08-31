@@ -19,7 +19,7 @@ upload/*
 
 assets/*
 
-cmd
+/cmd
 
 system/cmd/.sass-cache/*
 system/cmd/node_modules/*
