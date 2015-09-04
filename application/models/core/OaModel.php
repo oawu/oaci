@@ -15,12 +15,12 @@ class OaModel extends ActiveRecordModel {
     $args = array_splice($args, 1, 3);
 
     if (!isset($conditions))
-        $conditions = array();
+      $conditions = array();
 
     if (!$conditions)
-        $conditions[0] = '(' . $str . ')';
+      $conditions[0] = '(' . $str . ')';
     else
-        $conditions[0] .= ' AND (' . $str . ')';
+      $conditions[0] .= ' AND (' . $str . ')';
 
     foreach ($args as $arg)
         if ($arg !== null)
