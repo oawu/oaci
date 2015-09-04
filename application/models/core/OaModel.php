@@ -23,8 +23,8 @@ class OaModel extends ActiveRecordModel {
       $conditions[0] .= ' AND (' . $str . ')';
 
     foreach ($args as $arg)
-        if ($arg !== null)
-            array_push($conditions, $arg);
+      if ($arg !== null)
+          array_push($conditions, $arg);
   }
 
   public function recycle () {
