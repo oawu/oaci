@@ -21,7 +21,10 @@ class OAInput {
   }
 
   public static function post ($index = null, $xss_clean = true) {
-    $posts = $xss_clean ? array_map (function ($post) { return self::ci ()->security->xss_clean ($post);}, self::ci ()->input->post ()) : self::ci ()->input->post ();
+    if (!($posts = self::ci ()->input->post ()))
+      return array ();
+
+    $posts = $xss_clean ? array_map (function ($post) { return self::ci ()->security->xss_clean ($post);}, $posts) : $posts;
 
     if ($index === null)
       return $posts;
@@ -33,7 +36,10 @@ class OAInput {
   }
 
   public static function get ($index = null, $xss_clean = true) {
-    $gets = $xss_clean ? array_map (function ($get) { return self::ci ()->security->xss_clean ($get);}, self::ci ()->input->get ()) : self::ci ()->input->get ();
+    if (!($gets = self::ci ()->input->get ()))
+      return array ();
+
+    $gets = $xss_clean ? array_map (function ($get) { return self::ci ()->security->xss_clean ($get);}, $gets) : $gets;
 
     if ($index === null)
       return $gets;
