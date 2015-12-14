@@ -8,6 +8,7 @@
 class CompressorIo {
   const URL = 'https://compressor.io/server/Lossy.php';
   const TEMP_DIR = array ('temp');
+  const CURLOPT_TIMEOUT = 60 * 5;
   const CURLOPT_USERAGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36';
 
   public function __construct () {}
@@ -32,7 +33,7 @@ class CompressorIo {
 
     $options = array (
       CURLOPT_URL => $url,
-      CURLOPT_TIMEOUT => 120,
+      CompressorIo::CURLOPT_TIMEOUT => 120,
       CURLOPT_COOKIE => implode ($cookies, ';'),
       CURLOPT_HEADER => false,
       CURLOPT_MAXREDIRS => 10,
@@ -69,7 +70,7 @@ class CompressorIo {
       CURLOPT_URL => CompressorIo::URL, 
       CURLOPT_POST => true,
       CURLOPT_POSTFIELDS => $posts,
-      CURLOPT_TIMEOUT => 120, 
+      CompressorIo::CURLOPT_TIMEOUT => 120, 
       CURLOPT_HEADER => 1, 
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_AUTOREFERER => true, 
@@ -79,7 +80,7 @@ class CompressorIo {
       CURLOPT_USERAGENT => CompressorIo::CURLOPT_USERAGENT
     );
 
-    $ch = curl_init ($url);
+    $ch = curl_init (CompressorIo::URL);
     curl_setopt_array ($ch, $options);
     $data = curl_exec ($ch);
     $header_size = curl_getinfo ($ch, CURLINFO_HEADER_SIZE);
@@ -109,7 +110,6 @@ class CompressorIo {
 
   public static function post ($oriFiles, &$cookies) {
     $files = is_string ($oriFiles) ? $files = array ($oriFiles) : array_splice ($oriFiles, 0);
-
     $files = array_combine ($files, array_map (function ($oriFile) { return array (
         'postname' => $postname = uniqid (rand () . '_') . '.' . pathinfo ($oriFile, PATHINFO_EXTENSION),
         'realpath' => $realpath = realpath ($oriFile),
@@ -130,22 +130,22 @@ class CompressorIo {
     
     foreach ($files as $key => &$file)
       $file = isset ($data[$file['postname']]) ? $data[$file['postname']] : '';
-    
+   
     return is_string ($oriFiles) ? isset ($files[$oriFiles]) ? $files[$oriFiles] : '' : $files;
   }
 
-  public static function download ($datas, $cookies) {
+  public static function download ($datas, $cookies, $originName = false) {
     $result = array ();
     foreach ($datas as $key => $value)
-      $result[$key] = $value ? self::_getFile ($value, $cookies, FCPATH . implode (DIRECTORY_SEPARATOR, CompressorIo::TEMP_DIR) . DIRECTORY_SEPARATOR . uniqid (rand () . '_') . '.' . pathinfo ($key, PATHINFO_EXTENSION)) : '';
+      $result[$key] = $value ? self::_getFile ($value, $cookies, $originName ? ($key) : (FCPATH . implode (DIRECTORY_SEPARATOR, CompressorIo::TEMP_DIR) . DIRECTORY_SEPARATOR . uniqid (rand () . '_') . '.' . pathinfo ($key, PATHINFO_EXTENSION))) : '';
     return $result;
   }
 
-  public static function postAndDownload ($oriFiles) {
+  public static function postAndDownload ($oriFiles, $originName = false) {
     $cookies = array ();
 
     $files = is_string ($oriFiles) ? $files = array ($oriFiles) : array_splice ($oriFiles, 0);
-    $result = self::download (self::post ($files, $cookies), $cookies);
+    $result = self::download (self::post ($files, $cookies), $cookies, $originName);
 
     return is_string ($oriFiles) ? isset ($result[$oriFiles]) ? $result[$oriFiles] : '' : $result;
   }
