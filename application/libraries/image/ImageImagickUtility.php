@@ -14,7 +14,7 @@ class ImageImagickUtility extends ImageBaseUtility {
   public function __construct ($fileName, $options = array ()) {
     parent::__construct ($fileName);
 
-    $this->configs = Cfg::system ('image_gd_utility');
+    $this->configs = Cfg::system ('image_imgk_utility');
 
     $this->_init ()
          ->_setOptions ($options);
