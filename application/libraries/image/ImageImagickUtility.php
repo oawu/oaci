@@ -177,7 +177,7 @@ class ImageImagickUtility extends ImageBaseUtility {
       throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '色碼錯誤！', '請確認色碼格式，目前只支援 字串HEX 格式！');
 
     if (($width < $this->dimension['width']) || ($height < $this->dimension['height']))
-      return $this->resize ($width, $height);
+      $this->resize ($width, $height);
 
     $newImage = new Imagick ();
     $newImage->setFormat ($this->format);
