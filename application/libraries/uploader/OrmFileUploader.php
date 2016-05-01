@@ -2,7 +2,7 @@
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
- * @copyright   Copyright (c) 2016 OA Wu Design
+ * @copyright   Copyright (c) 2015 OA Wu Design
  */
 
 class OrmFileUploader extends OrmUploader {
@@ -17,11 +17,11 @@ class OrmFileUploader extends OrmUploader {
     $this->configs = Cfg::system ('orm_uploader', 'file_uploader');
   }
   // return string
-  public function url () {
+  public function url ($url ='') {
     return parent::url ('');
   }
   // return array
-  public function path () {
+  public function path ($fileName = '') {
     return parent::path ($this->getValue ());
   }
 }
