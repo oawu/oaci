@@ -14,6 +14,7 @@ class Root_controller extends CI_Controller {
   private $libraries_path   = array ();
 
   private $param = array ();
+  private $error = array ();
 
   public function __construct () {
     parent::__construct ();
@@ -37,6 +38,13 @@ class Root_controller extends CI_Controller {
          ->set_views_path ('application', 'views')
          ->set_class ($this->router->fetch_class ())
          ->set_method ($this->router->fetch_method ());
+  }
+
+  public function disable ($error) {
+    return $this->error = $error;
+  }
+  public function enable () {
+    return $this->error ? $this->error : false;
   }
 
   protected function set_class ($class) {
