@@ -17,7 +17,7 @@
  *
  * @example file.php    Using the file handler.
  */
-class Log_file extends Log
+class Log_file extends CI_Log
 {
     /**
      * String containing the name of the log file.
@@ -101,7 +101,7 @@ class Log_file extends Log
         $this->_id = md5(microtime());
         $this->_filename = $name;
         $this->_ident = $ident;
-        $this->_mask = Log::UPTO($level);
+        $this->_mask = CI_Log::UPTO($level);
 
         if (isset($conf['append'])) {
             $this->_append = $conf['append'];

@@ -27,7 +27,7 @@ define('PEAR_LOG_TYPE_FILE',    3); /* Append to a file */
 define('PEAR_LOG_TYPE_SAPI',    4); /* Use the SAPI logging handler */
 
 /**
- * The Log:: class implements both an abstraction for various logging
+ * The CI_Log:: class implements both an abstraction for various logging
  * mechanisms and the Subject end of a Subject-Observer pattern.
  *
  * @author  Chuck Hagenbuch <chuck@horde.org>
@@ -35,7 +35,7 @@ define('PEAR_LOG_TYPE_SAPI',    4); /* Use the SAPI logging handler */
  * @since   Horde 1.3
  * @package Log
  */
-class Log
+class CI_Log
 {
     /**
      * Indicates whether or not the log can been opened / connected.
@@ -172,7 +172,7 @@ class Log
      * check for the existance of one each time. The singleton pattern does all
      * the checking work for you.
      *
-     * <b>You MUST call this method with the $var = &Log::singleton() syntax.
+     * <b>You MUST call this method with the $var = &CI_Log::singleton() syntax.
      * Without the ampersand (&) in front of the method name, you will not get
      * a reference, you will get a copy.</b>
      *
@@ -206,7 +206,7 @@ class Log
 
         $signature = serialize(array($handler, $name, $ident, $conf, $level));
         if (!isset($instances[$signature])) {
-            $instances[$signature] = Log::factory($handler, $name, $ident,
+            $instances[$signature] = CI_Log::factory($handler, $name, $ident,
                                                   $conf, $level);
         }
 
@@ -647,11 +647,11 @@ class Log
      * @access  public
      * @since   Log 1.7.0
      *
-     * @deprecated deprecated since Log 1.9.4; use Log::MAX() instead
+     * @deprecated deprecated since Log 1.9.4; use CI_Log::MAX() instead
      */
     public static function UPTO($priority)
     {
-        return Log::MAX($priority);
+        return CI_Log::MAX($priority);
     }
 
     /**
@@ -735,7 +735,7 @@ class Log
      */
     function _isMasked($priority)
     {
-        return (Log::MASK($priority) & $this->_mask);
+        return (CI_Log::MASK($priority) & $this->_mask);
     }
 
     /**
