@@ -106,6 +106,6 @@ class ImageUtility {
     if (!class_exists ($class))
       include_once $class . '.php';
 
-    return call_user_func_array (array ($class, 'list_og'), array ($files, $save));
+    return call_user_func_array (array ($class, 'photos'), array ($files, $save));
   }
 }
