@@ -102,4 +102,10 @@ class ImageUtility {
 
     return call_user_func_array (array ($modules[$module], 'make_block9'), array ($files, $save));
   }
+  public static function photos ($files, $save, $class = 'ImageImagickUtility') {
+    if (!class_exists ($class))
+      include_once $class . '.php';
+
+    return call_user_func_array (array ($class, 'list_og'), array ($files, $save));
+  }
 }
