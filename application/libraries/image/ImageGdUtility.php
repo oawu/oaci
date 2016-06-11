@@ -365,4 +365,135 @@ class ImageGdUtility extends ImageBaseUtility {
       default: case 'png': return @imagepng ($image, $save);
     }
   }
+  public static function photos ($files, $save, $interlace = null, $jpegQuality = 100) {
+    if (!(count ($files) >= 1))
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '參數錯誤，files count：' . count ($files), '參數 files 數量一定要大於 9！');
+
+    if (!$save)
+      throw new ImageUtilityException ('ImageGdUtility 錯誤！', '錯誤的儲存路徑，save' . $save, '請再次確認儲存路徑！');
+
+    if (!class_exists ('ImageUtility'))
+      include_once 'ImageUtility.php';
+
+    $w = 1200;
+    $h = 630;
+
+    $positions = array (
+      array ('left' =>   0, 'top' =>   0, 'width' => 600 - 1, 'height' => 630),
+      array ('left' => 600 + 1, 'top' =>   0, 'width' =>  600 - 1, 'height' =>  310 - 1),
+      array ('left' => 600 + 1, 'top' =>   310 + 1, 'width' =>  600 - 1, 'height' =>  310 - 1),
+    );
+
+    $image = imagecreatetruecolor ($w, $h);
+    imagefill ($image, 0, 0, imagecolorallocate ($image, 255, 255, 255));
+    
+    $positions = array ();
+    $spacing = 5;
+    switch (count ($files)) {
+      default:
+      case 1:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w, 'height' => $h),
+        );
+        break;
+      case 2:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h),
+          array ('left' => $w / 2 + $spacing, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h),
+        );
+        break;
+      case 3:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h),
+          array ('left' => $w / 2 + $spacing, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 2 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 2 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 4:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w, 'height' => $h / 2 - $spacing),
+          array ('left' => 0, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 5:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 2 + $spacing, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => 0, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 6:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => 0, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 7:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => 0, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 8:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => 0, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => 0, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+        );
+        break;
+      case 9:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => 0, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => 0, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+        );
+        break;
+    }
+
+    for ($i = 0; $i < count ($positions); $i++)
+      imagecopymerge ($image,
+                      ImageUtility::create ($files[$i])->getImage (),
+                      $positions[$i]['left'],
+                      $positions[$i]['top'],
+                      0,
+                      0,
+                      $positions[$i]['width'],
+                      $positions[$i]['height'],
+                      100);
+
+    if ($interlace === true)
+      imageinterlace ($image, 1);
+    else if ($interlace === false)
+      imageinterlace ($image, 0);
+
+    switch (pathinfo ($save, PATHINFO_EXTENSION)) {
+      case 'jpg': return @imagejpeg ($image, $save, $jpegQuality);
+      case 'gif': return @imagegif ($image, $save);
+      default: case 'png': return @imagepng ($image, $save);
+    }
+  }
 }

@@ -580,4 +580,113 @@ class ImageImagickUtility extends ImageBaseUtility {
 
     return $newImage->writeImages ($save, $rawData);
   }
+  public static function photos ($files, $save = null, $rawData = true) {
+    if (!(count ($files) >= 1))
+      throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '參數錯誤，files count：' . count ($files), '參數 files 數量一定要大於 9！');
+
+    if (!$save)
+      throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '錯誤的儲存路徑，save' . $save, '請再次確認儲存路徑！');
+    
+    $w = 1200;
+    $h = 630;
+
+    $newImage = new Imagick ();
+    $newImage->newImage ($w, $h, new ImagickPixel ('white'));
+    $newImage->setFormat (pathinfo ($save, PATHINFO_EXTENSION));
+    $positions = array ();
+    $spacing = 5;
+    switch (count ($files)) {
+      default:
+      case 1:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w, 'height' => $h),
+        );
+        break;
+      case 2:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h),
+          array ('left' => $w / 2 + $spacing, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h),
+        );
+        break;
+      case 3:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h),
+          array ('left' => $w / 2 + $spacing, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 2 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 2 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 4:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w, 'height' => $h / 2 - $spacing),
+          array ('left' => 0, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 5:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 2 + $spacing, 'top' => 0, 'width' => $w / 2 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => 0, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 6:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => 0, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 7:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => 0, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+        );
+        break;
+      case 8:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => 0, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => 0, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 2 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 2 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+        );
+        break;
+      case 9:
+        $positions = array (
+          array ('left' => 0, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => 0, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => 0, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => $w / 3 + $spacing, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => 0, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => $h / 3 + $spacing, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+          array ('left' => ($w / 3 + $spacing) * 2, 'top' => ($h / 3 + $spacing) * 2, 'width' => $w / 3 - $spacing, 'height' => $h / 3 - $spacing),
+        );
+        break;
+    }
+
+    for ($i = 0; $i < count ($positions); $i++)
+      $newImage->compositeImage (ImageUtility::create ($files[$i])->adaptiveResizeQuadrant ($positions[$i]['width'], $positions[$i]['height'])
+                                                                  ->getImage (),
+                                 imagick::COMPOSITE_DEFAULT,
+                                 $positions[$i]['left'],
+                                 $positions[$i]['top']);
+
+    return $newImage->writeImages ($save, $rawData);
+  }
 }
