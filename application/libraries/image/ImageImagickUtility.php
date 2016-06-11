@@ -549,7 +549,7 @@ class ImageImagickUtility extends ImageBaseUtility {
   }
 
   // return boolean
-  public function make_block9 ($files, $save = null, $rawData = true) {
+  public static function make_block9 ($files, $save = null, $rawData = true) {
     if (!(count ($files) >= 9))
       throw new ImageUtilityException ('ImageImagickUtility 錯誤！', '參數錯誤，files count：' . count ($files), '參數 files 數量一定要大於 9！');
 
