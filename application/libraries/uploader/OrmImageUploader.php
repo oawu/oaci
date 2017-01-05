@@ -85,9 +85,14 @@ class OrmImageUploader extends OrmUploader {
       return $this->getDebug () ? error ('OrmImageUploader 錯誤！', '暫存資料夾不可讀寫或不存在！', '請檢查暫存資料夾是否存在以及可讀寫！', '預設值 暫存資料夾 請檢查 config/system/orm_uploader.php 設定檔！') : false;
 
     $news = array ();
+    $info = @exif_read_data ($temp);
+    $orientation = $info && isset ($info['Orientation']) ? $info['Orientation'] : 0;
+
     try {
       foreach ($versions as $key => $version) {
         $image = ImageUtility::create ($temp, null);
+        $image->rotate ($orientation == 6 ? 90 : ($orientation == 8 ? -90 : ($orientation == 3 ? 180 : 0)));
+        
         $name = !isset ($name) ? $this->getRandomName () . ($this->configs['auto_add_format'] ? '.' . $image->getFormat () : '') : $name;
         $new_name = $key . $this->configs['separate_symbol'] . $name;
         $new_path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($path, array ($new_name)));
