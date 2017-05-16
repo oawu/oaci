@@ -8,6 +8,11 @@
 class Main extends Site_controller {
 
   public function index () {
-    $this->load_view ();
+
+    $this->load->library ('PttGeter');
+    $uri = '/bbs/Gossiping/index.html';
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    print_r (PttGeter::getListAndPrevNextUri ($uri));
+    exit ();
   }
 }
