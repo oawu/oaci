@@ -73,8 +73,7 @@
   }, $links));
 
   $results = array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, $results);
-  if (file_exists (FCPATH . DIRECTORY_SEPARATOR . 'init'))
-    @unlink (FCPATH . DIRECTORY_SEPARATOR . 'init');
+  @unlink (FCPATH . DIRECTORY_SEPARATOR . 'init');
   
   array_unshift ($results, '初始化成功!');
   call_user_func_array ('console_log', $results);
