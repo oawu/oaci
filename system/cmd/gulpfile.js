@@ -4,8 +4,6 @@ var gulp       = require ('gulp'),
     htmlmin    = require ('gulp-html-minifier'),
     del        = require ('del'),
     chokidar   = require ('chokidar'),
-    read       = require ('read-file'),
-    writeFile  = require ('write'),
     gutil      = require ('gulp-util'),
     shell      = require ('gulp-shell'),
     colors     = gutil.colors;
@@ -13,92 +11,92 @@ var gulp       = require ('gulp'),
 gulp.task ('default', function () {
   console.log ('\n ' + colors.red ('•') + colors.cyan (' [啟動] ') + '正在開啟 Gulp 初始化！');
 
-      console.log ('\n ' + colors.red ('•') + colors.cyan (' [開啟] ') + '設定相關 ' + colors.magenta ('watch') + ' 功能！');
+  console.log ('\n ' + colors.red ('•') + colors.cyan (' [開啟] ') + '設定相關 ' + colors.magenta ('watch') + ' 功能！');
 
-      livereload.listen ({
-        silent: true
-      });
+  livereload.listen ({
+    silent: true
+  });
 
-      var watcherReload = chokidar.watch (['./root/*.html', './root/css/**/*.css', './root/js/**/*.js'], {
-        ignored: /(^|[\/\\])\../,
-        persistent: true
-      });
+  var watcherReload = chokidar.watch (['./root/*.html', './root/css/**/*.css', './root/js/**/*.js'], {
+    ignored: /(^|[\/\\])\../,
+    persistent: true
+  });
 
-      watcherReload.on ('change', function (path) {
-        console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有檔案更新，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
-        gulp.start ('reload');
-        console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
-      }).on ('add', function (path) {
-        console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有新增檔案，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
-        gulp.start ('reload');
-        console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
-      }).on ('unlink', function (path) {
-        console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有檔案刪除，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
-        gulp.start ('reload');
-        console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
-      });
+  watcherReload.on ('change', function (path) {
+    console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有檔案更新，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
+    gulp.start ('reload');
+    console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
+  }).on ('add', function (path) {
+    console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有新增檔案，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
+    gulp.start ('reload');
+    console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
+  }).on ('unlink', function (path) {
+    console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有檔案刪除，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
+    gulp.start ('reload');
+    console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
+  });
 
-      var watcherStyle = chokidar.watch ('./root/font/icomoon/style.css', {
-        ignored: /(^|[\/\\])\../,
-        persistent: true
-      });
+  var watcherStyle = chokidar.watch ('./root/font/icomoon/style.css', {
+    ignored: /(^|[\/\\])\../,
+    persistent: true
+  });
 
-      watcherStyle.on ('add', function (path) { gulp.start ('update_icomoon_font_icon'); })
-                  .on ('change', function (path) { gulp.start ('update_icomoon_font_icon'); });
-      // watcherStyle.on ('unlink', function (path) { gulp.start ('update_icomoon_font_icon'); });
+  watcherStyle.on ('add', function (path) { gulp.start ('update_icomoon_font_icon'); })
+              .on ('change', function (path) { gulp.start ('update_icomoon_font_icon'); });
+  // watcherStyle.on ('unlink', function (path) { gulp.start ('update_icomoon_font_icon'); });
 
-      var watcherScss = chokidar.watch ('./root/scss/**/*.scss', {
-        ignored: /(^|[\/\\])\../,
-        persistent: true
-      });
+  var watcherScss = chokidar.watch ('./root/scss/**/*.scss', {
+    ignored: /(^|[\/\\])\../,
+    persistent: true
+  });
 
-      watcherScss.on ('change', function (path) {
-        gulp.start ('compass_compile');
-        console.log ('\n ' + colors.red ('•') + colors.yellow (' [scss] ') + '完成編譯 scss，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
-      }).on ('unlink', function (path) {
-        del (path.replace (/scss\//g, 'css/').replace (/\.scss/g, '.css'));
-        console.log ('\n ' + colors.red ('•') + colors.yellow (' [scss] ') + '刪除 scss，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
-      }).on ('add', function (path) {
-        gulp.start ('compass_compile');
-        console.log ('\n ' + colors.red ('•') + colors.yellow (' [scss] ') + '完成編譯 scss，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
-      });
+  watcherScss.on ('change', function (path) {
+    gulp.start ('compass_compile');
+    console.log ('\n ' + colors.red ('•') + colors.yellow (' [scss] ') + '完成編譯 scss，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
+  }).on ('unlink', function (path) {
+    del (path.replace (/scss\//g, 'css/').replace (/\.scss/g, '.css'));
+    console.log ('\n ' + colors.red ('•') + colors.yellow (' [scss] ') + '刪除 scss，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
+  }).on ('add', function (path) {
+    gulp.start ('compass_compile');
+    console.log ('\n ' + colors.red ('•') + colors.yellow (' [scss] ') + '完成編譯 scss，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
+  });
 });
 gulp.task ('watch', function () {
   console.log ('\n ' + colors.red ('•') + colors.cyan (' [啟動] ') + '正在開啟 Gulp 初始化！');
 
-      console.log ('\n ' + colors.red ('•') + colors.cyan (' [開啟] ') + '設定相關 ' + colors.magenta ('watch') + ' 功能！');
+  console.log ('\n ' + colors.red ('•') + colors.cyan (' [開啟] ') + '設定相關 ' + colors.magenta ('watch') + ' 功能！');
 
-      livereload.listen ({
-        silent: true
-      });
+  livereload.listen ({
+    silent: true
+  });
 
-      var watcherReload = chokidar.watch (['./root/*.html', './root/css/**/*.css', './root/js/**/*.js'], {
-        ignored: /(^|[\/\\])\../,
-        persistent: true
-      });
+  var watcherReload = chokidar.watch (['./root/*.html', './root/css/**/*.css', './root/js/**/*.js'], {
+    ignored: /(^|[\/\\])\../,
+    persistent: true
+  });
 
-      watcherReload.on ('change', function (path) {
-        console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有檔案更新，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
-        gulp.start ('reload');
-        console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
-      }).on ('add', function (path) {
-        console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有新增檔案，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
-        gulp.start ('reload');
-        console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
-      }).on ('unlink', function (path) {
-        console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有檔案刪除，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
-        gulp.start ('reload');
-        console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
-      });
+  watcherReload.on ('change', function (path) {
+    console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有檔案更新，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
+    gulp.start ('reload');
+    console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
+  }).on ('add', function (path) {
+    console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有新增檔案，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
+    gulp.start ('reload');
+    console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
+  }).on ('unlink', function (path) {
+    console.log ('\n ' + colors.red ('•') + colors.yellow (' [重整] ') + '有檔案刪除，檔案：' + colors.gray (path.replace (/\\/g,'/').replace (/.*\//, '')) + '');
+    gulp.start ('reload');
+    console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
+  });
 
-      var watcherStyle = chokidar.watch ('./root/font/icomoon/style.css', {
-        ignored: /(^|[\/\\])\../,
-        persistent: true
-      });
+  var watcherStyle = chokidar.watch ('./root/font/icomoon/style.css', {
+    ignored: /(^|[\/\\])\../,
+    persistent: true
+  });
 
-      watcherStyle.on ('add', function (path) { gulp.start ('update_icomoon_font_icon'); })
-                  .on ('change', function (path) { gulp.start ('update_icomoon_font_icon'); });
-      // watcherStyle.on ('unlink', function (path) { gulp.start ('update_icomoon_font_icon'); });
+  watcherStyle.on ('add', function (path) { gulp.start ('update_icomoon_font_icon'); })
+              .on ('change', function (path) { gulp.start ('update_icomoon_font_icon'); });
+  // watcherStyle.on ('unlink', function (path) { gulp.start ('update_icomoon_font_icon'); });
 });
 
 // // ===================================================
