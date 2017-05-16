@@ -2,7 +2,8 @@
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
- * @copyright   Copyright (c) 2016 OA Wu Design
+ * @copyright   Copyright (c) 2017 OA Wu Design
+ * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/
  */
 
   include_once 'base.php';
@@ -59,6 +60,9 @@
       array ('target' => 'system/cmd', 'link' => 'cmd')
     );
   $results = array_merge ($results, array_map (function ($link) {
+    if (file_exists (FCPATH . $link['link']))
+      @unlink (FCPATH . $link['link']);
+
     if (!symlink (FCPATH . $link['target'], FCPATH . $link['link']))
       console_error ("Link " . $link['link'] . color (' → ', 'c') . $link['target'] . " 失敗!");
 
@@ -70,5 +74,8 @@
   }, $links));
 
   $results = array_map (function ($result) { $count = 1; return color ('Create: ', 'g') . str_replace (FCPATH, '', $result, $count); }, $results);
+  if (file_exists (FCPATH . DIRECTORY_SEPARATOR . 'init'))
+    @unlink (FCPATH . DIRECTORY_SEPARATOR . 'init');
+  
   array_unshift ($results, '初始化成功!');
   call_user_func_array ('console_log', $results);
