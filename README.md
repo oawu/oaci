@@ -3,10 +3,11 @@
 This is OA's framework, It is based on CodeIgniter version 2.1.4!
 
 ---
+
 ## 聲明
 本作品授權採用 姓名標示-非商業性 2.0 台灣 (CC BY-NC 2.0 TW) 授權，詳見 [http://creativecommons.org/licenses/by-nc/2.0/tw/](http://creativecommons.org/licenses/by-nc/2.0/tw/) 
 
-<br />
+
 ## DEMO
 
 <a href="https://www.youtube.com/watch?&v=svomGfqxZvg" target="_blank">點我 Youtube 觀賞 demo 影片！</a>  
@@ -14,7 +15,7 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 <a href="https://www.youtube.com/watch?&v=svomGfqxZvg" target="_blank"><img width='100%' src="http://img.youtube.com/vi/svomGfqxZvg/0.jpg" alt="OACI Blog youtube demo!" /></a>
 
 
-<br />
+
 ## 目錄
 * [簡介](#簡介)
 
@@ -41,8 +42,6 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 
 * [Compass](#compass)
 
-<br />
-<br />
 ## 簡介
 這是一個以 CodeIgniter 2.1.4 為基礎版本，將其新增進階功能的一套好用的 framework!  
 
@@ -86,8 +85,6 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 * 匯入 [OA-ElasticaSearch](https://github.com/comdan66/OA-ElasticaSearch) 加入 Elastica Search 的使用以及 command。
 
 
-<br />
-<br />
 ## 快速初始化
 基本快速地建立起常用資料夾以及檔案，例如 log files、temp folders... 等。
 
@@ -102,8 +99,6 @@ This is OA's framework, It is based on CodeIgniter version 2.1.4!
 
 ![OA's CodeIgniter Init](resource/image/readme/init.png)
 
-<br />
-<br />
 ## 常用指令
 此版本中已經建立多個快速建置檔案的指令，其中包含如下:
 
@@ -258,8 +253,6 @@ php  | clean  |   cache   | [cell \| file \| model \| [assets \| static]]
 
 ![OA's CodeIgniter Clean Cache](resource/image/readme/clean_cache.png)
 
-<br />
-<br />
 ### 初始化指令
 在一開始建立時會使用到，主要就是處理一些暫存資料夾、資料庫設定檔案..等設定，基本指令為 ```php init [root [password [table [127.0.0.1]]]]```。
 
@@ -270,8 +263,6 @@ php  | clean  |   cache   | [cell \| file \| model \| [assets \| static]]
 
 ![OA's CodeIgniter Init Command](resource/image/readme/init_command.png)
 
-<br />
-<br />
 ### Demo指令
 * 此版本也內建 Demo 版本指令，只要一個指令，就可以快速建制一個 CRUD 的版本 Sample!
 
@@ -334,8 +325,6 @@ php  | clean  |   cache   | [cell \| file \| model \| [assets \| static]]
 ![OA's CodeIgniter Delete Demo](resource/image/readme/delete_demo.png)
 
 
-<br />
-<br />
 ### Gulp
 * [gulp](http://gulpjs.com/) 是一套可以運用一些別人寫好的套件工具，跟 [grunt](http://gruntjs.com/) 相似，相關簡介可以參考[此篇](http://fireqqtw.logdown.com/posts/249086-good-helper-of-gulp-automation)。
 * 資料夾目錄在 ```command/gulp/```，使用前請記得移到該目錄並且下 ```npm install .``` 指令初始。
@@ -343,16 +332,11 @@ php  | clean  |   cache   | [cell \| file \| model \| [assets \| static]]
 * 使用 gulp 可搭配使用 **livereload** 以便於開發。
 * 目前預設監聽檔案類型是 css、js、html、php。
 
-<br />
-<br />
 ### Compass
 * [compass](http://compass-style.org/) 是一套可以編輯 sass、scss 的編輯工具，可以加快切板速度並且編譯出較優異的 css。
 * 資料夾目錄在 ```command/compass/```，使用前請記得移到該目錄並且下 ```compass watch``` 即可開始。
 * 所有有關於 compass 的設定可在 ```command/compass/config.rb``` 內設定。
 
-<br />
-<br />
-<br />
 
 ---
 
