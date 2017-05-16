@@ -3,6 +3,7 @@
 /**
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2017 OA Wu Design
+ * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/
  */
 
 class <?php echo ucfirst ($file_name);?> extends Cell_Controller {
