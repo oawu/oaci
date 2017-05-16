@@ -17,7 +17,7 @@ gulp.task ('default', function () {
     silent: true
   });
 
-  var watcherReload = chokidar.watch (['./root/*.html', './root/css/**/*.css', './root/js/**/*.js'], {
+  var watcherReload = chokidar.watch (['./root/**/*.php', './root/css/**/*.css', './root/js/**/*.js'], {
     ignored: /(^|[\/\\])\../,
     persistent: true
   });
@@ -70,7 +70,7 @@ gulp.task ('watch', function () {
     silent: true
   });
 
-  var watcherReload = chokidar.watch (['./root/*.html', './root/css/**/*.css', './root/js/**/*.js'], {
+  var watcherReload = chokidar.watch (['./root/**/*.php', './root/css/**/*.css', './root/js/**/*.js'], {
     ignored: /(^|[\/\\])\../,
     persistent: true
   });
