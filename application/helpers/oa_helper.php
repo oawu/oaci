@@ -6,6 +6,99 @@
  * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/
  */
 
+if (!function_exists ('listSort')) {
+  function listSort ($url, $key) {
+    $qs = [];
+    if (OAInput::get () !== null)
+      foreach (OAInput::get () as $k => $val)
+        if ($k != '_s')
+          if (!is_array ($val))
+            array_push ($qs, $k . '=' . $val);
+          else
+            array_push ($qs, implode ('&', array_map (function ($t) use ($k) { return $k . '[]=' . $t;}, $val)));
+
+    $qs = implode ('&amp;', $qs);
+
+    if (!($sort = (OAInput::get ('_s') !== null) && (count ($s = array_filter (array_map (function ($t) { return trim ($t); }, explode (':', OAInput::get ('_s'))))) > 1) ? $s : '') || $sort[0] != $key)
+      return '<a href="' . base_url ($url, '?' . ($qs ? $qs . '&amp;' : '') . '_s=' . $key . ':asc') . '"></a>';
+    return '<a class=' . strtolower ($sort[1]) . ' href="' . base_url ($url, '?' . ($qs ? $qs . '&amp;' : '') . '_s=' . $key . ':' . (strtolower ($sort[1]) == 'asc' ? 'desc' : 'asc')) . '"></a>';
+  }
+}
+if (!function_exists ('conditions')) {
+  function conditions (&$searches, &$configs, &$offset, $modelName, $options = array (), $cndFunc = null, $limit = 15) {
+
+    $conditions = [];
+    foreach ($searches as $key => &$search) {
+      preg_match_all ('/^(?P<var>\w+)(\s?\[\s?\]\s?)$/', $key, $matches);
+
+      if ($matches['var'] && $matches['var'][0]) {
+        $key = $matches['var'][0];
+      }
+      if (OAInput::get ($key) === null && ($search['value'] = null) === null)
+        continue;
+      else if (in_array ($search['el'], array ('input', 'select', 'textarea')) && OAInput::get ($key) === '' && ($search['value'] = null) === null)
+        continue;
+      else {
+        $search['value'] = OAInput::get ($key);
+      }
+
+      if (isset ($search['vs'])) {
+        $val = $search['value'];
+        eval('$val = ' . $search['vs'] . ';');
+        OaModel::addConditions ($conditions, $search['sql'], $val ? $val : array (0));
+      } else {
+        OaModel::addConditions ($conditions, $search['sql'], strpos (strtolower ($search['sql']), ' like ') !== false ? '%' . (is_array ($search['value']) ? implode (',', $search['value']) : $search['value']) . '%' : $search['value']);
+      }
+    }
+
+    if ($cndFunc && ($c = $cndFunc ($conditions)))
+      $conditions = $c;
+
+    $total = $modelName::count (array ('conditions' => $conditions));
+
+    $qs = [];
+    if (OAInput::get () !== null)
+      foreach (OAInput::get () as $key => $val)
+        if (!is_array ($val))
+          array_push ($qs, $key . '=' . $val);
+        else
+          array_push ($qs, implode ('&', array_map (function ($t) use ($key) { return $key . '[]=' . $t;}, $val)));
+
+    $qs = implode ('&amp;', $qs);
+
+    $configs = array (
+        'per_page' => $limit, 
+        'total_rows' => $total, 
+        'uri_segment' => ($tmp = array_search ('%s', $configs)) !== false ? $tmp + 1 : count ($configs),
+        'base_url' => base_url (array_merge ($configs, array ($qs ? '?' . $qs : '')))
+      );
+    
+    $options = ($sort = (OAInput::get ('_s') !== null) && (count ($s = array_filter (array_map (function ($t) { return trim ($t); }, explode (':', OAInput::get ('_s'))))) > 1) ? $s[0] . ' ' . strtoupper ($s[1]) : '') ? array_merge ($options, array ('order' => $sort, 'offset' => $offset < $total ? $offset : 0, 'limit' => $limit, 'conditions' => $conditions), $options) : array_merge ($options, array ('offset' => $offset < $total ? $offset : 0, 'limit' => $limit, 'conditions' => $conditions), $options);
+    $offset = $total;
+
+    return $modelName::find ('all', $options);
+  }
+}
+if (!function_exists ('token')) {
+  function token ($id) {
+    return md5 ($id . '_' . uniqid (rand () . '_'));
+  }
+}
+if (!function_exists ('redirect_message')) {
+  function redirect_message ($uri, $datas) {
+    if (class_exists ('Session') && $datas)
+      foreach ($datas as $key => $data)
+        Session::setData ($key, $data, true);
+
+    return redirect ($uri, 'refresh');
+  }
+}
+if (!function_exists ('res_url')) {
+  function res_url () {
+    $args = array_filter (func_get_args ());
+    return base_url ($args);
+  }
+}
 if (!function_exists ('conditions')) {
   function conditions (&$columns, &$configs, $model_name, $inputs = null) {
     $inputs = $inputs === null ? $_GET : $inputs;

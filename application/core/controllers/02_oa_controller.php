@@ -199,9 +199,6 @@ class Oa_controller extends Root_controller {
     if (!($this->get_class () && $this->get_method ()))
       return show_error ('The controller lack of necessary resources!!  Please confirm your program again.');
 
-    if (file_exists ($path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('icomoon_icon.css')))) && is_readable ($path))
-      $this->add_css (base_url (implode ('/', array_merge ($this->get_views_path (), $this->get_public_path (), array ('icomoon_icon.css')))));
-
     $this->add_css (base_url (implode ('/', array_merge ($this->get_views_path (), $this->get_public_path (), array ('public.css')))))
          ->add_css (base_url (implode ('/', array_merge ($this->get_views_path (), $this->get_frame_path (), array ('frame.css')))))
          ->add_css (base_url (implode ('/', array_merge ($this->get_views_path (), $this->get_content_path (), array ($this->get_class (), $this->get_method (), 'content.css')))))
