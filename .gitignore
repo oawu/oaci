@@ -19,6 +19,7 @@ upload/*
 
 assets/*
 
+/vendor/*
 /cmd
 
 system/cmd/.sass-cache/*
