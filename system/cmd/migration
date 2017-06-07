@@ -8,7 +8,8 @@
 
   include_once 'base.php';
   include_once 'functions/migration.php';
-
+  define('SPARKPATH', BASEPATH . 'sparks/');
+  
   //       file       version
   // ==========================================
   // php   migration  [0 | 1 | 2...]
