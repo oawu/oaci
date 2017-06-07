@@ -15,7 +15,7 @@ class OaModel extends ActiveRecordModel {
     $args = array_filter (func_get_args (), function ($t) {
       return $t !== null;
     });
-    $args = array_splice($args, !isset ($conditions) ? 1 : 2, 3);
+    $args = array_splice ($args, !isset ($conditions) ? 1 : 2);
 
     if (!isset($conditions) || !array_filter($conditions))
       $conditions = array();
@@ -27,8 +27,9 @@ class OaModel extends ActiveRecordModel {
 
     foreach ($args as $arg)
       if ($arg !== null)
-        array_push($conditions, $arg);
+        array_push ($conditions, $arg);
   }
+
 
   public function recycle () {
     if (!(class_exists ($ori_model = get_called_class ()) && class_exists ($delete_model = 'Delete' . $ori_model)))

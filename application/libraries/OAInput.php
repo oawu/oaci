@@ -38,7 +38,7 @@ class OAInput {
 
   public static function get ($index = null, $xss_clean = true) {
     if (!($gets = self::ci ()->input->get ()))
-      return array ();
+      return null;
 
     $gets = $xss_clean ? array_map (function ($get) { return self::ci ()->security->xss_clean ($get);}, $gets) : $gets;
 
