@@ -1,0 +1,174 @@
+/*
+Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or http://ckeditor.com/license
+*/
+
+body
+{
+	/* Font */
+	font-family: "微軟正黑體","Open sans", "Helvetica Neue", "HelveticaNeue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+
+	/* Text color */
+	color: rgba(85, 85, 85, 1);
+
+	/* Remove the background color to make it transparent */
+	background-color: #fff;
+
+	margin: 20px;
+}
+
+.cke_editable
+{
+	font-size: 14px;
+	line-height: 2.0;
+}
+
+blockquote
+{
+	font-style: italic;
+	font-family: Georgia, Times, "Times New Roman", serif;
+	padding: 2px 0;
+	border-style: solid;
+	border-color: #ccc;
+	border-width: 0;
+}
+
+.cke_contents_ltr blockquote
+{
+	padding-left: 20px;
+	padding-right: 8px;
+	border-left-width: 5px;
+}
+
+.cke_contents_rtl blockquote
+{
+	padding-left: 8px;
+	padding-right: 20px;
+	border-right-width: 5px;
+}
+
+a
+{
+	color: #0782C1;
+	display:inline-block;
+	color:rgba(42,90,149,0.7);
+	font-weight:normal;
+	text-decoration:none;
+	padding:0 2px;
+	padding-bottom:1px;
+	-moz-transition:all .3s;
+	-o-transition:all .3s;
+	-webkit-transition:all .3s;
+	transition:all .3s;
+	border-bottom:1px solid rgba(42,90,149,0.7);
+	display:inline;
+	padding-bottom:0;
+	border-bottom-color:rgba(42,90,149,0.25);
+}
+
+ol,ul,dl
+{
+	/* IE7: reset rtl list margin. (#7334) */
+	*margin-right: 0px;
+	/* preserved spaces for list items with text direction other than the list. (#6249,#8049)*/
+	padding: 0 20px;
+}
+
+h1,h2,h3,h4,h5,h6
+{
+	font-weight: normal;
+	line-height: 1.2;
+}
+
+hr
+{
+	border: 0px;
+	border-top: 1px solid #ccc;
+}
+
+img.right
+{
+	border: 1px solid #ccc;
+	float: right;
+	margin-left: 15px;
+	padding: 5px;
+}
+
+img.left
+{
+	border: 1px solid #ccc;
+	float: left;
+	margin-right: 15px;
+	padding: 5px;
+}
+
+pre
+{
+	white-space: pre-wrap; /* CSS 2.1 */
+	word-wrap: break-word; /* IE7 */
+	-moz-tab-size: 4;
+	tab-size: 4;
+}
+
+.marker
+{
+	background-color: Yellow;
+}
+
+span[lang]
+{
+	font-style: italic;
+}
+
+figure
+{
+	text-align: center;
+	border: solid 1px #ccc;
+	border-radius: 2px;
+	background: rgba(0,0,0,0.05);
+	padding: 10px;
+	margin: 10px 20px;
+	display: inline-block;
+}
+
+figure > figcaption
+{
+	text-align: center;
+	display: block; /* For IE8 */
+}
+
+a > img {
+	padding: 1px;
+	margin: 1px;
+	border: none;
+	outline: 1px solid #0782C1;
+}
+b {
+	font-weight: bold;
+}
+li code, p code {
+  border: 1px solid rgba(137, 137, 137, .2);
+  background-color: rgba(246, 246, 246, 1.00);
+  padding: 1px 6px;
+  -webkit-border-radius:2px;
+	   -moz-border-radius:2px;
+  				border-radius:2px;
+}
+pre{
+	line-height:14px;
+	font-size:13px;
+	border:1px solid rgba(137,137,137,0.2);
+	padding:10px;
+
+	-webkit-border-radius:2px;
+		 -moz-border-radius:2px;
+					border-radius:2px;
+
+	word-break:break-all;
+	word-wrap:break-word;
+	white-space:pre-wrap;
+	white-space:-moz-pre-wrap;
+	white-space:-pre-wrap;
+	white-space:-o-pre-wrap;
+}
