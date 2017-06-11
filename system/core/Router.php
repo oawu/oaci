@@ -68,6 +68,7 @@ class Route {
 		self::put ($prefix . implode ('/(:id)/', $uris) . '/(:id)', $prefix . $controller . '@update($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
 		self::delete ($prefix . implode ('/(:id)/', $uris) . '/(:id)', $prefix . $controller . '@destroy($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
 		self::post ($prefix . implode ('/(:id)/', $uris) . '/(:id)' .  '/sort/(:any)', $prefix . $controller . '@sort($1' . (', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c + 1)))) . ')');
+		self::get ($prefix . implode ('/(:id)/', $uris) . '/(:id)' .  '/show', $prefix . $controller . '@show($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
 	}
 
 	public static function resourcePagination_is_enabled ($uris, $controller, $prefix = '') {

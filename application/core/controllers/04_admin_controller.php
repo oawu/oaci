@@ -25,12 +25,18 @@ class Admin_controller extends Oa_controller {
          ->_add_meta ()
          ->_add_css ()
          ->_add_js ()
+         ->add_hidden (array ('id' => 'filebrowserUploadUrl', 'value' => base_url ('admin', 'ckeditor', 'image_upload')))
+         ->add_hidden (array ('id' => 'filebrowserImageBrowseUrl', 'value' => base_url ('admin', 'ckeditor', 'image_browser')))
          ;
 
     if (file_exists ($path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('icon_admin.css')))) && is_readable ($path))
       $this->add_css (base_url (implode ('/', array_merge ($this->get_views_path (), $this->get_public_path (), array ('icon_admin.css')))));
   }
 
+  protected function _get_pagination ($configs) {
+    $this->load->library ('pagination');
+    return $this->pagination->initialize (array_merge (array ('num_links' => 3, 'uri_segment' => 0, 'base_url' => '', 'page_query_string' => false, 'first_link' => '', 'last_link' => '', 'prev_link' => '', 'next_link' => '', 'full_tag_open' => '<ul>', 'full_tag_close' => '</ul>', 'first_tag_open' => '<li class="f icon-first_page">', 'first_tag_close' => '</li>', 'prev_tag_open' => '<li class="p icon-keyboard_arrow_left">', 'prev_tag_close' => '</li>', 'num_tag_open' => '<li>', 'num_tag_close' => '</li>', 'cur_tag_open' => '<li class="active"><a href="#">', 'cur_tag_close' => '</a></li>', 'next_tag_open' => '<li class="n icon-keyboard_arrow_right">', 'next_tag_close' => '</li>', 'last_tag_open' => '<li class="l icon-last_page">', 'last_tag_close' => '</li>'), $configs))->create_links ();
+  }
   private function _add_meta () {
     return $this;
   }

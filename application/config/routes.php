@@ -8,5 +8,6 @@ Route::get ('/logout', 'platform@logout');
 Route::get ('admin', 'admin/main@index');
 
 Route::group ('admin', function () {
-  
+  Route::resourcePagination (array ('article_tags'), 'article_tags');
+  Route::resourcePagination (array ('articles'), 'articles');
 });

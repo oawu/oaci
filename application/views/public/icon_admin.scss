@@ -1,27 +1,9 @@
-@font-face {
-  font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?jet98x');
-  src:  url('fonts/icomoon.eot?jet98x#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?jet98x') format('truetype'),
-    url('fonts/icomoon.woff?jet98x') format('woff'),
-    url('fonts/icomoon.svg?jet98x#icomoon') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
+@import "_oa";
 
+@include font-face("admin", font-files("admin/fonts/icomoon.eot", "admin/fonts/icomoon.woff", "admin/fonts/icomoon.ttf", "admin/fonts/icomoon.svg"));
 [class^="icon-"], [class*=" icon-"] {
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'icomoon' !important;
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "admin"; speak: none; font-style: normal; font-weight: normal; font-variant: normal;
+  @include font-smoothing(antialiased);
 }
 
 .icon-file-text2:before {

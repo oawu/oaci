@@ -1,0 +1,260 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2016 OA Wu Design
+ */
+
+@import "_oa";
+
+.back {
+  @include clearfix();
+  a {
+    float: left;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+
+    &:before {
+      font-size: 24px;
+      display: inline-block;
+      margin-top: 2px;
+    }
+    &:nth-child(1) {
+      width: calc(100% - 70px * 2);
+    }
+    &:nth-child(2), &:nth-child(3) {
+      width: 70px;
+      text-align: center;
+
+      &:before {
+        font-size: 14px;
+        margin-top: 2px;
+        margin-right: 2px;
+      }
+    }
+  }
+}
+.show-type1 {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+  @include range-width(0, 500px){
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
+  };
+
+
+  .row {
+    display: block;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+    text-align: left;
+    padding: 0 16px;
+
+    @include range-width(0, 500px) {
+      padding: 0 8px;
+    };
+
+    > b {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      min-height: 23px;
+    }
+    > span {
+      display: inline-block;
+      width: 100%;
+      border: 1px solid rgba(222, 222, 222, 1);
+      padding: 4px 8px;
+      @include border-radius(2px);
+      margin-top: 4px;
+      // height: 35px;
+      // line-height: 35px;
+      &.e, &:empty {
+        &:before {
+          content: '無';
+          font-style: italic;
+          color: rgba(190, 190, 190, 1);
+        }
+      }
+      &.list {
+
+        > * {
+          display: inline-block;
+          width: 100%;
+          @include clearfix();
+          + div {
+            border-top: 1px dashed rgba(222, 222, 222, 1);
+          }
+          > * {
+            float: left;
+            display: inline-block;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 4px;
+            @include overflow-docx3();
+            
+            &.e, &:empty {
+              &:before {
+                content: '無';
+                font-style: italic;
+                color: rgba(190, 190, 190, 1);
+              }
+            }
+            // background-color: rgba(0, 0, 255, 0.2);
+          }
+        }
+        &[data-cnt='1'] {
+          > div {
+            > * {
+              width: calc(100%);
+            }
+          }
+        }
+        &[data-cnt='2'] {
+          > div {
+            > * {
+              width: calc(100% / 3);
+              + * {
+                margin-left: 4px;
+                width: calc(100% / 3 * 2 - 4px);
+              }
+            }
+          }
+        }
+        &[data-cnt='3'] {
+          > div {
+            > * {
+              width: calc(100% / 4);
+              + * {
+                margin-left: 4px;
+                width: calc(100% / 4 - 4px);
+                + * {
+                  width: calc(100% / 4 * 2 - 4px);
+                }
+              }
+            }
+          }
+        }
+      }
+      &.tags {
+        @include clearfix();
+
+        .tag {
+          float: left;
+          display: inline-block;
+          padding: 0;
+          height: 23px;
+          line-height: 23px;
+          cursor: pointer;
+          
+          &:after {
+            content: ',';
+            margin-right: 4px;
+            color: rgba(100, 100, 100, 1) !important;
+          }
+          &:last-child {
+            &:after {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+   
+    > .drop_img  {
+      width: 100%;
+      margin-top: 8px;
+    }
+    img {
+      display: inline-block;
+      max-width: 100%;
+      cursor: pointer;
+    }
+    .img {
+      position: relative;
+      cursor: pointer;
+      border: 1px solid rgba(222, 222, 222, 1);
+      padding: 4px;
+    }
+    > .img {
+      margin-top: 8px;
+    }
+
+    .imgs {
+      margin-top: 8px;
+      @include clearfix();
+      &.e, &:empty {
+        &:before {
+          content: '無';
+          font-style: italic;
+          color: rgba(190, 190, 190, 1);
+        }
+      }
+      
+      .img {
+        float: left;
+
+        @include range-width(0, 400px) {
+          width: 100%;
+          height: 145px;
+          &:nth-child(n + 2) { margin-top: 16px; }
+        }
+        @include range-width(400px, 550px) {
+          width: calc(100% / 2 - 16px * 1 / 2);
+          height: 145px;
+          margin-left: 16px;
+          &:nth-child(2n + 1) { margin-left: 0; }
+          &:nth-child(n + 3) { margin-top: 16px; }
+        }
+        @include range-width(550px, 650px) {
+          width: calc(100% / 3 - 16px * 2 / 3);
+          height: 145px;
+          margin-left: 16px;
+          &:nth-child(3n + 1) { margin-left: 0; }
+          &:nth-child(n + 4) { margin-top: 16px; }
+        }
+        @include range-width(650px) {
+          width: calc(100% / 4 - 16px * 3 / 4);
+          height: 145px;
+          margin-left: 16px;
+          &:nth-child(4n + 1) { margin-left: 0; }
+          &:nth-child(n + 5) { margin-top: 16px; }
+        }
+        img {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+
+          max-width:100%;
+          max-height:100%;
+          z-index: 1;
+          @include transform(translateX(-50%) translateY(-50%));
+        }
+      }
+    }
+    + .row {
+      margin-top: 16px;
+    }
+    &.min {
+      height: 23px;
+      line-height: 23px;
+      > * {
+        display: inline-block;
+      }
+      > b {
+        width: auto;
+        margin-right: 4px;
+      }
+      > span {
+        width: auto;
+        height: 23px;
+        line-height: 23px;
+        padding: 0 8px;
+        margin-top: 0;
+      }
+    }
+  }
+}

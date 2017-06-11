@@ -6,9 +6,33 @@
  * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/
  */
 
+if (!function_exists ('is_upload_image_format')) {
+  function is_upload_image_format ($file, $types = array (), $check_size = 10485760) { // 10 * 1024 * 1024
+    if (!(isset ($file['name']) && isset ($file['type']) && isset ($file['tmp_name']) && isset ($file['error']) && isset ($file['size'])))
+      return false;
+
+    if ($check_size && !(is_numeric ($file['size']) && $file['size'] > 0)) return false;
+    if (!$types) return true;
+
+    $CI =& get_instance ();
+    $CI->config->load ('mimes');
+    $mimes = $CI->config->item ('mimes');
+    foreach ($types as $type)
+      if (isset ($mimes[$type]))
+        if (is_string ($mimes[$type])) {
+          if ($mimes[$type] == $file['type']) return true;
+        } else if (is_array ($mimes[$type])) {
+          foreach ($mimes[$type] as $mime)
+            if ($mime == $file['type']) return true;
+        }
+
+    return false;
+  }
+}
+
 if (!function_exists ('listSort')) {
   function listSort ($url, $key) {
-    $qs = [];
+    $qs = array ();
     if (OAInput::get () !== null)
       foreach (OAInput::get () as $k => $val)
         if ($k != '_s')
@@ -27,7 +51,7 @@ if (!function_exists ('listSort')) {
 if (!function_exists ('conditions')) {
   function conditions (&$searches, &$configs, &$offset, $modelName, $options = array (), $cndFunc = null, $limit = 15) {
 
-    $conditions = [];
+    $conditions = array ();
     foreach ($searches as $key => &$search) {
       preg_match_all ('/^(?P<var>\w+)(\s?\[\s?\]\s?)$/', $key, $matches);
 
@@ -56,7 +80,7 @@ if (!function_exists ('conditions')) {
 
     $total = $modelName::count (array ('conditions' => $conditions));
 
-    $qs = [];
+    $qs = array ();
     if (OAInput::get () !== null)
       foreach (OAInput::get () as $key => $val)
         if (!is_array ($val))
@@ -73,7 +97,7 @@ if (!function_exists ('conditions')) {
         'base_url' => base_url (array_merge ($configs, array ($qs ? '?' . $qs : '')))
       );
     
-    $options = ($sort = (OAInput::get ('_s') !== null) && (count ($s = array_filter (array_map (function ($t) { return trim ($t); }, explode (':', OAInput::get ('_s'))))) > 1) ? $s[0] . ' ' . strtoupper ($s[1]) : '') ? array_merge ($options, array ('order' => $sort, 'offset' => $offset < $total ? $offset : 0, 'limit' => $limit, 'conditions' => $conditions), $options) : array_merge ($options, array ('offset' => $offset < $total ? $offset : 0, 'limit' => $limit, 'conditions' => $conditions), $options);
+    $options = ($sort = (OAInput::get ('_s') !== null) && (count ($s = array_filter (array_map (function ($t) { return trim ($t); }, explode (':', OAInput::get ('_s'))))) > 1) ? $s[0] . ' ' . strtoupper ($s[1]) : '') ? array_merge ($options, array ('order' => $sort, 'offset' => $offset < $total ? $offset : 0, 'limit' => $limit, 'conditions' => $conditions)) : array_merge ($options, array ('offset' => $offset < $total ? $offset : 0, 'limit' => $limit, 'conditions' => $conditions));
     $offset = $total;
 
     return $modelName::find ('all', $options);
@@ -312,5 +336,11 @@ if ( !function_exists ('make_click_able_links')) {
 if (!function_exists ('url_parse')) {
   function url_parse ($url, $key) {
     return ($url = parse_url ($url)) && isset ($url[$key]) ? $url[$key] : '';
+  }
+}
+
+if (!function_exists ('remove_ckedit_tag')) {
+  function remove_ckedit_tag ($text) {
+    return preg_replace ("/\s+/", "", preg_replace ("/&#?[a-z0-9]+;/i", "", str_replace ('▼', '', str_replace ('▲', '', trim (strip_tags ($text))))));
   }
 }

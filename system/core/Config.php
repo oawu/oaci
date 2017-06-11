@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php defined ('BASEPATH') OR exit ('No direct script access allowed');
 /**
  * CodeIgniter
  *
@@ -129,7 +129,7 @@ class CI_Config {
 
 			include($file_path);
 
-			if ( ! isset($config) OR ! is_array($config))
+			if ( ! isset($$location) OR ! is_array($$location))
 			{
 				if ($fail_gracefully === TRUE)
 				{
@@ -142,20 +142,20 @@ class CI_Config {
 			{
 				if (isset($this->config[$file]))
 				{
-					$this->config[$file] = array_merge($this->config[$file], $config);
+					$this->config[$file] = array_merge($this->config[$file], array ($location => $$location));
 				}
 				else
 				{
-					$this->config[$file] = $config;
+					$this->config[$file] = array ($location => $$location);
 				}
 			}
 			else
 			{
-				$this->config = array_merge($this->config, $config);
+				$this->config = array_merge ($this->config, array ($location => $$location));
 			}
 
 			$this->is_loaded[] = $file_path;
-			unset($config);
+			unset($$location);
 
 			$loaded = TRUE;
 			log_message('debug', 'Config file loaded: '.$file_path);

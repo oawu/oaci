@@ -19,7 +19,7 @@
     <header id='header'>
       <div class='logo'>
         <span>
-          <img src='<?php echo res_url('resource', 'image', 'logo', '2.png');?>' />
+          <i class='icon-grin'></i>
         </span>
         <span>主標題 - 管理後台</span>
       </div>
@@ -35,6 +35,9 @@
 
     <div id='main'>
       <div>
+        <label class='alert type1'><?php echo Session::getData ('_fi', true);?></label>
+        <label class='alert type3'><?php echo Session::getData ('_fd', true);?></label>
+
         <?php echo isset ($content) ? $content : ''; ?>
       </div>
     </div>
@@ -53,6 +56,14 @@
         </div>
       </div>
 
+      <div class='group'>
+        <span class='icon-file-text2'>文章系統</span>
+        <div>
+          <a class='icon-price-tags<?php echo ($url = base_url ('admin', 'article_tags')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>文章分類</a>
+          <a class='icon-file-text2<?php echo ($url = base_url ('admin', 'articles')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>' href='user.html'>文章列表</a>
+        </div>
+      </div>
+
       <footer>© 2017 oaci.tw</footer>
     </div><label class='icon-cross' for='menu_ckb'></label>
 
@@ -65,6 +76,8 @@
         <a href='<?php echo base_url ('logout');?>' class='icon-power'>登出</a>
       </div>
     </div><label for='user_ckb'></label>
+
+    <div id='tip_texts'></div>
 
   </body>
 </html>
