@@ -7,5 +7,6 @@
  */
 
 $company['char']   = 'x';
-$company['name']   = 'IOA';
+$company['name']   = 'iOA';
+$company['ename']   = 'iOA Admin';
 $company['domain']  = 'ioa.tw';
