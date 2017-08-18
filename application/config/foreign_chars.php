@@ -1,12 +1,5 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/*
-| -------------------------------------------------------------------
-| Foreign Characters
-| -------------------------------------------------------------------
-| This file contains an array of foreign characters for transliteration
-| conversion used by the Text helper
-|
-*/
+
 $foreign_characters = array(
 	'/ä|æ|ǽ/' => 'ae',
 	'/ö|œ/' => 'oe',
@@ -59,6 +52,3 @@ $foreign_characters = array(
 	'/Œ/' => 'OE',
 	'/ƒ/' => 'f'
 );
-
-/* End of file foreign_chars.php */
-/* Location: ./application/config/foreign_chars.php */
