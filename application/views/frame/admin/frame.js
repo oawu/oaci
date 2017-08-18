@@ -30,8 +30,8 @@ $(function () {
   window.fns._fsg = function (key) { return ((typeof (Storage) !== 'undefined') && (value = localStorage.getItem (key)) && (value = JSON.parse (value))) ? value : undefined; };
   window.fns._fss = function (key, data) { try { if (typeof (Storage) !== 'undefined') { localStorage.setItem (key, JSON.stringify (data)); return true; } return false; } catch (err) { console.error ('Set storage failure.', error); return false; } };
   
-  if ($(window).width () > 750) $menuCkb.prop ('checked', window.fns._fsg ('zeus.menu') ? true : false);
-  $menuCkb.click (function () { if ($(window).width () > 750) window.fns._fss ('zeus.menu', $(this).prop ('checked')); });
+  if ($(window).width () > 750) $menuCkb.prop ('checked', window.fns._fsg ('oa.admin.menu') ? true : false);
+  $menuCkb.click (function () { if ($(window).width () > 750) window.fns._fss ('oa.admin.menu', $(this).prop ('checked')); });
   setTimeout (function () { $('body').addClass ('ani'); }, 300);
   
   window.fns.mutiImg = function ($obj) {
