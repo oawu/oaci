@@ -8,11 +8,14 @@
 
 class ArticleCoverImageUploader extends OrmImageUploader {
 
+  public function d4Url () {
+    return res_url ('res', 'image', 'uploader.jpg');
+  }
   public function getVersions () {
     return array (
         '' => array (),
-        '100w' => array ('resize', 100, 100, 'width'),
-        '120x80c' => array ('adaptiveResizeQuadrant', 120, 80, 'c')
+        '450x180c' => array ('adaptiveResizeQuadrant', 450, 180, 'c'),
+        '1200x630c' => array ('adaptiveResizeQuadrant', 1200, 630, 't'),
       );
   }
 }

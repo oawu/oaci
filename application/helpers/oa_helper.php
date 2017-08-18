@@ -433,3 +433,9 @@ if (!function_exists ('url_parse')) {
     return ($url = parse_url ($url)) && isset ($url[$key]) ? $url[$key] : '';
   }
 }
+
+if (!function_exists ('remove_ckedit_tag')) {
+  function remove_ckedit_tag ($text) {
+    return preg_replace ("/\s+/", "", preg_replace ("/&#?[a-z0-9]+;/i", "", str_replace ('▼', '', str_replace ('▲', '', trim (strip_tags ($text))))));
+  }
+}

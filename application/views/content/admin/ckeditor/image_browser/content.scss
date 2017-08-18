@@ -1,0 +1,336 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2017 OA Wu Design
+ * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/
+ */
+
+@import "_oa";
+
+html body {
+  background-color: rgba(200, 200, 200, 1.00);
+}
+
+#tabs {
+  margin-top: 16px;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 0 4px;
+  @include clearfix();
+
+  &:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: inline-block;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(195, 195, 195, 1.00);
+    z-index: 3;
+  }
+  > * {
+    float: left;
+    position: relative;
+    display: inline-block;
+    padding: 0 10px;
+    height: 30px;
+    line-height: 30px;
+    margin-top: 5px;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 13px;
+    text-decoration: none;
+    color: rgba(100, 100, 100, 1);
+    background-color: rgba(220, 220, 220, 1.00);
+
+    border-top: 1px solid rgba(195, 195, 195, 1.00);
+    border-left: 1px solid rgba(195, 195, 195, 1.00);
+    @include transition(color .3s);
+    
+
+    &:first-child {
+      @include border-top-left-radius(3px);
+    }
+    &:last-child {
+      border-right: 1px solid rgba(195, 195, 195, 1.00);
+      @include border-top-right-radius(3px);
+    }
+    + * {
+      // @include border-top-left-radius(0);
+    }
+    &:hover {
+      color: rgba(85, 85, 85, 1);
+    }
+
+    &.a {
+      background-color: rgba(235, 235, 235, 1.00);
+      z-index: 4;
+      height: 35px;
+      line-height: 35px;
+      margin-top: 0;
+      font-weight: bold;
+      border-right: 1px solid rgba(195, 195, 195, 1.00);
+      font-size: 14px;
+      color: rgba(85, 85, 85, 1);
+      @include border-top-radius(3px);
+
+      + * {
+        border-left: 0;
+      }
+    }
+  }
+}
+
+#imgs {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 5px;
+  z-index: 2;
+  background-color: rgba(235, 235, 235, 1.00);
+  @include clearfix();
+  
+  &.e, &:empty {
+    padding: 10px;
+    text-align: center;
+
+    &:before {
+      content: '目前沒有任何資料。';
+      display: inline-block;
+      font-weight: bold;
+      width: 100%;
+      height: 100px;
+      line-height: 100px - 10px;
+      color: rgba(108, 108, 108, .500);
+    }
+  }
+  > div {
+    float: left;
+    position: relative;
+    display: inline-block;
+    width: calc(100% / 4 - 10px * 2);
+    height: 230px;
+    margin: 10px;
+
+    cursor: pointer;
+    overflow: hidden;
+    background-color: white;
+    @include transition(box-shadow .3s);
+    @include box-shadow(0 0 1px rgba(39, 40, 34, .300));
+    > * {
+      position: absolute;
+      display: inline-block;
+    }
+    > div {
+      top: 8px;
+      left: 8px;
+      display: none;
+      width: 35px;
+      height: 35px;
+      overflow: hidden;
+      z-index: 2;
+      border: 2px solid rgba(255, 255, 255, 1);
+      @include border-radius(50%);
+      @include box-shadow(0 0 5px 1px rgba(39, 40, 34, .300));
+
+      img {
+        width: 100%;
+      }
+    }
+    > img {
+      max-width:100%;
+      max-height:100%;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      @include transform(translateX(-50%) translateY(-50%));
+    }
+    time {
+      bottom: -35px;
+      left: 0;
+      width: 100%;
+      height: 35px;
+      line-height: 35px;
+      padding: 0 5px;
+      color: white;
+      font-weight: normal;
+      text-align: center;
+      background-color: rgba(39, 40, 34, 1);
+      z-index: 2;
+      @include overflow-docx3();
+      @include opacity(0);
+      @include transition(opacity .3s, bottom .3s);
+    }
+    &:hover {
+      @include box-shadow(0 0 2px rgba(39, 40, 34, .500));
+
+      time {
+        bottom: 0;
+        @include opacity(.75);
+      }
+    }
+    @include range-width(0, 600px) {
+      time {
+        bottom: 0;
+        @include opacity(.75);
+      }
+    }
+
+    @include range-width(0, 300px) {
+      width: calc(100% / 1 - 8px * 2);
+      height: 150px;
+      margin: 8px;
+    };
+    @include range-width(300px, 400px) {
+      width: calc(100% / 1 - 10px * 2);
+      height: 200px;
+      margin: 10px;
+    };
+    @include range-width(400px, 600px) {
+      width: calc(100% / 2 - 8px * 2);
+      height: 150px;
+      margin: 8px;
+    }
+    @include range-width(600px, 700px) {
+      width: calc(100% / 2 - 10px * 2);
+      height: 200px;
+      margin: 10px;
+    }
+    @include range-width(700px, 800px) {
+      width: calc(100% / 3 - 8px * 2);
+      height: 150px;
+      margin: 8px;
+    }
+    @include range-width(800px, 900px) {
+      width: calc(100% / 3 - 10px * 2);
+      height: 200px;
+      margin: 10px;
+    }
+    @include range-width(900px, 1000px) {
+      width: calc(100% / 4 - 8px * 2);
+      height: 150px;
+      margin: 8px;
+    }
+    @include range-width(1000px, 1200px) {
+      height: 200px;
+    }
+  }
+  &.all {
+    > div {
+      > div {
+        display: inline-block;
+      }
+    }
+  }  
+}
+
+.pagination {
+  display: inline-block;
+  width: calc(100% - 16px * 2);
+  padding: 0;
+  margin: 16px;
+  @include range-width(0, 450px) {
+    margin-top: 8px;
+  };
+  text-align: right;
+
+  @include range-width(0, 530px){
+    text-align: center;
+    background-color: white;
+    // @include border-radius(2px);
+    @include box-shadow(0 1px 2px rgba(0,0,0,0.2), 0 -1px 1px rgba(0,0,0,0.05));
+
+  }
+  &:empty {
+    display: none;
+  }
+  > ul {
+    display: inline-block;
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
+    list-style-type: none;
+    @include clearfix();
+
+    @include range-width(0, 530px){
+      width: 100%;
+      // @include ;
+    }
+    @include range-width(530px){
+      background-color: white;
+      @include border-radius(2px);
+      @include box-shadow(0 1px 2px rgba(0,0,0,0.2), 0 -1px 1px rgba(0,0,0,0.05));
+
+    }
+
+    > li {
+      position: relative;
+      float: left;
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      overflow: hidden;
+      @include transition(background-color .3s);
+      
+      @include range-width(0, 530px){
+        display: none;
+        width: calc(100% / 3);
+        height: 45px;
+        line-height: 45px;
+
+        &.n, &.p, &.active {
+          display: inline-block;
+          + * {
+            margin-left: 10px;
+          }
+        }
+        &.active {
+          &:first-child {
+            display: none;
+            ~ li.n {
+              width: 100%;
+              &:before {
+                content: '下一頁';
+              }
+            }
+            ~ li.l {
+              display: none;
+            }
+          }
+        }
+      }
+      &:hover {
+        background-color: rgba(250, 250, 250, 1.00);
+      }
+      &.active {
+        font-weight: bold;
+        @include range-width(530px){
+          background-color: rgba(245, 245, 245, 1.00);
+        }
+        &, a {
+          color: rgba(200, 75, 75, 1.00);
+        }
+      }
+      &, a {
+        font-size: 14px;
+        color: rgba(100, 100, 100, 1.00);
+        &:before {
+          font-size: 16px;
+        }
+      }
+
+      a {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+      }
+    }
+  }
+}
