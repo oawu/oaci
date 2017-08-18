@@ -13,7 +13,7 @@ class Platform extends Site_controller {
     $this->load->library ('fb');
   }
   public function login () {
-    if (User::current () && User::current ()->is_login ()) return redirect_message (array ('admin', 'my'), array ());
+    if (User::current () && User::current ()->is_login ()) return redirect_message (array ('admin'), array ());
     else $this->set_frame_path ('frame', 'pure')
               ->set_title ('登入 - ' . Cfg::setting ('company', 'name') . '管理系統')
               ->load_view (array (
