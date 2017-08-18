@@ -34,7 +34,7 @@
 
     <div class='row'>
       <b class='need'><?php echo $title;?>鏈結</b>
-      <input type='text' name='link' value='<?php echo isset ($posts['link']) ? $posts['link'] : $obj->link;?>' placeholder='請輸入<?php echo $title;?>鏈結..' maxlength='200' pattern='.{1,200}' required title='輸入<?php echo $title;?>鏈結!' />
+      <input type='text' name='href' value='<?php echo isset ($posts['href']) ? $posts['href'] : $obj->href;?>' placeholder='請輸入<?php echo $title;?>鏈結..' maxlength='200' pattern='.{1,200}' required title='輸入<?php echo $title;?>鏈結!' />
     </div>
 
     <div class='row'>

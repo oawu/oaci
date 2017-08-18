@@ -34,7 +34,6 @@ class Articles extends Admin_controller {
     if (in_array ($this->uri->rsegments (2, 0), array ('create', 'update')))
       error_reporting (E_ALL & ~E_NOTICE & ~E_WARNING);
   }
-
   public function index ($offset = 0) {
     $searches = array (
         'status'    => array ('el' => 'select', 'text' => '是否上架', 'sql' => 'status = ?', 'items' => array_map (function ($t) { return array ('text' => Article::$statusNames[$t], 'value' => $t,);}, array_keys (Article::$statusNames))),

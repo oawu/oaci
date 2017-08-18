@@ -80,7 +80,6 @@
           <td class='left'><?php echo $obj->mini_content (50);?></td>
           <td><?php echo Banner::$targetNames[$obj->target];?></td>
           <td class='edit'>
-            <a class='icon-eye' href="<?php echo base_url ($uri_1, $obj->id, 'show');?>"></a>
             <a class='icon-pencil2' href="<?php echo base_url ($uri_1, $obj->id, 'edit');?>"></a>
             <a class='icon-bin' href="<?php echo base_url ($uri_1, $obj->id);?>" data-method='delete'></a>
           </td>

@@ -50,6 +50,7 @@
           <span class='icon-u'>個人管理</span>
           <div>
             <a class='icon-home<?php echo ($url = base_url ('admin')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>個人頁面</a>
+            <a class='icon-im<?php echo ($url = base_url ('admin', 'banners')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>旗幟管理</a>
           </div>
         </div>
 <?php } ?>
