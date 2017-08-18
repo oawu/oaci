@@ -1,0 +1,1 @@
+php put.php -b {bucket} -a {access} -s {secret} -m 0 -v 1
