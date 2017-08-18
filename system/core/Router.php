@@ -67,23 +67,13 @@ class Route {
 		self::get ($prefix . implode ('/(:id)/', $uris) . '/(:id)' .  '/edit', $prefix . $controller . '@edit($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
 		self::put ($prefix . implode ('/(:id)/', $uris) . '/(:id)', $prefix . $controller . '@update($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
 		self::delete ($prefix . implode ('/(:id)/', $uris) . '/(:id)', $prefix . $controller . '@destroy($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
-		self::post ($prefix . implode ('/(:id)/', $uris) . '/(:id)' .  '/sort/(:any)', $prefix . $controller . '@sort($1' . (', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c + 1)))) . ')');
+		self::get ($prefix . implode ('/(:id)/', $uris) . '/(:id)' .  '/show', $prefix . $controller . '@show($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
+		
+		// self::post ($prefix . implode ('/(:id)/', $uris) . '/(:id)' .  '/sort/(:any)', $prefix . $controller . '@sort($1' . (', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c + 1)))) . ')');
+		self::get ($prefix . implode ('/(:id)/', $uris) . '/sort', $prefix . $controller . '@sort($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
+		self::put ($prefix . implode ('/(:id)/', $uris) . '/sort', $prefix . $controller . '@sort_update($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
 	}
 
-	public static function resourcePagination_is_enabled ($uris, $controller, $prefix = '') {
-		$c = count ($uris = is_string ($uris) ? array ($uris) : $uris);
-		$group = self::_getGroup ();
-		$prefix = trim ($group . trim ($prefix, '/'), '/') . '/';
-
-		self::get ($prefix . implode ('/(:id)/', $uris) . '/', $prefix . $controller . '@index(' . ($c > 1 ? implode (', ', array_map (function ($a) { return '$' . $a; }, range (1, $c - 1))) . ', ' : '') . '0)');
-		self::get ($prefix . implode ('/(:id)/', $uris) . '/(:num)', $prefix . $controller . '@index($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
-		self::get ($prefix . implode ('/(:id)/', $uris) . '/add', $prefix . $controller . '@add(' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (1, $c - 1))) : '') . ')');
-		self::post ($prefix . implode ('/(:id)/', $uris) . '/', $prefix . $controller . '@create(' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (1, $c - 1))) : '') . ')');
-		self::get ($prefix . implode ('/(:id)/', $uris) . '/(:id)' .  '/edit', $prefix . $controller . '@edit($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
-		self::put ($prefix . implode ('/(:id)/', $uris) . '/(:id)', $prefix . $controller . '@update($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
-		self::delete ($prefix . implode ('/(:id)/', $uris) . '/(:id)', $prefix . $controller . '@destroy($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
-		self::post ($prefix . implode ('/(:id)/', $uris) .  '/is_enabled/(:id)', $prefix . $controller . '@is_enabled($1' . ($c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '') . ')');
-	}
 	public static function group ($prefix, $callback) {
 		$callback ();
 	}
@@ -223,6 +213,7 @@ class CI_Router {
 
 		$request_method = isset ($_SERVER['REQUEST_METHOD']) ? strtolower ($_SERVER['REQUEST_METHOD']) : 'get';
 		$uri = implode ('/', $this->uri->segments) . '/';
+		$uri = str_replace ('-', '_', $uri);
 
 		if (isset ($this->routes[$request_method . ':' . $uri]) && is_string ($this->routes[$request_method . ':' . $uri]))
 			return $this->_set_request (explode ('/', $this->routes[$request_method . ':' . $uri]));
