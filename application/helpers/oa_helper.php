@@ -6,6 +6,66 @@
  * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/
  */
 
+if (!function_exists ('is_upload_image_format')) {
+  function is_upload_image_format ($file, $types = array (), $check_size = 10485760) { // 10 * 1024 * 1024
+    if (!(isset ($file['name']) && isset ($file['type']) && isset ($file['tmp_name']) && isset ($file['error']) && isset ($file['size'])))
+      return false;
+
+    if ($check_size && !(is_numeric ($file['size']) && $file['size'] > 0)) return false;
+    if (!$types) return true;
+
+    $CI =& get_instance ();
+    $CI->config->load ('mimes');
+    $mimes = $CI->config->item ('mimes');
+    foreach ($types as $type)
+      if (isset ($mimes[$type]))
+        if (is_string ($mimes[$type])) {
+          if ($mimes[$type] == $file['type']) return true;
+        } else if (is_array ($mimes[$type])) {
+          foreach ($mimes[$type] as $mime)
+            if ($mime == $file['type']) return true;
+        }
+
+    return false;
+  }
+}
+
+if (!function_exists ('is_upload_file_format')) {
+  function is_upload_file_format ($file, $check_size = 0, $types = array ()) {
+    if (!(isset ($file['name']) && isset ($file['type']) && isset ($file['tmp_name']) && isset ($file['error']) && isset ($file['size'])))
+      return false;
+
+    if ($check_size && !(is_numeric ($file['size']) && $file['size'] > 0)) return false;
+    if (!$types) return true;
+
+    $CI =& get_instance ();
+    $CI->config->load ('mimes');
+    $mimes = $CI->config->item ('mimes');
+
+    foreach ($types as $type)
+      if (isset ($mimes[$type]))
+        if (is_string ($mimes[$type])) {
+          if ($mimes[$type] == $file['type']) return true;
+        } else if (is_array ($mimes[$type])) {
+          foreach ($mimes[$type] as $mime)
+            if ($mime == $file['type']) return true;
+        }
+
+    return false;
+  }
+}
+if (!function_exists ('res_url')) {
+  function res_url () {
+    $args = array_filter (func_get_args ());
+    if (ENVIRONMENT !== 'production')
+      return base_url ($args);
+
+    if ($args && $args[0] == 'res')
+      array_splice ($args, 1, 0, '1');
+
+    return Cfg::system ('orm_uploader', 'uploader', 's3', 'url') . implode ('/', $args);
+  }
+}
 if (!function_exists ('conditions')) {
   function conditions (&$columns, &$configs, $model_name, $inputs = null) {
     $inputs = $inputs === null ? $_GET : $inputs;

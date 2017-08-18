@@ -1,0 +1,7 @@
+@import "_oa";
+
+@include font-face("admin", font-files("admin/fonts/icomoon.eot", "admin/fonts/icomoon.woff", "admin/fonts/icomoon.ttf", "admin/fonts/icomoon.svg"));
+[class^="icon-"], [class*=" icon-"] {
+  font-family: "admin"; speak: none; font-style: normal; font-weight: normal; font-variant: normal;
+  @include font-smoothing(antialiased);
+}

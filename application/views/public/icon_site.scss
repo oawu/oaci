@@ -1,0 +1,7 @@
+@import "_oa";
+
+@include font-face("site", font-files("site/fonts/icomoon.eot", "site/fonts/icomoon.woff", "site/fonts/icomoon.ttf", "site/fonts/icomoon.svg"));
+[class^="icon-"], [class*=" icon-"] {
+  font-family: "site"; speak: none; font-style: normal; font-weight: normal; font-variant: normal;
+  @include font-smoothing(antialiased);
+}
