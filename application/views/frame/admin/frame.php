@@ -47,25 +47,12 @@
 
 <?php if (User::current ()->in_roles (array ('member'))) { ?>
         <div class='group'>
-          <span class='icon-u'>個人管理</span>
+          <span class='icon-u'>後台管理區</span>
           <div>
-            <a class='icon-home<?php echo ($url = base_url ('admin')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>個人頁面</a>
+            <a class='icon-home<?php echo ($url = base_url ('admin')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>後台首頁</a>
             <a class='icon-im<?php echo ($url = base_url ('admin', 'banners')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>旗幟管理</a>
-          </div>
-        </div>
-<?php } ?>
-
-
-<?php if (User::current ()->in_roles (array ('article_tag', 'article'))) { ?>
-        <div class='group'>
-          <span class='icon-file-text2'>文章管理</span>
-          <div>
-      <?php if (User::current ()->in_roles (array ('article_tag'))) { ?>
-              <a class='icon-price-tags<?php echo ($url = base_url ('admin', 'article-tags')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>文章分類</a>
-      <?php }
-            if (User::current ()->in_roles (array ('article'))) { ?>
-              <a class='icon-list<?php echo ($url = base_url ('admin', 'articles')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>文章列表</a>
-      <?php } ?>
+            <a class='icon-price-tags<?php echo ($url = base_url ('admin', 'article-tags')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>文章分類</a>
+            <a class='icon-list<?php echo ($url = base_url ('admin', 'articles')) && isset ($_url) && ($url == $_url) ? ' show' : '';?>' href='<?php echo $url;?>'>文章列表</a>
           </div>
         </div>
 <?php } ?>

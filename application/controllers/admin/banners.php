@@ -15,7 +15,7 @@ class Banners extends Admin_controller {
   public function __construct () {
     parent::__construct ();
     
-    if (!User::current ()->in_roles (array ('banner')))
+    if (!User::current ()->in_roles (array ('member')))
       return redirect_message (array ('admin'), array ('_fd' => '您的權限不足，或者頁面不存在。'));
     
     $this->uri_1 = 'admin/banners';
