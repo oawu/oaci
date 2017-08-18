@@ -22,7 +22,9 @@
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
-	define ('ENVIRONMENT', 'development');
+	if (!file_exists ('_ENV.php')) exit ('環境未設定！');
+	include '_ENV.php';
+	
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING

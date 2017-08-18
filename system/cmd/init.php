@@ -40,7 +40,8 @@
   $files = array (
       array ('name' => 'database.php',  'path' => $path_config, 'params' => array ('hostname' => $hostname, 'username' => $username, 'password' => $password, 'database' => $database)),
       array ('name' => 'query.log',     'path' => $path_logs,   'params' => array ()),
-      array ('name' => 'delay_job.log', 'path' => $path_logs,   'params' => array ())
+      array ('name' => 'delay_job.log', 'path' => $path_logs,   'params' => array ()),
+      array ('name' => '_ENV.php', 'path' => FCPATH,   'params' => array ())
     );
   $results = array_merge ($results, array_map (function ($file) use ($temp_path) {
       $date = load_view ($temp_path . $file['name'], $file['params']);
