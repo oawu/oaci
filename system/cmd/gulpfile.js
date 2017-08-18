@@ -40,25 +40,45 @@ gulp.task ('watch', function () {
     console.log ('\n ' + colors.red ('•') + colors.cyan (' [啟動] ') + '已經啟動監聽 .php、.css、js 檔案。');
   }, 1 * 1000);
 
-  var watcherStyle = chokidar.watch ('./root/resource/font/icomoon/style.css', {
+  var watcherAdminStyle = chokidar.watch ('./root/res/font/admin/style.css', {
     ignored: /(^|[\/\\])\../,
     persistent: true
   });
 
-  watcherStyle.on ('add', function (path) { gulp.start ('update_icomoon_font_icon'); })
-              .on ('change', function (path) { gulp.start ('update_icomoon_font_icon'); });
-  // watcherStyle.on ('unlink', function (path) { gulp.start ('update_icomoon_font_icon'); });
+  watcherAdminStyle.on ('add', function (path) { gulp.start ('update_admin_font_icon'); })
+                   .on ('change', function (path) { gulp.start ('update_admin_font_icon'); });
+              
+  var watcherSiteStyle = chokidar.watch ('./root/res/font/site/style.css', {
+    ignored: /(^|[\/\\])\../,
+    persistent: true
+  });
+
+  watcherSiteStyle.on ('add', function (path) { gulp.start ('update_site_font_icon'); })
+                  .on ('change', function (path) { gulp.start ('update_site_font_icon'); });
+
 });
 
 // // ===================================================
 
-gulp.task ('update_icomoon_font_icon', function () {
+gulp.task ('update_admin_font_icon', function () {
 
-  read ('./root/resource/font/icomoon/style.css', 'utf8', function (err, buffer) {
-    var t = buffer.match (/\.icon-[a-zA-Z_\-0-9]*:before\s?\{\s*content:\s*"[\\A-Za-z0-9]*";\s*}/g);
+  read ('./root/res/font/admin/style.css', 'utf8', function (err, buffer) {
+    var t = buffer.match (/\.icon-[a-zA-Z_\-0-9]*:before\s?\{\s*content:\s*"[\\A-Za-z0-9]*";(\s*color:\s*#[A-Za-z0-9]*;)?\s*}/g);
       if (!(t && t.length)) return;
 
-      writeFile ('./root/application/views/public/icomoon_icon.scss', '@import "_oa";\n\n@include font-face("icomoon", font-files("icomoon/fonts/icomoon.eot", "icomoon/fonts/icomoon.woff", "icomoon/fonts/icomoon.ttf", "icomoon/fonts/icomoon.svg"));\n[class^="icon-"], [class*=" icon-"] {\n  font-family: "icomoon"; speak: none; font-style: normal; font-weight: normal; font-variant: normal;\n  @include font-smoothing(antialiased);\n}\n\n' + t.join ('\n'), function(err) {
+      writeFile ('./root/application/views/public/icon_admin.scss', '@import "_oa";\n\n@include font-face("admin", font-files("admin/fonts/icomoon.eot", "admin/fonts/icomoon.woff", "admin/fonts/icomoon.ttf", "admin/fonts/icomoon.svg"));\n[class^="icon-"], [class*=" icon-"] {\n  font-family: "admin"; speak: none; font-style: normal; font-weight: normal; font-variant: normal;\n  @include font-smoothing(antialiased);\n}\n\n' + t.join ('\n'), function(err) {
+        if (err) console.log ('\n ' + colors.red ('•') + colors.red (' [錯誤] ') + '寫入檔案失敗！');
+        else console.log ('\n ' + colors.red ('•') + colors.yellow (' [icon] ') + '更新 icon 惹，目前有 ' + colors.magenta (t.length) + ' 個！');
+      });
+  });
+});
+gulp.task ('update_site_font_icon', function () {
+
+  read ('./root/res/font/site/style.css', 'utf8', function (err, buffer) {
+    var t = buffer.match (/\.icon-[a-zA-Z_\-0-9]*:before\s?\{\s*content:\s*"[\\A-Za-z0-9]*";(\s*color:\s*#[A-Za-z0-9]*;)?\s*}/g);
+      if (!(t && t.length)) return;
+
+      writeFile ('./root/application/views/public/icon_site.scss', '@import "_oa";\n\n@include font-face("site", font-files("site/fonts/icomoon.eot", "site/fonts/icomoon.woff", "site/fonts/icomoon.ttf", "site/fonts/icomoon.svg"));\n[class^="icon-"], [class*=" icon-"] {\n  font-family: "site"; speak: none; font-style: normal; font-weight: normal; font-variant: normal;\n  @include font-smoothing(antialiased);\n}\n\n' + t.join ('\n'), function(err) {
         if (err) console.log ('\n ' + colors.red ('•') + colors.red (' [錯誤] ') + '寫入檔案失敗！');
         else console.log ('\n ' + colors.red ('•') + colors.yellow (' [icon] ') + '更新 icon 惹，目前有 ' + colors.magenta (t.length) + ' 個！');
       });
