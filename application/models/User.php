@@ -57,12 +57,4 @@ class User extends OaModel {
     }
     return res_url ('res', 'image', 'avatar.png');
   }
-
-  public function backup ($has = false) {
-    $var = $this->getBackup ();
-    return $has ? array (
-        '_' => $var,
-        'roles' => $this->subBackup ('UserRole', $has),
-      ) : $var;
-  }
 }

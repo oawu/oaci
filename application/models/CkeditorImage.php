@@ -1,4 +1,4 @@
-<?php if (!defined ('BASEPATH')) exit ('No direct script access allowed');
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
@@ -6,9 +6,9 @@
  * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/
  */
 
-class UserRole extends OaModel {
+class CkeditorImage extends OaModel {
 
-  static $table_name = 'user_roles';
+  static $table_name = 'ckeditor_images';
 
   static $has_one = array (
   );
@@ -17,19 +17,12 @@ class UserRole extends OaModel {
   );
 
   static $belongs_to = array (
+    array ('user', 'class_name' => 'User'),
   );
 
   public function __construct ($attributes = array (), $guard_attributes = true, $instantiating_via_find = false, $new_record = true) {
     parent::__construct ($attributes, $guard_attributes, $instantiating_via_find, $new_record);
-  }
-  public function name () {
-    return Cfg::setting ('role', 'role_names', $this->name, 'name');
-  }
-  public function desc () {
-    return Cfg::setting ('role', 'role_names', $this->name, 'desc');
-  }
-  public function destroy () {
-    if (!isset ($this->id)) return false;
-    return $this->delete ();
+
+    OrmImageUploader::bind ('name', 'CkeditorImageNameImageUploader');
   }
 }
