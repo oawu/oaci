@@ -65,7 +65,7 @@
         <tr>
           <td class='center'>
             <label class='switch ajax' data-column='status' data-url='<?php echo base_url ($uri_1, 'status', $obj->id);?>'>
-              <input type='checkbox'<?php echo $obj->status == Banner::STATUS_2 ? ' checked' : '';?> />
+              <input type='checkbox'<?php echo $obj->status == Article::STATUS_2 ? ' checked' : '';?> />
               <span></span>
             </label>
           </td>
