@@ -25,7 +25,7 @@ class Site_controller extends Oa_controller {
          ;
 
     if (file_exists ($path = FCPATH . implode (DIRECTORY_SEPARATOR, array_merge ($this->get_views_path (), $this->get_public_path (), array ('icon_site.css')))) && is_readable ($path))
-      $this->add_css (res_url (implode ('/', array_merge ($this->get_views_path (), $this->get_public_path (), array ('icon_site.css')))));
+      $this->add_css (base_url (implode ('/', array_merge ($this->get_views_path (), $this->get_public_path (), array ('icon_site.css')))));
 
   }
 
