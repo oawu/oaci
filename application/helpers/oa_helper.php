@@ -212,8 +212,10 @@ if (!function_exists ('res_url')) {
     if (ENVIRONMENT !== 'production')
       return base_url ($args);
 
-    if ($args && $args[0] == 'res')
-      array_splice ($args, 1, 0, '1');
+    if ($args && $args[0] == 'res') {
+      $CI =& get_instance ();
+      array_splice ($args, 1, 0, $CI->static_file_version);
+    }
 
     return Cfg::system ('orm_uploader', 'uploader', 's3', 'url') . implode ('/', $args);
   }

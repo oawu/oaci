@@ -26,6 +26,7 @@ class Admin_controller extends Oa_controller {
          ->_add_css ()
          ->_add_js ()
          ->add_hidden (array ('id' => 'filebrowserUploadUrl', 'value' => base_url ('admin', 'ckeditor', 'image_upload')))
+         ->add_hidden (array ('id' => 'droplerUploadUrl', 'value' => base_url ('admin', 'ckeditor', 'dropler_upload')))
          ->add_hidden (array ('id' => 'filebrowserImageBrowseUrl', 'value' => base_url ('admin', 'ckeditor', 'image_browser')))
          ;
 
@@ -53,9 +54,12 @@ class Admin_controller extends Oa_controller {
                 ->add_js (res_url ('res', 'js', 'jquery-timeago_v1.3.1', 'jquery.timeago.js'))
                 ->add_js (res_url ('res', 'js', 'jquery-timeago_v1.3.1', 'locales', 'jquery.timeago.zh-TW.js'))
                 ->add_js (res_url ('res', 'js', 'imgLiquid_v0.9.944', 'imgLiquid-min.js'))
+                ->add_js (res_url ('res', 'js', 'autosize_v3.0.8', 'autosize.min.js'))
                 ->add_js (res_url ('res', 'js', 'ckeditor_d2015_05_18', 'ckeditor.js'), false)
                 ->add_js (res_url ('res', 'js', 'ckeditor_d2015_05_18', 'config.js'), false)
                 ->add_js (res_url ('res', 'js', 'ckeditor_d2015_05_18', 'adapters', 'jquery.js'), false)
+                ->add_js (res_url ('res', 'js', 'ckeditor_d2015_05_18', 'plugins', 'tabletools', 'tableresize.js'), false)
+                ->add_js (res_url ('res', 'js', 'ckeditor_d2015_05_18', 'plugins', 'dropler', 'dropler.js'), false)
                 ;
   }
   protected function _build_excel ($objs, $infos) {
