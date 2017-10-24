@@ -16,7 +16,7 @@ class Ckeditor extends Admin_controller {
     $searches = array ();
     $configs = array_merge ($uri_1, array ($type, '%s', '?' . $gets));
     $objs = conditions ($searches, $configs, $offset, 'CkeditorImage', array ('order' => 'id DESC'), function ($conditions) use ($type) {
-      // if ($type === 'self') OaModel::addConditions ($conditions, 'user_id = ?', User::current ()->id);
+      if ($type === 'self') OaModel::addConditions ($conditions, 'user_id = ?', User::current ()->id);
       return $conditions;
     }, 12);
 
