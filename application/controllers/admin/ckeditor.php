@@ -32,13 +32,13 @@ class Ckeditor extends Admin_controller {
     $funcNum = $_GET['CKEditorFuncNum'];
     $upload = OAInput::file ('upload');
 
-    if (!($upload && verifyCreateOrm ($img = CkeditorImage::create (array ('name' => ''))) && $img->name->put ($upload, true))) echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction ($funcNum, '', '上傳失敗！');</script>";
+    if (!($upload && verifyCreateOrm ($img = CkeditorImage::create (array ('name' => '', 'user_id' => User::current ()->id))) && $img->name->put ($upload, true))) echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction ($funcNum, '', '上傳失敗！');</script>";
     else echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction ($funcNum, '" . $img->name->url ('h800') . "', '上傳成功！');</script>";
   }
   public function dropler_upload () {
     $upload = OAInput::file ('upload');
 
-    if (!($upload && verifyCreateOrm ($img = CkeditorImage::create (array ('name' => ''))) && $img->name->put ($upload, true)))
+    if (!($upload && verifyCreateOrm ($img = CkeditorImage::create (array ('name' => '', 'user_id' => User::current ()->id))) && $img->name->put ($upload, true)))
       return $this->output_error_json (array ('上傳失敗！'));
     else
       return $this->output_json (array ('url' => $img->name->url ('h800')));
