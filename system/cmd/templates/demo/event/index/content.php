@@ -21,7 +21,7 @@
             <td data-title='編號' width='80'>{<{<{ echo $event->id;?></td>
             <td data-title='標題' width='120'>{<{<{ echo $event->title;?></td>
             <td data-title='資訊'>{<{<{ echo $event->info;?></td>
-            <td data-title='封面' width='120'>{<{<{ echo img ($event->cover->url ('100w'));?></td>
+            <td data-title='封面' width='120'>{<{<{ echo img ($event->cover->url ('w100'));?></td>
             <td data-title='參加人數' width='90'>{<{<{ echo count ($event->attendees);?></td>
             <td data-title='檢視' width='60'>
               <a href='{<{<{ echo base_url (array ('events', 'show', $event->id));?>'>

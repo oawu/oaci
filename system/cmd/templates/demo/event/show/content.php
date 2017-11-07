@@ -29,7 +29,7 @@
       <tr>
         <th>封面</th>
         <td>
-          {<{<{ echo img ($event->cover->url ('100w'));?>
+          {<{<{ echo img ($event->cover->url ('w100'));?>
         </td>
       </tr>
       <tr>

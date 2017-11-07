@@ -31,7 +31,7 @@
         <tr>
           <th>封面</th>
           <td>
-            {<{<{ echo img ($event->cover->url ('100w'));?>
+            {<{<{ echo img ($event->cover->url ('w100'));?>
             <hr />
             <input type='file' name='cover' value='' accept="image/gif, image/jpeg, image/png" />
           </td>
