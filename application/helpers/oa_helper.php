@@ -6,6 +6,21 @@
  * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/
  */
 
+if ( !function_exists ('contentType2ext')) {
+  function contentType2ext ($contentType) {
+    $CI =& get_instance ();
+    $CI->config->load ('mimes');
+    $mimes = $CI->config->item ('mimes');
+    
+    foreach ($mimes as $ext => $mime)
+      if (is_string ($mime) ? $contentType == $mime : in_array ($contentType, $mime))
+        return '.' . $ext;
+    
+    return '';
+  }
+}
+
+
 if (!function_exists ('is_upload_image_format')) {
   function is_upload_image_format ($file, $types = array (), $check_size = 10485760) { // 10 * 1024 * 1024
     if (!(isset ($file['name']) && isset ($file['type']) && isset ($file['tmp_name']) && isset ($file['error']) && isset ($file['size'])))
