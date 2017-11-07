@@ -6,6 +6,21 @@
  * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/
  */
 
+if ( !function_exists ('contentType2ext')) {
+  function contentType2ext ($contentType) {
+    $CI =& get_instance ();
+    $CI->config->load ('mimes');
+    $mimes = $CI->config->item ('mimes');
+    
+    foreach ($mimes as $ext => $mime)
+      if (is_string ($mime) ? $contentType == $mime : in_array ($contentType, $mime))
+        return '.' . $ext;
+    
+    return '';
+  }
+}
+
+
 if ( !function_exists ('size_unit')) {
   function size_unit ($size, $unit = null, $default = null) {
     $sizes = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB');
