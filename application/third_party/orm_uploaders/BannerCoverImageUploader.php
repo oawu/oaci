@@ -14,7 +14,7 @@ class BannerCoverImageUploader extends OrmImageUploader {
   public function getVersions () {
     return array (
         '' => array (),
-        '800w' => array ('resize', 800, 800, 'width')
+        'w800' => array ('resize', 800, 800, 'width')
       );
   }
 }

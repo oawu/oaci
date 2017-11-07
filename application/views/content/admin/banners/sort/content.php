@@ -11,7 +11,7 @@
   <?php
     foreach ($objs as $i => $obj) { ?>
       <div class='sort' data-i='<?php echo $i + 1;?>'>
-        <div class='_ic'><img src='<?php echo $obj->cover->url ('800w');?>'></div>
+        <div class='_ic'><img src='<?php echo $obj->cover->url ('w800');?>'></div>
         <span title='<?php echo $obj->title;?>'><?php echo $obj->title;?></span>
         <input type='hidden' name='ids[]' value='<?php echo $obj->id;?>' />
       </div>
