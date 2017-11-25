@@ -96,7 +96,7 @@ class Articles extends Admin_controller {
       return '';
     };
 
-    if (($msg = $validation ($posts)) || (!(Article::transaction (function () use (&$obj, $posts, $cover) { if (!verifyCreateOrm ($obj = Article::create (array_intersect_key ($posts, Article::table ()->columns)))) return false; return $obj->cover->put ($cover); }) && $obj) && ($msg = '資料庫處理錯誤！')))
+    if (($msg = $validation ($posts, $cover)) || (!(Article::transaction (function () use (&$obj, $posts, $cover) { if (!verifyCreateOrm ($obj = Article::create (array_intersect_key ($posts, Article::table ()->columns)))) return false; return $obj->cover->put ($cover); }) && $obj) && ($msg = '資料庫處理錯誤！')))
       return redirect_message (array ($this->uri_1, 'add'), array ('_fd' => $msg, 'posts' => $posts));
 
     if ($posts['tag_ids'])

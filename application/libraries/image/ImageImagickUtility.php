@@ -684,7 +684,7 @@ class ImageImagickUtility extends ImageBaseUtility {
     for ($i = 0; $i < count ($positions); $i++)
       $newImage->compositeImage (ImageUtility::create ($files[$i])->adaptiveResizeQuadrant ($positions[$i]['width'], $positions[$i]['height'])
                                                                   ->getImage (),
-                                 imagick::COMPOSITE_DEFAULT,
+                                 Imagick::COMPOSITE_DEFAULT,
                                  $positions[$i]['left'],
                                  $positions[$i]['top']);
 
