@@ -21,6 +21,9 @@ class Router {
   public static function getRoutes () {
     return array (
         // '404' => 'main',
+        'cli' => array (
+            '' => 'welcome',
+          ),
         'get' => array (
             '' => 'welcome',
             'main/c' => 'main@a',

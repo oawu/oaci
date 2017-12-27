@@ -22,6 +22,8 @@ if (!function_exists ('use_model')) {
     ActiveRecord\Config::initialize (function ($cfg) use ($database) {
       $cfg->set_model_directory (APPPATH . 'model');
       $cfg->set_connections (array_combine (array_keys ($database['groups']), array_map (function ($group) { return $group['dbdriver'] . '://' . $group['username'] . ':' . $group['password'] . '@' . $group['hostname'] . '/' . $group['database'] . '?charset=' . $group['char_set']; }, $database['groups'])), $database['active_group']);
+
+      class_exists ('Log') && $cfg->setLog ('Log');
     });
 
     class_alias ('ActiveRecord\Connection', 'ModelConnection');

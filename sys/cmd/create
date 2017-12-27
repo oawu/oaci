@@ -15,6 +15,9 @@ define ('OACI', '1');
 
 Load::sysCore ('Common.php', true, "config ('defines');");
 Load::sysCore ('Charset.php', true, "Charset::init ();");
+Load::sysCore ('Log.php', true);
+Load::sysCore ('URL.php', true, "URL::init ();URL::forceSetUriString ('create');");
+
 Load::cmdFunc ('create.php', true);
 Load::sysFunc ('file.php', true);
 Load::sysFunc ('inflector.php', true);

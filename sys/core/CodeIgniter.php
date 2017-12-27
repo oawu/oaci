@@ -49,4 +49,6 @@ Benchmark::markEnd ('Controller ( ' . $class . ' / ' . $method . ' )');
  * ====================================================== */
 
 Output::display ($output);
+
+Log::closeAll ();
 Benchmark::markEnd ('整體');

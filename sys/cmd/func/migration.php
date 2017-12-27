@@ -42,6 +42,7 @@ if (!function_exists ('headerText')) {
 
 if (!function_exists ('cho1')) {
   function cho1 ($version = null) {
+    $cho = 1;
     $now = MigrationTool::nowVersion ();
     $keys = array_keys (MigrationTool::files (true));
     

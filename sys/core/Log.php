@@ -8,6 +8,9 @@
  */
 
 class Log {
+  private static $fps = array ();
+  private static $lock = false;
+
   private static $config = array (
     'path' => FCPATH . 'log' . DIRECTORY_SEPARATOR,
     'extension' => '.log',
@@ -16,45 +19,53 @@ class Log {
   );
 
   public static function info ($msg) {
-    self::message (cc ('紀錄', 'g'), $msg);
+    @self::message (self::formatLine (date (self::$config['dateFormat']), cc ('紀錄', 'g'), $msg), 'log-info-');
   }
   public static function warning ($msg) {
-    self::message (cc ('警告', 'y'), $msg);
+    @self::message (self::formatLine (date (self::$config['dateFormat']), cc ('警告', 'y'), $msg), 'log-warning-');
   }
   public static function error ($msg) {
-    self::message (cc ('錯誤', 'r'), $msg);
+    @self::message (self::formatLine (date (self::$config['dateFormat']), cc ('錯誤', 'r'), $msg), 'log-error-');
+  }
+  public static function query ($valid, $time, $sql, $values) {
+    @self::message (self::formatQuery (date (self::$config['dateFormat']), $valid, $time, $sql, $values), 'query-');
   }
 
-  public static function msg ($title, $msg) {
-    return call_user_func_array (array ('Log', 'message'), array (func_get_args ()));
+  public static function closeAll () {
+    foreach (self::$fps as $fp)
+      fclose ($fp);
   }
-  public static function message ($title, $msg) {
+
+  private static function message ($msg, $prefix = 'log-') {
     if (!(is_dir (self::$config['path']) && is_really_writable (self::$config['path'])))
       return false;
 
-    $newfile = !file_exists ($path = self::$config['path'] . 'log-' . date ('Y-m-d') . self::$config['extension']);
+    $newfile = !file_exists ($path = self::$config['path'] . $prefix . date ('Y-m-d') . self::$config['extension']);
 
-    if (!$fp = @fopen ($path, FOPEN_WRITE_CREATE))
-      return false;
+    if (!isset (self::$fps[$path]))
+      if (!$fp = @fopen ($path, FOPEN_WRITE_CREATE))
+        return false;
+      else
+        self::$fps[$path] = $fp;
 
-    flock ($fp, LOCK_EX);
+    Log::$lock && flock (self::$fps[$path], LOCK_EX);
 
-    $msg = self::formatLine (date (self::$config['dateFormat']), $title, $msg);
 
     for ($written = 0, $length = Charset::strlen ($msg); $written < $length; $written += $result)
-      if (($result = fwrite ($fp, Charset::substr ($msg, $written))) === false)
+      if (($result = fwrite (self::$fps[$path], Charset::substr ($msg, $written))) === false)
         break;
 
-    flock ($fp, LOCK_UN);
-    fclose ($fp);
+    Log::$lock && flock (self::$fps[$path], LOCK_UN);
 
-    $newfile &&
-      chmod ($path, self::$config['permissions']);
+    $newfile && @chmod ($path, self::$config['permissions']);
 
     return is_int ($result);
   }
 
   private static function formatLine ($date, $title, $msg) {
-    return cc ($date, 'W') . cc ('：', 'N') . $title . cc ('：', 'N') . $msg . "\n";
+    return cc ($date, 'w') . cc ('：', 'N') . $title . cc ('：', 'N') . $msg . "\n";
+  }
+  private static function formatQuery ($date, $valid, $time, $sql, $values) {
+    return (ENVIRONMENT !== 'cmd' ? request_is_cli () ? cc ('cli', 'c') : cc ('page', 'p') : cc ('cmd', 'y')) . cc (' ➜ ', 'N') . cc (($uri = URL::uriString ()) ? $uri : '首頁', ENVIRONMENT !== 'cmd' ? request_is_cli () ? 'C' : 'P' : 'Y') . cc (' │ ', 'N') . cc ($date, 'w') . cc (' ➜ ', 'N') . cc ($time, $time < 999 ? $time < 99 ? $time < 9 ? 'w' : 'W' : 'Y' : 'R') . '' . cc ('ms', $time < 999 ? $time < 99 ? $time < 9 ? 'N' : 'w' : 'y' : 'r') . cc (' │ ', 'N') . ($valid ? cc ('OK', 'g') : cc ('GG', 'r')) . cc (' ➜ ', 'N') . call_user_func_array ('sprintf', array_merge (array (preg_replace_callback ('/\?/', function ($matches) { return cc ('%s', 'W'); }, $sql)), $values)) . "\n";
   }
 }
