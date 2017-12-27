@@ -168,7 +168,7 @@ do {
     if ($env == 'q') {
       echo "\n";
       echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
-      echo "  ������  好的！下次別再按錯囉，期待您下次再使用，������  " . cc ('掰掰', 'W') . "～  \n\n";
+      echo "  好的！下次別再按錯囉，期待您下次再使用，" . cc ('掰掰', 'W') . "～  \n\n";
       echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
       exit;
     }
@@ -227,6 +227,6 @@ foreach ($dirs as $dir)
 echo "" . cc (str_repeat ('─ ', CLI_LEN / 2), 'N') . "\n";
 
 echo "\n";
-echo ' ' . cc ('➜', 'R') . " ������  " . cc ($env == '2' ? '正式環境' : '開發環境', 'W') . cc ($env == '2' ? '(production)' : '(development)', 'N') . " 初始化" . cc ('順利完成', 'W') . '囉，' . ($env == '2' ? '快開啟網址確認一下吧' : '可以開始寫程式啦') . "！\n";
+echo ' ' . cc ('➜', 'R') . " " . cc ($env == '2' ? '正式環境' : '開發環境', 'W') . cc ($env == '2' ? '(production)' : '(development)', 'N') . " 初始化" . cc ('順利完成', 'W') . '囉，' . ($env == '2' ? '快開啟網址確認一下吧' : '可以開始寫程式啦') . "！\n";
 echo "\n";
 exit;
