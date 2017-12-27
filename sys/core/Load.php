@@ -39,4 +39,7 @@ class Load {
   public static function sysLib ($filename, $notExistsExit = false, $class = null) {
     return self::file (BASEPATH . 'lib' . DIRECTORY_SEPARATOR . $filename, $notExistsExit, $class);
   }
+  public static function lib ($filename, $notExistsExit = false, $class = null) {
+    return self::file (APPPATH . 'lib' . DIRECTORY_SEPARATOR . $filename, $notExistsExit, $class);
+  }
 }
