@@ -1,4 +1,5 @@
 .DS_Store
+sftp-config*
 
 application/cache/*
 !application/cache/index.html
@@ -10,22 +11,7 @@ application/logs/*
 
 composer.lock
 
-user_guide_src/build/*
-user_guide_src/cilexer/build/*
-user_guide_src/cilexer/dist/*
-user_guide_src/cilexer/pycilexer.egg-info/*
-/vendor/
+/vendor/*
 
-# IDE Files
-#-------------------------
-/nbproject/
-.idea/*
+application/config/database.php
 
-## Sublime Text cache files
-*.tmlanguage.cache
-*.tmPreferences.cache
-*.stTheme.cache
-*.sublime-workspace
-*.sublime-project
-/tests/tests/
-/tests/results/
