@@ -1,274 +1,173 @@
-<?php
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP
- *
- * This content is released under the MIT License (MIT)
- *
- * Copyright (c) 2014 - 2017, British Columbia Institute of Technology
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @package	CodeIgniter
- * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2017, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	https://codeigniter.com
- * @since	Version 1.0.0
- * @filesource
- */
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined ('BASEPATH') OR exit ('No direct script access allowed');
 
-/**
- * Exceptions Class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Exceptions
- * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/user_guide/libraries/exceptions.html
- */
-class CI_Exceptions {
+class Exceptions {
+  private static $obLevel;
+  private static $stati = array (100 => 'Continue', 101 => 'Switching Protocols', 200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 307 => 'Temporary Redirect', 400 => 'Bad Request', 401 => 'Unauthorized', 402 => 'Payment Required', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable', 407 => 'Proxy Authentication Required', 408 => 'Request Timeout', 409 => 'Conflict', 410 => 'Gone', 411 => 'Length Required', 412 => 'Precondition Failed', 413 => 'Request Entity Too Large', 414 => 'Request-URI Too Long', 415 => 'Unsupported Media Type', 416 => 'Requested Range Not Satisfiable', 417 => 'Expectation Failed', 422 => 'Unprocessable Entity', 426 => 'Upgrade Required', 428 => 'Precondition Required', 429 => 'Too Many Requests', 431 => 'Request Header Fields Too Large', 500 => 'Internal Server Error', 501 => 'Not Implemented', 502 => 'Bad Gateway', 503 => 'Service Unavailable', 504 => 'Gateway Timeout', 505 => 'HTTP Version Not Supported', 511 => 'Network Authentication Required');
+  public static $levels = array (E_ERROR => 'Error', E_WARNING => 'Warning', E_PARSE => 'Parsing Error', E_NOTICE => 'Notice', E_CORE_ERROR => 'Core Error', E_CORE_WARNING => 'Core Warning', E_COMPILE_ERROR => 'Compile Error', E_COMPILE_WARNING => 'Compile Warning', E_USER_ERROR => 'User Error', E_USER_WARNING => 'User Warning', E_USER_NOTICE => 'User Notice', E_STRICT => 'Runtime Notice');
 
-	/**
-	 * Nesting level of the output buffering mechanism
-	 *
-	 * @var	int
-	 */
-	public $ob_level;
+  public static function init () {
+    self::$obLevel = ob_get_level ();
+  }
 
-	/**
-	 * List of available error levels
-	 *
-	 * @var	array
-	 */
-	public $levels = array(
-		E_ERROR			=>	'Error',
-		E_WARNING		=>	'Warning',
-		E_PARSE			=>	'Parsing Error',
-		E_NOTICE		=>	'Notice',
-		E_CORE_ERROR		=>	'Core Error',
-		E_CORE_WARNING		=>	'Core Warning',
-		E_COMPILE_ERROR		=>	'Compile Error',
-		E_COMPILE_WARNING	=>	'Compile Warning',
-		E_USER_ERROR		=>	'User Error',
-		E_USER_WARNING		=>	'User Warning',
-		E_USER_NOTICE		=>	'User Notice',
-		E_STRICT		=>	'Runtime Notice'
-	);
+  public static function logException ($severity, $message, $filepath, $line) {
+    $severity = isset(self::$levels[$severity]) ? self::$levels[$severity] : $severity;
+    Log::message ('Severity: ' . $severity . ' --> ' . $message . ' ' . $filepath . ' ' . $line);
+  }
 
-	/**
-	 * Class constructor
-	 *
-	 * @return	void
-	 */
-	public function __construct()
-	{
-		$this->ob_level = ob_get_level();
-		// Note: Do not log messages from this constructor.
-	}
+  public static function setStatusHeader ($code = 200, $text = '') {
+    if (isCli ()) return ;
 
-	// --------------------------------------------------------------------
+    if (empty ($code) || !is_numeric ($code))
+      self::showError ('Status codes must be numeric', 500);
 
-	/**
-	 * Exception Logger
-	 *
-	 * Logs PHP generated error messages
-	 *
-	 * @param	int	$severity	Log level
-	 * @param	string	$message	Error message
-	 * @param	string	$filepath	File path
-	 * @param	int	$line		Line number
-	 * @return	void
-	 */
-	public function log_exception($severity, $message, $filepath, $line)
-	{
-		$severity = isset($this->levels[$severity]) ? $this->levels[$severity] : $severity;
-		log_message('error', 'Severity: '.$severity.' --> '.$message.' '.$filepath.' '.$line);
-	}
+    if (!$text) {
+      if (!isset (self::$stati[$code]))
+        self::showError ('No status text available. Please check your status code number or supply your own message text.', 500);
+      $text = self::$stati[$code];
+    }
 
-	// --------------------------------------------------------------------
+    if (strpos (PHP_SAPI, 'cgi') === 0) {
+      header ('Status: ' . $code . ' ' . $text, true);
+      return;
+    }
 
-	/**
-	 * 404 Error Handler
-	 *
-	 * @uses	CI_Exceptions::show_error()
-	 *
-	 * @param	string	$page		Page URI
-	 * @param 	bool	$log_error	Whether to log the error
-	 * @return	void
-	 */
-	public function show_404($page = '', $log_error = TRUE)
-	{
-		if (is_cli())
-		{
-			$heading = 'Not Found';
-			$message = 'The controller/method pair you requested was not found.';
-		}
-		else
-		{
-			$heading = '404 Page Not Found';
-			$message = 'The page you requested was not found.';
-		}
+    $serverProtocol = isset($_SERVER['SERVER_PROTOCOL']) && in_array ($_SERVER['SERVER_PROTOCOL'], array ('HTTP/1.0', 'HTTP/1.1', 'HTTP/2'), true) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
+    header ($serverProtocol.' '.$code.' '.$text, true, $code);
+  }
 
-		// By default we log this, but allow a dev to skip it
-		if ($log_error)
-		{
-			log_message('error', $heading.': '.$page);
-		}
+  public static function showError ($message, $statusCode = 500) {
+    if (isCli ()) {
+      $message = " -> " . (is_array ($message) ? implode ("\n\t", $message) : $message);
+    } else {
+      self::setStatusHeader ($statusCode);
+      $message = '<p>' . (is_array ($message) ? implode ('</p><p>', $message) : $message) . '</p>';
+    }
 
-		echo $this->show_error($heading, $message, 'error_404', 404);
-		exit(4); // EXIT_UNKNOWN_FILE
-	}
+    if (ob_get_level () > self::$obLevel + 1) ob_end_flush ();
 
-	// --------------------------------------------------------------------
+    ob_start ();
+    echo $message;
+    $buffer = ob_get_contents();
+    ob_end_clean();
 
-	/**
-	 * General Error Page
-	 *
-	 * Takes an error message as input (either as a string or an array)
-	 * and displays it using the specified template.
-	 *
-	 * @param	string		$heading	Page heading
-	 * @param	string|string[]	$message	Error message
-	 * @param	string		$template	Template name
-	 * @param 	int		$status_code	(default: 500)
-	 *
-	 * @return	string	Error page output
-	 */
-	public function show_error($heading, $message, $template = 'error_general', $status_code = 500)
-	{
-		$templates_path = config_item('error_views_path');
-		if (empty($templates_path))
-		{
-			$templates_path = VIEWPATH.'errors'.DIRECTORY_SEPARATOR;
-		}
+    echo $buffer;
+    exit ($statusCode);
+  }
 
-		if (is_cli())
-		{
-			$message = "\t".(is_array($message) ? implode("\n\t", $message) : $message);
-			$template = 'cli'.DIRECTORY_SEPARATOR.$template;
-		}
-		else
-		{
-			set_status_header($status_code);
-			$message = '<p>'.(is_array($message) ? implode('</p><p>', $message) : $message).'</p>';
-			$template = 'html'.DIRECTORY_SEPARATOR.$template;
-		}
+  public static function show404 ($page = '', $logError = false) {
+    if (isCli ()) {
+      $heading = 'Not Found';
+      $message = '找不到此 controller/method。';
+    } else {
+      $heading = '此頁面不存在(404)';
+      $message = '找不到您的頁面。';
+    }
 
-		if (ob_get_level() > $this->ob_level + 1)
-		{
-			ob_end_flush();
-		}
-		ob_start();
-		include($templates_path.$template.'.php');
-		$buffer = ob_get_contents();
-		ob_end_clean();
-		return $buffer;
-	}
+    if ($logError) Log::message ($heading . ': ' . $page);
 
-	// --------------------------------------------------------------------
+    self::showError ($message, 404);
+  }
 
-	public function show_exception($exception)
-	{
-		$templates_path = config_item('error_views_path');
-		if (empty($templates_path))
-		{
-			$templates_path = VIEWPATH.'errors'.DIRECTORY_SEPARATOR;
-		}
+  public static function showException ($exception) {
+    $message = $exception->getMessage ();
+    
+    if (empty($message))
+      $message = '(null)';
 
-		$message = $exception->getMessage();
-		if (empty($message))
-		{
-			$message = '(null)';
-		}
+    if (ob_get_level () > self::$obLevel + 1) ob_end_flush ();
 
-		if (is_cli())
-		{
-			$templates_path .= 'cli'.DIRECTORY_SEPARATOR;
-		}
-		else
-		{
-			$templates_path .= 'html'.DIRECTORY_SEPARATOR;
-		}
+    ob_start();
 
-		if (ob_get_level() > $this->ob_level + 1)
-		{
-			ob_end_flush();
-		}
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" />' . '<br/>';
+    echo 'An uncaught Exception was encountered' . '<br/>';
+    echo 'Type:        ' . get_class ($exception) . '<br/>';
+    echo 'Message:     ' . $message . '<br/>';
+    echo 'Filename:    ' . $exception->getFile () . '<br/>';
+    echo 'Line Number: ' . $exception->getLine () . '<br/>';
 
-		ob_start();
-		include($templates_path.'error_exception.php');
-		$buffer = ob_get_contents();
-		ob_end_clean();
-		echo $buffer;
-	}
+    if (defined ('SHOW_DEBUG_BACKTRACE') && SHOW_DEBUG_BACKTRACE === true) {
+      echo '' . '<br/>';
+      echo 'Backtrace:' . '<br/>';
+      foreach ($exception->getTrace () as $error) {
+        if (isset($error['file']) && strpos($error['file'], realpath(BASEPATH)) !== 0) {
+          echo 'File: ' . $error['file'] . '<br/>';
+          echo 'Line: ' . $error['line'] . '<br/>';
+          echo 'Function: ' . $error['function'] . '<br/>';
+        }
+      }
+    }
 
-	// --------------------------------------------------------------------
+    $buffer = ob_get_contents();
+    ob_end_clean();
+    echo $buffer;
+  }
 
-	/**
-	 * Native PHP error handler
-	 *
-	 * @param	int	$severity	Error level
-	 * @param	string	$message	Error message
-	 * @param	string	$filepath	File path
-	 * @param	int	$line		Line number
-	 * @return	void
-	 */
-	public function show_php_error($severity, $message, $filepath, $line)
-	{
-		$templates_path = config_item('error_views_path');
-		if (empty($templates_path))
-		{
-			$templates_path = VIEWPATH.'errors'.DIRECTORY_SEPARATOR;
-		}
+  public static function showPhpError ($severity, $message, $filepath, $line) {
+    $severity = isset (self::$levels[$severity]) ? self::$levels[$severity] : $severity;
+    if (ob_get_level () > self::$obLevel + 1) ob_end_flush ();
 
-		$severity = isset($this->levels[$severity]) ? $this->levels[$severity] : $severity;
+    ob_start();
 
-		// For safety reasons we don't show the full file path in non-CLI requests
-		if ( ! is_cli())
-		{
-			$filepath = str_replace('\\', '/', $filepath);
-			if (FALSE !== strpos($filepath, '/'))
-			{
-				$x = explode('/', $filepath);
-				$filepath = $x[count($x)-2].'/'.end($x);
-			}
+    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" />' . '<br/>';
+    echo '嚴重性：' . $severity . '<br/>';
+    echo '錯誤訊息：' . $message . '<br/>';
+    echo '位置：' . $filepath . '<br/>';
+    echo '行數：' . $line . '<br/>';
 
-			$template = 'html'.DIRECTORY_SEPARATOR.'error_php';
-		}
-		else
-		{
-			$template = 'cli'.DIRECTORY_SEPARATOR.'error_php';
-		}
-
-		if (ob_get_level() > $this->ob_level + 1)
-		{
-			ob_end_flush();
-		}
-		ob_start();
-		include($templates_path.$template.'.php');
-		$buffer = ob_get_contents();
-		ob_end_clean();
-		echo $buffer;
-	}
-
+    $buffer = ob_get_contents();
+    ob_end_clean();
+    
+    echo $buffer;
+  }
 }
+
+if (!function_exists ('_errorHandler')) {
+  function _errorHandler ($severity, $message, $filepath, $line) {
+    $isError = (((E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $severity) === $severity);
+    
+    if ($isError)
+      Exceptions::setStatusHeader (500);
+
+    if (($severity & error_reporting ()) !== $severity)
+      return;
+
+    Exceptions::logException ($severity, $message, $filepath, $line);
+
+    if (str_ireplace (array ('off', 'none', 'no', 'false', 'null'), '', ini_get ('display_errors')))
+      Exceptions::showPhpError ($severity, $message, $filepath, $line);
+
+    if ($isError)
+      exit(1);
+  }
+}
+
+if (!function_exists ('_exceptionHandler')) {
+  function _exceptionHandler ($exception) {
+    Exceptions::logException ('Error', 'Exception: ' . $exception->getMessage (), $exception->getFile (), $exception->getLine ());
+
+    isCli() OR Exceptions::setStatusHeader (500);
+
+    if (str_ireplace (array ('off', 'none', 'no', 'false', 'null'), '', ini_get ('display_errors')))
+      Exceptions::showException ($exception);
+
+    exit(1);
+  }
+}
+
+if (!function_exists ('_shutdownHandler')) {
+  function _shutdownHandler () {
+    $lastError = error_get_last ();
+    
+    if (isset ($lastError) && ($lastError['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING)))
+      _errorHandler ($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
+  }
+}
+
+/*
+ * ------------------------------------------------------
+ *  定義自己的 Error Handler
+ * ------------------------------------------------------
+ */
+set_error_handler ('_errorHandler');
+set_exception_handler ('_exceptionHandler');
+register_shutdown_function ('_shutdownHandler');

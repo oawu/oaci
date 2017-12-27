@@ -94,12 +94,12 @@ if ( ! function_exists('form_open'))
 		{
 			foreach ($hidden as $name => $value)
 			{
-				$form .= '<input type="hidden" name="'.$name.'" value="'.html_escape($value).'" />'."\n";
+				$form .= '<input type="hidden" name="'.$name.'" value="'.htmlEscape($value).'" />'."\n";
 			}
 		}
 
 		// Add CSRF field if enabled, but leave it out for GET requests and requests to external websites
-		if ($CI->config->item('csrf_protection') === TRUE && strpos($action, $CI->config->base_url()) !== FALSE && ! stripos($form, 'method="get"'))
+		if (Config::get ('general', 'csrf_protection') === TRUE && strpos($action, $CI->config->base_url()) !== FALSE && ! stripos($form, 'method="get"'))
 		{
 			// Prepend/append random-length "white noise" around the CSRF
 			// token input, as a form of protection against BREACH attacks
@@ -126,8 +126,8 @@ if ( ! function_exists('form_open'))
 			$form .= sprintf(
 				'%s<input type="hidden" name="%s" value="%s" />%s%s',
 				$prepend,
-				$CI->security->get_csrf_token_name(),
-				$CI->security->get_csrf_hash(),
+				Security::getTokenName (),
+				Security::getHash (),
 				$append,
 				"\n"
 			);
@@ -202,7 +202,7 @@ if ( ! function_exists('form_hidden'))
 
 		if ( ! is_array($value))
 		{
-			$form .= '<input type="hidden" name="'.$name.'" value="'.html_escape($value)."\" />\n";
+			$form .= '<input type="hidden" name="'.$name.'" value="'.htmlEscape($value)."\" />\n";
 		}
 		else
 		{
@@ -318,7 +318,7 @@ if ( ! function_exists('form_textarea'))
 		}
 
 		return '<textarea '._parse_form_attributes($data, $defaults)._attributes_to_string($extra).'>'
-			.html_escape($val)
+			.htmlEscape($val)
 			."</textarea>\n";
 	}
 }
@@ -425,7 +425,7 @@ if ( ! function_exists('form_dropdown'))
 				foreach ($val as $optgroup_key => $optgroup_val)
 				{
 					$sel = in_array($optgroup_key, $selected) ? ' selected="selected"' : '';
-					$form .= '<option value="'.html_escape($optgroup_key).'"'.$sel.'>'
+					$form .= '<option value="'.htmlEscape($optgroup_key).'"'.$sel.'>'
 						.(string) $optgroup_val."</option>\n";
 				}
 
@@ -433,7 +433,7 @@ if ( ! function_exists('form_dropdown'))
 			}
 			else
 			{
-				$form .= '<option value="'.html_escape($key).'"'
+				$form .= '<option value="'.htmlEscape($key).'"'
 					.(in_array($key, $selected) ? ' selected="selected"' : '').'>'
 					.(string) $val."</option>\n";
 			}
@@ -683,13 +683,13 @@ if ( ! function_exists('form_prep'))
 	 *
 	 * Formats text so that it can be safely placed in a form field in the event it has HTML tags.
 	 *
-	 * @deprecated	3.0.0	An alias for html_escape()
+	 * @deprecated	3.0.0	An alias for htmlEscape()
 	 * @param	string|string[]	$str		Value to escape
 	 * @return	string|string[]	Escaped values
 	 */
 	function form_prep($str)
 	{
-		return html_escape($str, TRUE);
+		return htmlEscape($str, TRUE);
 	}
 }
 
@@ -718,7 +718,7 @@ if ( ! function_exists('set_value'))
 			: $CI->input->post($field, FALSE);
 
 		isset($value) OR $value = $default;
-		return ($html_escape) ? html_escape($value) : $value;
+		return ($html_escape) ? htmlEscape($value) : $value;
 	}
 }
 
@@ -962,7 +962,7 @@ if ( ! function_exists('_parse_form_attributes'))
 		{
 			if ($key === 'value')
 			{
-				$val = html_escape($val);
+				$val = htmlEscape($val);
 			}
 			elseif ($key === 'name' && ! strlen($default['name']))
 			{

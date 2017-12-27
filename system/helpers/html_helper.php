@@ -63,7 +63,7 @@ if ( ! function_exists('heading'))
 	 */
 	function heading($data = '', $h = '1', $attributes = '')
 	{
-		return '<h'.$h._stringify_attributes($attributes).'>'.$data.'</h'.$h.'>';
+		return '<h'.$h.stringifyAttributes($attributes).'>'.$data.'</h'.$h.'>';
 	}
 }
 
@@ -131,7 +131,7 @@ if ( ! function_exists('_list'))
 		// Set the indentation based on the depth
 		$out = str_repeat(' ', $depth)
 			// Write the opening list tag
-			.'<'.$type._stringify_attributes($attributes).">\n";
+			.'<'.$type.stringifyAttributes($attributes).">\n";
 
 
 		// Cycle through the list elements.  If an array is
@@ -209,7 +209,7 @@ if ( ! function_exists('img'))
 			}
 		}
 
-		return $img._stringify_attributes($attributes).' />';
+		return $img.stringifyAttributes($attributes).' />';
 	}
 }
 

@@ -12,6 +12,7 @@ application/logs/*
 composer.lock
 
 /vendor/*
+/logs/*
 
 application/config/database.php
 

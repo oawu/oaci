@@ -1272,9 +1272,8 @@ class CI_Form_validation {
 	 * @param	string	'ipv4' or 'ipv6' to validate a specific IP format
 	 * @return	bool
 	 */
-	public function valid_ip($ip, $which = '')
-	{
-		return $this->CI->input->valid_ip($ip, $which);
+	public function validIp ($ip, $which = '') {
+		return Input::validIp ($ip, $which);
 	}
 
 	// --------------------------------------------------------------------
@@ -1544,9 +1543,8 @@ class CI_Form_validation {
 	 * @param	string
 	 * @return	string
 	 */
-	public function strip_image_tags($str)
-	{
-		return $this->CI->security->strip_image_tags($str);
+	public function stripImageTags ($str) {
+		return Security::stripImageTags($str);
 	}
 
 	// --------------------------------------------------------------------
