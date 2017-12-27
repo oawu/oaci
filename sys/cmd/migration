@@ -1,0 +1,96 @@
+<?php
+
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2013 - 2017, OACI
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+include_once 'lib' . DIRECTORY_SEPARATOR . 'base.php';
+include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Load.php';
+
+Load::sysCore ('Common.php', true);
+Load::sysCore ('Exceptions.php', true, "Exceptions::init ();");
+Load::sysCore ('Model.php', true);
+
+Load::sysLib ('MigrationTool.php', '載入 MigrationTool 失敗！');
+MigrationTool::init ();
+
+if (!function_exists ('showAll')) {
+  function showAll () {
+    system ('clear');
+    $now = MigrationTool::nowVersion ();
+    $files = MigrationTool::files (true);
+    
+    echo cc ('╔═══════╦' . str_repeat ('═', CLI_LEN - 12 - 20) . '╦' . str_repeat ('═', 21) . '╗', 'N') . "\n";
+    echo cc ('║', 'N') . '  版本 ' . cc ('║', 'N') . ' 名稱 ' . str_repeat (' ', CLI_LEN - 12 - 25 - 1) . cc ('║', 'N') .  ' 新增日期' . str_repeat (' ', 21 - 9) . cc ('║', 'N') . " \n";
+    echo cc ('╟───────╫' . str_repeat ('─', CLI_LEN - 12 - 20) . '╫' . str_repeat ('─', 21) . '╢', 'N') . "\n";
+
+    foreach ($files as $v => $f) {
+      $at = MigrationTool::get ($f);
+      $at = $at['at'];
+      $f = preg_replace ('/^\d{3}_/', '', basename ($f, '.php'));
+      echo $now == $v ? cc ('║', 'N') . ' ' . cc ('➜', 'G') . ' ' . cc (sprintf ('%3s', $v), 'Y') . ' ' . cc ('║', 'N') . ' ' . cc (sprintf ('%-47s', $f), 'Y') . cc ('║', 'N') . ' ' . cc ($at, 'Y') . ' ' . cc ('║', 'N') . "\n" : cc ('║', 'N') . ' ' . '  ' . sprintf ('%3s', $v) . ' ' . cc ('║', 'N') . ' ' . sprintf ('%-47s', $f) . cc ('║', 'N') . ' ' . $at . ' ' . cc ('║', 'N') . "\n";
+    }
+    echo cc ('╚═══════╩' . str_repeat ('═', CLI_LEN - 12 - 20) . '╩' . str_repeat ('═', 21) . '╝', 'N') . "\n";
+  }
+}
+$now = MigrationTool::nowVersion ();
+$files = MigrationTool::files (true);
+$keys = array_keys ($files);
+array_shift ($argv);
+
+if (!$files) {
+  echo "\n " . cc ('◎', 'G') . " 目前沒有任何 Migration。\n\n";
+  exit();
+}
+
+if (!((($version = array_shift ($argv)) != null) && $version >= 0 && $version <= end ($keys))) {
+  $version = end ($keys);
+  do {
+    showAll ();
+    echo "\n";
+    echo ' ' . cc ('1.', 'W') . ' ' . '更新至最新版 ' . "\n";
+    echo ' ' . cc ('2.', 'W') . ' ' . '輸入更新版號' . "\n";
+    echo ' ' . cc ('q.', 'W') . ' ' . '離開本程式' . "\n";
+    echo "\n";
+    echo ' ' . cc ('➜', 'G') . ' 請選擇功能' . cc ('(q)', 'N') . '：';
+
+    ($feature = trim (fgets (STDIN))) || $feature = 'q';
+  } while (!in_array (strtolower ($feature), array ('1', '2', 'q')));
+} else {
+  $feature = '1';
+}
+
+if ($feature == '3')
+  echo "\n";
+
+if ($feature == '2') {
+  do {
+    showAll ();
+    echo "\n " . cc ('◎', 'G') . " 請輸入要更新的版本號" . cc ('(0 ~ ' . end ($keys) . ')', 'N') . "：";
+    $version = trim (fgets (STDIN));
+  } while (!(is_numeric ($version) && $version >= 0 && $version <= end ($keys)));
+
+  $feature = '1';
+}
+
+if ($feature == '1') {
+  showAll ();
+
+  if (($err = MigrationTool::to ($version)) === true) {
+    showAll ();
+    echo "\n " . cc ('◎', 'G') . " Migration 更新中，正在由第 " . cc ($now, 'W') . ' 版更新至第' . cc ($version, 'W') . ' 版.. ';
+    echo cc ('更新成功', 'g') . "。\n";
+    echo ' ' . cc ('◎', 'G') . ' 目前已經更新至第 ' . cc (MigrationTool::nowVersion (), 'W') . ' 版了！' . "\n";
+  } else {
+    echo "\n " . cc ('◎', 'G') . " Migration 更新中，正在由第 " . cc ($now, 'W') . ' 版更新至第' . cc ($version, 'W') . ' 版.. ';
+    echo cc ('更新失敗', 'r') . "。\n";
+    echo implode ("\n", array_map (function ($e) { return ' ' . cc ('◎', 'G') . ' ' . $e; }, $err)) . "\n";
+    echo ' ' . cc ('◎', 'G') . ' 目前在 ' . cc (MigrationTool::nowVersion (), 'W') . ' 版。' . "\n";
+  }
+}
+
+echo "\n";
+exit();

@@ -1,18 +1,17 @@
 .DS_Store
 sftp-config*
 
-application/cache/*
-!application/cache/index.html
-
-application/logs/*
-!application/logs/index.html
-
-!application/*/.htaccess
+!app/*/.htaccess
 
 composer.lock
+/_env.php
+/cmd
 
 /vendor/*
-/logs/*
+/log/*
+/cache/*
+/session/*
+/upload/*
 
-application/config/database.php
+app/config/database.php
 
