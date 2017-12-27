@@ -20,11 +20,9 @@ class View {
     if (!$key)
       return $this;
 
-    if (is_array ($key) && !$val)
-      $this->vals = array_merge ($this->vals, $key);
-    else if (is_string ($key) && $val !== null)
-      $this->vals[$key] = $val;
-
+    is_array ($key) && $this->vals = array_merge ($this->vals, $key);
+    is_string ($key) && $this->vals[$key] = $val;
+    
     return $this;
   }
 
@@ -56,22 +54,16 @@ class View {
   }
 
   public static function load ($_x_oa_x_path, $_x_oa_x_params = array (), $_x_oa_x_return = false) {
-    if (!(($_x_oa_x_path = ltrim ($_x_oa_x_path, DIRECTORY_SEPARATOR)) && file_exists ($_x_oa_x_path = VIEWPATH . $_x_oa_x_path)))
-      gg ('無法載入 View：' . $_x_oa_x_path);
-    
-    extract ($_x_oa_x_params);
+    ($_x_oa_x_path = ltrim ($_x_oa_x_path, DIRECTORY_SEPARATOR)) && file_exists ($_x_oa_x_path = VIEWPATH . $_x_oa_x_path) || gg ('無法載入 View：' . $_x_oa_x_path);
 
+    extract ($_x_oa_x_params);
     ob_start ();
 
-    if (!@include ($_x_oa_x_path))
-      gg ('無法載入 View：' . $_x_oa_x_path);
+    @include ($_x_oa_x_path) || gg ('無法載入 View：' . $_x_oa_x_path);
 
     $buffer = ob_get_contents ();
-      @ob_end_clean ();
+    @ob_end_clean ();
 
-    if ($_x_oa_x_return === true)
-      return $buffer;
-
-    return Output::appendOutput ($buffer);
+    return $_x_oa_x_return ? $buffer : Output::appendOutput ($buffer);
   }
 }

@@ -18,10 +18,7 @@ class URL {
     self::$baseUrl = null;
     self::$segments = self::$rsegments = array ();
 
-    if (request_is_cli () || config ('other', 'enable_query_strings') !== true) {
-      $uri = request_is_cli () ? self::parseArgv () : self::parseRequestUri ();
-      self::setUriString ($uri);
-    }
+    !request_is_cli () && config ('other', 'enable_query_strings') || self::setUriString (request_is_cli () ? self::parseArgv () : self::parseRequestUri ());
   }
 
   private static function setUriString ($str) {
@@ -30,14 +27,8 @@ class URL {
     if (self::$uriString !== '') {
       self::$segments[0] = null;
       
-      foreach (explode ('/', trim (self::$uriString, '/')) as $val) {
-        $val = trim ($val);
-
-        self::filterUri ($val);
-
-        if ($val !== '')
-          array_push (self::$segments, $val);
-      }
+      foreach (explode ('/', trim (self::$uriString, '/')) as $val)
+        self::filterUri ($val = trim ($val)) && array_push (self::$segments, $val);
 
       unset (self::$segments[0]);
     }
@@ -51,11 +42,9 @@ class URL {
     $query = isset ($uri['query']) ? $uri['query'] : '';
     $uri = urldecode (isset ($uri['path']) ? $uri['path'] : '');
 
-    if (isset ($_SERVER['SCRIPT_NAME'][0]))
-      $uri = strpos ($uri, $_SERVER['SCRIPT_NAME']) === 0 ? (string) substr ($uri, strlen ($_SERVER['SCRIPT_NAME'])) : (strpos ($uri, dirname ($_SERVER['SCRIPT_NAME'])) === 0 ? (string) substr ($uri, strlen (dirname ($_SERVER['SCRIPT_NAME']))) : $uri);
+    isset ($_SERVER['SCRIPT_NAME'][0]) && $uri = strpos ($uri, $_SERVER['SCRIPT_NAME']) === 0 ? (string) substr ($uri, strlen ($_SERVER['SCRIPT_NAME'])) : (strpos ($uri, dirname ($_SERVER['SCRIPT_NAME'])) === 0 ? (string) substr ($uri, strlen (dirname ($_SERVER['SCRIPT_NAME']))) : $uri);
 
-    if (trim ($uri, '/') === '' && strncmp ($query, '/', 1) === 0) {
-      $query = explode ('?', $query, 2);
+    if (trim ($uri, '/') === '' && strncmp ($query, '/', 1) === 0 && ($query = explode ('?', $query, 2))) {
       $uri = $query[0];
       $_SERVER['QUERY_STRING'] = isset ($query[1]) ? $query[1] : '';
     } else {
@@ -64,7 +53,7 @@ class URL {
 
     parse_str ($_SERVER['QUERY_STRING'], $_GET);
 
-    if ($uri === '/' OR $uri === '')
+    if ($uri === '/' || $uri === '')
       return '/';
 
     return self::removeRelativeDirectory ($uri);
@@ -84,11 +73,13 @@ class URL {
 
     return implode ('/', $uris);
   }
-  public static function filterUri (&$str) {
+  public static function filterUri ($str) {
     $c = config ('other', 'permitted_uri_chars');
 
     if ($str && $c && !preg_match ('/^[' . $c . ']+$/i' . (UTF8_ENABLED ? 'u' : ''), $str))
       gg ('網址有不合法的字元！', 400);
+
+    return $str;
   }
   public static function uriString () {
     return self::$uriString;

@@ -17,10 +17,7 @@ class SessionFileDriver extends SessionDriver implements SessionHandlerInterface
     parent::__construct ($cookie);
 
     $this->sidRegexp = $sidRegexp;
-
-    if (!(isset ($this->config['path']) && is_dir ($this->config['path']) && is_really_writable ($this->config['path'])))
-      gg ('[Session] SessionFileDriver 錯誤，路徑不存在或無法寫入。Path：' . $this->config['path']);
-
+    isset ($this->config['path']) && is_dir ($this->config['path']) && is_really_writable ($this->config['path']) || gg ('[Session] SessionFileDriver 錯誤，路徑不存在或無法寫入。Path：' . $this->config['path']);
     ini_set ('session.save_path', $this->config['path']);
   }
 

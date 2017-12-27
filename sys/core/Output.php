@@ -74,8 +74,8 @@ class Output {
 
   public static function getContentType () {
     for ($i = 0, $c = count ($this->headers); $i < $c; $i++)
-      if (sscanf ($this->headers[$i][0], 'Content-Type: %[^;]', $content_type) === 1)
-        return $content_type;
+      if (sscanf ($this->headers[$i][0], 'Content-Type: %[^;]', $contentType) === 1)
+        return $contentType;
 
     return 'text/html';
   }
@@ -86,9 +86,7 @@ class Output {
 
       if (isset (self::$mimes[$extension])) {
         $mimeType =& self::$mimes[$extension];
-
-        if (is_array ($mimeType))
-          $mimeType = current ($mimeType);
+        is_array ($mimeType) && $mimeType = current ($mimeType);
       }
     }
 
@@ -108,11 +106,6 @@ class Output {
     $output || $output =& self::$output;
 
     self::$cacheExpiration > 0 && self::writeCache ($output);
-
-    $elapsed = Benchmark::elapsedTime ('total_execution_time_start', 'total_execution_time_end');
-    $memory = round (memory_get_usage () / 1024 / 1024, 2) . 'MB';
-    $output = str_replace (array ('{elapsed_time}', '{memory_usage}'), array ($elapsed, $memory), $output);
-
     self::$compressOutput === true && isset ($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos ($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false && ob_start ('ob_gzhandler');
 
     foreach (self::getHeaders () as $header)
@@ -134,21 +127,16 @@ class Output {
     $path = config ('cache', 'output', 'path');
 
     if (!(is_dir ($path) && is_really_writable ($path)))
-      return ;
+      return false;
 
     $path .= self::filename ();
 
-    if (!$fp = @fopen ($path, FOPEN_READ_WRITE_CREATE))
-      return;
-
-    if (!flock ($fp, LOCK_EX))
-      return;
+    if (!(($fp = @fopen ($path, FOPEN_READ_WRITE_CREATE)) && flock ($fp, LOCK_EX)))
+      return false;
 
     if (self::$compressOutput === true) {
       $output = gzencode ($output);
-
-      if (self::getHeader ('content-type') === null)
-        self::setContentType (self::$cacheMimeType);
+      self::getHeader ('content-type') === null && self::setContentType (self::$cacheMimeType);
     }
 
     $expire = time () + self::$cacheExpiration;
@@ -238,7 +226,7 @@ class Output {
     Output::setContentType ('application/json');
     return Output::setOutput (json_encode ($arr));
   }
-  public static function view ($html = '') {
+  public static function html ($html = '') {
     Output::setContentType ('text/html');
     return Output::setOutput ($html);
   }

@@ -11,14 +11,13 @@ if (!function_exists ('use_model')) {
   function use_model () {
     static $used;
 
-    if (isset ($used))
+    if (!empty ($used))
       return true;
 
-    if (!(file_exists ($ar = BASEPATH . 'model' . DIRECTORY_SEPARATOR . 'ActiveRecord.php') && ($database = config ('database'))))
+    if (!$database = config ('database'))
       return false;
 
-    Load::file ($ar, true);
-    Load::sysLib ('Uploader.php');
+    Load::file (BASEPATH . 'model' . DIRECTORY_SEPARATOR . 'ActiveRecord.php', true);
 
     ActiveRecord\Config::initialize (function ($cfg) use ($database) {
       $cfg->set_model_directory (APPPATH . 'model');
@@ -28,8 +27,11 @@ if (!function_exists ('use_model')) {
     class_alias ('ActiveRecord\Connection', 'ModelConnection');
     class Model extends ActiveRecord\Model {}
 
+    Load::sysLib ('Uploader.php');
+
     return $used = true;
   }
+
   if (!function_exists ('create_model')) {
     function create_model ($modelName, $arr) {
       return ($obj = $modelName::create (array_intersect_key ($arr, $modelName::table ()->columns))) && $obj->is_valid () ? $obj : null;
@@ -37,5 +39,4 @@ if (!function_exists ('use_model')) {
   }
 }
 
-if (config ('model', 'auto_load'))
-  use_model ();
+config ('model', 'auto_load') && use_model ();

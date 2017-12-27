@@ -7,39 +7,44 @@
  * @link        https://www.ioa.tw/
  */
 
-if (!function_exists ('_i_r')) {
-  function _i_r ($path, $notExistsExit = false, $class = null) {
-    static $_path;
+class Load {
+  private static $cache = array ();
 
-    if (isset ($_path[$path]) && $_path[$path])
+  public static function file ($path, $must = false, $eval = null) {
+    if (!empty (self::$cache[$path]))
       return true;
 
-    if (!file_exists ($path) || ((include_once ($path)) === false))
-      if ($notExistsExit) is_bool ($notExistsExit) ? gg ('載入檔案失敗。', 503, array ('detail' => array ('檔案路徑' => $path)), array (503, 'Service Unavailable')) : exit ('初始化失敗！');
+    if (!(is_file ($path) && is_readable ($path)))
+      if ($must) $must === true && function_exists ('gg') ? gg ('載入檔案失敗。', 503, array ('detail' => array ('檔案路徑' => $path)), array (503, 'Service Unavailable')) : exit ('初始化失敗！');
       else return false;
 
-    // is_callable ($class) ? $class () : 
-    $class === null || eval ($class);
+    require_once $path;
 
-    return $_path[$path] = true;
-  }
-}
+    // is_callable ($eval) ? $eval () : 
+    $eval === null || eval ($eval);
 
-class Load {
+    return self::$cache = true;
+  }
 
-  public static function file ($file, $notExistsExit = false, $class = null) {
-    return _i_r ($file, $notExistsExit, $class);
+  public static function cmdCore ($file, $must = false, $eval = null) {
+    return self::file (BASEPATH . 'cmd' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . $file, $must, $eval);
   }
-  public static function sysCore ($file, $notExistsExit = false, $class = null) {
-    return self::file (BASEPATH . 'core' . DIRECTORY_SEPARATOR . $file, $notExistsExit, $class);
+  public static function cmdLib ($file, $must = false, $eval = null) {
+    return self::file (BASEPATH . 'cmd' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . $file, $must, $eval);
   }
-  public static function sysFunc ($helper, $notExistsExit = false) {
-    return self::file (BASEPATH . 'func' . DIRECTORY_SEPARATOR . $helper, $notExistsExit, null);
+  public static function cmdFunc ($file, $must = false, $eval = null) {
+    return self::file (BASEPATH . 'cmd' . DIRECTORY_SEPARATOR . 'func' . DIRECTORY_SEPARATOR . $file, $must, $eval);
   }
-  public static function sysLib ($filename, $notExistsExit = false, $class = null) {
-    return self::file (BASEPATH . 'lib' . DIRECTORY_SEPARATOR . $filename, $notExistsExit, $class);
+  public static function sysCore ($file, $must = false, $eval = null) {
+    return self::file (BASEPATH . 'core' . DIRECTORY_SEPARATOR . $file, $must, $eval);
   }
-  public static function lib ($filename, $notExistsExit = false, $class = null) {
-    return self::file (APPPATH . 'lib' . DIRECTORY_SEPARATOR . $filename, $notExistsExit, $class);
+  public static function sysFunc ($helper, $must = false) {
+    return self::file (BASEPATH . 'func' . DIRECTORY_SEPARATOR . $helper, $must, null);
+  }
+  public static function sysLib ($filename, $must = false, $eval = null) {
+    return self::file (BASEPATH . 'lib' . DIRECTORY_SEPARATOR . $filename, $must, $eval);
+  }
+  public static function lib ($filename, $must = false, $eval = null) {
+    return self::file (APPPATH . 'lib' . DIRECTORY_SEPARATOR . $filename, $must, $eval);
   }
 }

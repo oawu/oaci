@@ -14,6 +14,9 @@ class MigrationTool {
   private static $files;
 
   public static function init () {
+    Load::sysCore ('Model.php', true);
+    Load::sysFunc ('file.php', true);
+
     use_model () || gg ('[Migration] init 錯誤，無法連線資料庫。');
 
     self::$gets = array ();
@@ -134,7 +137,6 @@ class MigrationTool {
     $version = $files ? end ($files) + 1 : 1;
 
     file_exists ($path = self::$path . sprintf ('%03s_%s.php', $version, $name)) && gg ('[Migration] create 錯誤，檔案已經存在。Path：' . $path);
-    Load::sysFunc ('file.php');
 
     $content = "<?php defined ('OACI') || exit ('此檔案不允許讀取。');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2013 - " . date ('Y') . ", OACI\n" . " * @license     http://opensource.org/licenses/MIT  MIT License\n" . " * @link        https://www.ioa.tw/\n" . " */\n" . "\n" . "return array (\n" . "    'up' => \"\",\n" . "    'down' => \"\",\n" . "    'at' => \"" . date ('Y-m-d H:i:s') . "\",\n" . "  );";
 

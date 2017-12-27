@@ -7,142 +7,35 @@
  * @link        https://www.ioa.tw/
  */
 
-include_once 'lib' . DIRECTORY_SEPARATOR . 'base.php';
-include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Load.php';
+define ('OACI', '1');
+
+(@include_once 'core' . DIRECTORY_SEPARATOR . 'base.php') || exit ('初始化失敗！');
+(@include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Init.php') || exit ('初始化失敗！');
+(@include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Load.php') || gg ('初始化失敗！', 503);
 
 Load::sysCore ('Common.php', true, "config ('defines');");
-Load::sysCore ('Exception.php', true, "Exception::init ();");
+Load::sysCore ('Charset.php', true, "Charset::init ();");
+Load::cmdFunc ('migration.php', true);
+
+Load::sysFunc ('file.php', true);
 Load::sysCore ('Model.php', true);
+Load::cmdLib ('MigrationTool.php', true, "MigrationTool::init ();");
 
-Load::sysLib ('MigrationTool.php', '載入 MigrationTool 失敗！');
-MigrationTool::init ();
+MigrationTool::files (true) || exit ("\n " . cc ('◎', 'G') . " 目前沒有任何 Migration。\n\n");
 
-if (!function_exists ('headerText')) {
-  function headerText ($cho = 0) {
-    system ('clear');
-    $now = MigrationTool::nowVersion ();
-    $files = MigrationTool::files (true);
-    
-    echo cc ('╔' . str_repeat ('═', CLI_LEN - 2) . '╗', 'N') . "\n";
-    echo cc ('║' . str_repeat (' ', CLI_LEN - 2) . '║', 'N') . "\n";
-    echo cc ('║', 'N') . cc ('  歡迎使用 OACI Migration 工具', 'y') . cc (' v1.0', 'N') . str_repeat (' ', CLI_LEN - 37) . cc ('║', 'N') . "\n";
-    echo cc ('║', 'N') . str_repeat (' ', CLI_LEN - 15) . '    ' . cc ('by', 'N') . ' ' . cc ('OA Wu ', 'W') . cc ('║', 'N') . "\n";
-    echo cc ('╠═══════╦' . str_repeat ('═', CLI_LEN - 12 - 20) . '╦' . str_repeat ('═', 21) . '╣', 'N') . "\n";
-    echo cc ('║', 'N') . '  版本 ' . cc ('║', 'N') . ' 名稱 ' . str_repeat (' ', CLI_LEN - 12 - 25 - 1) . cc ('║', 'N') .  ' 新增日期' . str_repeat (' ', 21 - 9) . cc ('║', 'N') . " \n";
-    echo cc ('╟───────╫' . str_repeat ('─', CLI_LEN - 12 - 20) . '╫' . str_repeat ('─', 21) . '╢', 'N') . "\n";
 
-    foreach ($files as $v => $f) {
-      $at = MigrationTool::get ($f);
-      $at = $at['at'];
-      $f = preg_replace ('/^\d{3}_/', '', basename ($f, '.php'));
-      echo $now == $v ? cc ('║', 'N') . ' ' . cc ('➜', 'y') . ' ' . cc (sprintf ('%3s', $v), 'Y') . ' ' . cc ('║', 'N') . ' ' . cc (sprintf ('%-47s', $f), 'Y') . cc ('║', 'N') . ' ' . cc ($at, 'Y') . ' ' . cc ('║', 'N') . "\n" : cc ('║', 'N') . ' ' . '  ' . sprintf ('%3s', $v) . ' ' . cc ('║', 'N') . ' ' . sprintf ('%-47s', $f) . cc ('║', 'N') . ' ' . $at . ' ' . cc ('║', 'N') . "\n";
-    }
-    echo cc ('╠═══════╬' . str_repeat ('═', CLI_LEN - 12 - 20) . '╩' . str_repeat ('═', 21) . '╣', 'N') . "\n";
-    echo cc ('║', 'N') . '  選項 ' . cc ('║', 'N') . ' 功能 ' . str_repeat (' ', CLI_LEN - 16) . cc ('║', 'N') . "\n";
-    echo cc ('╟───────╫' . str_repeat ('─', CLI_LEN - 12 - 20) . '─' . str_repeat ('─', 21) . '╢', 'N') . "\n";
-    echo cc ('║', 'N') . ' ' . cc ($cho == '1' ? '➜' : ' ', 'y') . cc ('  1. ', $cho == '1' ? 'Y' : null) . cc ('║', 'N') . cc (' 更新至最新版 ', $cho == '1' ? 'Y' : null) . str_repeat (' ', CLI_LEN - 13 - 11) . cc ('║', 'N') . "\n";
-    echo cc ('║', 'N') . ' ' . cc ($cho == '2' ? '➜' : ' ', 'y') . cc ('  2. ', $cho == '2' ? 'Y' : null) . cc ('║', 'N') . cc (' 輸入更新版號 ', $cho == '2' ? 'Y' : null) . str_repeat (' ', CLI_LEN - 13 - 11) . cc ('║', 'N') . "\n";
-    echo cc ('╟ ─ ─ ─ ╫ ' . str_repeat ('─ ', (CLI_LEN - 11) / 2) . '─║', 'N') . "\n";
-    echo cc ('║', 'N') . cc ('    q. ', 'W') . cc ('║', 'N') . ' 沒事，按錯.. 離開本程式 ' . str_repeat (' ', CLI_LEN - 23 - 12) . cc ('║', 'N') . "\n";
-    echo cc ('╚═══════╩' . str_repeat ('═', CLI_LEN - 10) . '╝', 'N') . "\n";
-  }
-}
-$now = MigrationTool::nowVersion ();
-$files = MigrationTool::files (true);
-$keys = array_keys ($files);
-array_shift ($argv);
+$file = array_shift ($argv);
+$argv && $argv = $argv[0];
+$argv && cho1 ($argv);
 
-if (!$files) {
-  echo "\n " . cc ('◎', 'G') . " 目前沒有任何 Migration。\n\n";
-  exit();
-}
-
-if (!((($version = array_shift ($argv)) != null) && $version >= 0 && $version <= end ($keys))) {
-  $version = end ($keys);
-  do {
-    headerText ();
-    echo "\n";
-    echo ' ' . cc ('➜', 'R') . ' 請輸入您的選項' .  cc ('(q)', 'N') . '：';
-    ($cho = trim (fgets (STDIN))) || $cho = 'q';
-
-  } while (!in_array (strtolower ($cho), array ('1', '2', 'q')));
-} else {
-  $cho = '1';
-}
-
-if ($cho == 'q') {
+do {
+  headerText ();
   echo "\n";
-  echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
-  echo "  好的！下次別再按錯囉，期待您下次再使用，" . cc ('掰掰', 'W') . "～  \n\n";
-  echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
-  exit;
-}
+  echo ' ' . cc ('➜', 'R') . ' 請輸入您的選項' .  cc ('(q)', 'N') . '：';
+  ($cho = trim (fgets (STDIN))) || $cho = 'q';
 
-if ($cho == '1') {
-  headerText ($cho);
+} while (!in_array (strtolower ($cho), array ('1', '2', 'q')));
 
-  if (($err = MigrationTool::to ($version)) === true) {
-    headerText ($cho);
-    echo "\n " . cc ('◎', 'G') . " Migration 更新中，正在由第 " . cc ($now, 'W') . ' 版更新至第' . cc ($version, 'W') . ' 版.. ';
-    echo cc ('更新成功', 'g') . "。\n";
-    echo "\n";
-    echo ' ' . cc ('◎', 'G') . ' 目前已經更新至第 ' . cc (MigrationTool::nowVersion (), 'W') . ' 版了！' . "\n";
-    echo "\n";
-  } else {
-    headerText ($cho);
-    echo "\n " . cc ('◎', 'G') . " Migration 更新中，正在由第 " . cc ($now, 'W') . ' 版更新至第' . cc ($version, 'W') . ' 版.. ';
-    echo cc ('更新失敗', 'r') . "。\n";
-    echo "\n";
-    echo implode ("\n", array_map (function ($e) { return ' ' . cc ('◎', 'G') . ' ' . $e . "\n"; }, $err)) . "\n";
-    echo ' ' . cc ('◎', 'G') . ' 目前在 ' . cc (MigrationTool::nowVersion (), 'W') . ' 版。' . "\n";
-    echo "\n";
-  }
-  exit;
-}
-
-if ($cho == '2') {
-  $check = $version = '';
-
-  do {
-    headerText ($cho);
-    echo "\n " . cc ('◎', 'G') . " 請輸入要更新的版本號" . cc ('(0 ~ ' . end ($keys) . ')', 'N') . "：" . (is_numeric ($version) && $version >= 0 && $version <= end ($keys) ? $version . "\n" : '');
-    
-    if (!is_numeric ($version = is_numeric ($version) && $version >= 0 && $version <= end ($keys) ? $version : trim (fgets (STDIN))))
-      $version = '';
-
-    if (is_numeric ($version) && $version >= 0 && $version <= end ($keys)) {
-      echo "\n";
-      echo ' ' . cc ('➜', 'R') . ' 您確定要更新至「' . cc ($version, 'W') . '」' . cc ('[Y：沒錯, n：不是]', 'N') . '？';
-      ($check = strtolower (trim (fgets (STDIN)))) == 'n' && $version = '';
-    }
-  } while ($check != 'y');
-  
-  
-  if (($err = MigrationTool::to ($version)) === true) {
-    headerText ($cho);
-    echo "\n " . cc ('◎', 'G') . " 請輸入要更新的版本號" . cc ('(0 ~ ' . end ($keys) . ')', 'N') . "：" . (is_numeric ($version) ? $version . "\n" : '');
-    echo "\n";
-    echo ' ' . cc ('➜', 'R') . ' 您確定要更新至「' . cc ($version, 'W') . '」' . cc ('[Y：沒錯, n：不是]', 'N') . '？' . cc ($check, 'W');
-    echo "\n";
-
-    echo "\n " . cc ('◎', 'G') . " Migration 更新中，正在由第 " . cc ($now, 'W') . ' 版更新至第' . cc ($version, 'W') . ' 版.. ';
-    echo cc ('更新成功', 'g') . "。\n";
-    echo "\n";
-    echo ' ' . cc ('◎', 'G') . ' 目前已經更新至第 ' . cc (MigrationTool::nowVersion (), 'W') . ' 版了！' . "\n";
-    echo "\n";
-  } else {
-    headerText ($cho);
-    echo "\n " . cc ('◎', 'G') . " 請輸入要更新的版本號" . cc ('(0 ~ ' . end ($keys) . ')', 'N') . "：" . (is_numeric ($version) ? $version . "\n" : '');
-    echo "\n";
-    echo ' ' . cc ('➜', 'R') . ' 您確定要更新至「' . cc ($version, 'W') . '」' . cc ('[Y：沒錯, n：不是]', 'N') . '？' . cc ($check, 'W');
-    echo "\n";
-
-    echo "\n " . cc ('◎', 'G') . " Migration 更新中，正在由第 " . cc ($now, 'W') . ' 版更新至第' . cc ($version, 'W') . ' 版.. ';
-    echo cc ('更新失敗', 'r') . "。\n";
-    echo "\n";
-    echo implode ("\n", array_map (function ($e) { return ' ' . cc ('◎', 'G') . ' ' . $e . "\n"; }, $err)) . "\n";
-    echo ' ' . cc ('◎', 'G') . ' 目前在 ' . cc (MigrationTool::nowVersion (), 'W') . ' 版。' . "\n";
-    echo "\n";
-  }
-  exit;
-}
+$cho == '1' && cho1 ();
+$cho == '2' && cho2 ();
+$cho == 'q' && exit ("\n" . cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n" . "  好的！下次別再按錯囉，期待您下次再使用，" . cc ('掰掰', 'W') . "～  \n\n" . cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n");

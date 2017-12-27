@@ -15,6 +15,7 @@ class Utf8 {
         && 'UTF-8' === config ('other', 'charset')
     );
   }
+
   public static function cleanString ($str) {
     return self::isAscii ($str) === false
            ? !MB_ENABLED
@@ -25,19 +26,19 @@ class Utf8 {
            : $str;
   }
 
-  public static function safeAsciiForXml($str) {
-    return remove_invisible_characters ($str, false);
-  }
-
-  public static function convert2utf8 ($str, $encoding) {
-    return !MB_ENABLED
-    ? ICONV_ENABLED
-      ? @iconv($encoding, 'UTF-8', $str)
-      : false 
-    : mb_convert_encoding ($str, 'UTF-8', $encoding);
-  }
-
   public static function isAscii ($str) {
     return preg_match ('/[^\x00-\x7F]/S', $str) === 0;
   }
+
+  // public static function safeAsciiForXml($str) {
+  //   return remove_invisible_characters ($str, false);
+  // }
+
+  // public static function convert2utf8 ($str, $encoding) {
+  //   return !MB_ENABLED
+  //   ? ICONV_ENABLED
+  //     ? @iconv($encoding, 'UTF-8', $str)
+  //     : false 
+  //   : mb_convert_encoding ($str, 'UTF-8', $encoding);
+  // }
 }

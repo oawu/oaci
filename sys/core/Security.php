@@ -42,7 +42,8 @@ class Security {
       $output = fread ($fp, $length);
       fclose ($fp);
       
-      if ($output !== false) return $output;
+      if ($output !== false)
+        return $output;
     }
 
     if (function_exists ('openssl_random_pseudo_bytes'))
@@ -103,9 +104,7 @@ class Security {
       }
 
       $str = html_entity_decode (preg_replace ('/(&#(?:x0*[0-9a-f]{2,5}(?![0-9a-f;])|(?:0*\d{2,4}(?![0-9;]))))/iS', '$1;', $str), $flag, $charset);
-
-      if ($flag === ENT_COMPAT)
-        $str = str_replace (array_values (self::$entities), array_keys (self::$entities), $str);
+      $flag === ENT_COMPAT && $str = str_replace (array_values (self::$entities), array_keys (self::$entities), $str);
     } while ($str_compare !== $str);
 
     return $str;

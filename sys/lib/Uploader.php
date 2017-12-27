@@ -79,7 +79,7 @@ class Uploader {
     if (self::$debug)
       throw new UploaderException (call_user_func_array ('sprintf', func_get_args ()));
 
-    Log::errorMessage (call_user_func_array ('sprintf', func_get_args ()));
+    Log::error (call_user_func_array ('sprintf', func_get_args ()));
     return false;
   }
 

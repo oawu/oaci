@@ -14,11 +14,8 @@ class SessionDatabaseDriver extends SessionDriver implements SessionHandlerInter
   public function __construct ($cookie) {
     parent::__construct ($cookie);
 
-    if (!use_model ())
-      gg ('[Session] SessionDatabaseDriver 錯誤，無法連線資料庫。');
-
-    if (!($this->config['model'] && class_exists ($this->config['model'])))
-      gg ('[Session] SessionDatabaseDriver 錯誤，找不到指定的 Model。Model：' . $this->config['model']);
+    use_model () || gg ('[Session] SessionDatabaseDriver 錯誤，無法連線資料庫。');
+    $this->config['model'] && class_exists ($this->config['model']) || gg ('[Session] SessionDatabaseDriver 錯誤，找不到指定的 Model。Model：' . $this->config['model']);
 
     $model = $this->config['model'];
     ($obj = ModelConnection::instance ()->query ("SHOW TABLES LIKE '" . $model::$table_name . "';")->fetch (PDO::FETCH_NUM)) && ($obj[0] == $model::$table_name) || $this->createTable ($model);

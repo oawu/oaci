@@ -17,11 +17,8 @@ class SessionRedisDriver extends SessionDriver implements SessionHandlerInterfac
   public function __construct ($cookie, $expiration) {
     parent::__construct ($cookie);
 
-    if (!extension_loaded ('redis'))
-      gg ('[Session] SessionRedisDriver 錯誤，載入 Redis 失敗。');
-
-    if (!(is_string ($this->config['host']) && $this->config['host'] && is_string ($this->config['port']) && $this->config['port']))
-      gg ('[Session] SessionRedisDriver 錯誤，未設定 Host 與 Port。Host：' . $this->config['host'] . '，Port：' . $this->config['port']);
+    extension_loaded ('redis') || gg ('[Session] SessionRedisDriver 錯誤，載入 Redis 失敗。');
+    is_string ($this->config['host']) && $this->config['host'] && is_string ($this->config['port']) && $this->config['port'] || gg ('[Session] SessionRedisDriver 錯誤，未設定 Host 與 Port。Host：' . $this->config['host'] . '，Port：' . $this->config['port']);
 
     isset ($this->config['password']) && is_string ($this->config['password']) || $this->config['password'] = '';
     isset ($this->config['database']) && is_numeric ($this->config['database']) || $this->config['database'] = null;
@@ -32,7 +29,7 @@ class SessionRedisDriver extends SessionDriver implements SessionHandlerInterfac
   }
 
   public function open ($save_path, $name) {
-    $redis = new Redis();
+    $redis = new Redis ();
 
     if (!$redis->connect ($this->config['host'], $this->config['port'], $this->config['timeout']))
       gg ('[Session] SessionRedisDriver 錯誤，連不上 Redis。Host：' . $this->config['host'] . '，Port：' . $this->config['port'] . '，Timeout：' . $this->config['timeout']);

@@ -37,7 +37,7 @@ class Router {
   private static function parseRoutes () {
     $uri = implode ('/', URL::segments ());
 
-    $method = request_is_method ();
+    $method = strtolower (request_is_cli () ? 'cli' : (isset ($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : (isset ($_POST['_method']) ? $_POST['_method'] : 'get')));
     $routes = self::getRoutes ();
 
     if (isset ($routes[$method]))
@@ -45,9 +45,7 @@ class Router {
         $key = str_replace (array (':any', ':num'), array ('[^/]+', '[0-9]+'), $key);
 
         if (preg_match ('#^' . $key . '$#', $uri, $matches)) {
-          if (strpos ($controller, '$') !== false && strpos ($key, '(') !== false)
-            $controller = preg_replace ('#^' . $key . '$#', $controller, $uri);
-
+          strpos ($controller, '$') !== false && strpos ($key, '(') !== false && $controller = preg_replace ('#^' . $key . '$#', $controller, $uri);
           self::setRequest (explode ('/', $controller));
           return;
         }

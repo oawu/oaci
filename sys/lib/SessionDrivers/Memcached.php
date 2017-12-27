@@ -17,14 +17,9 @@ class SessionMemcachedDriver extends SessionDriver implements SessionHandlerInte
   public function __construct ($cookie, $expiration) {
     parent::__construct ($cookie);
 
-    if (!extension_loaded ('memcached') || extension_loaded ('memcache'))
-      gg ('[Session] SessionMemcachedDriver 錯誤，載入 Memcached 失敗。');
-
+    extension_loaded ('memcached') && !extension_loaded ('memcache') || gg ('[Session] SessionMemcachedDriver 錯誤，載入 Memcached 失敗。');
     isset ($this->config['prefix']) && is_string ($this->config['prefix']) && $this->keyPrefix = $this->config['prefix'] . ($this->config['match_ip'] ? $_SERVER['REMOTE_ADDR'] . ':' : '');
-
-    if (!(((isset ($this->config['servers']) && is_array ($this->config['servers']) && ($this->servers = $this->config['servers'])) || (isset ($this->config['server']) && is_array ($this->config['server']) && ($this->servers = array ($this->config['server'])))) && ($this->servers = array_filter (array_map (function ($server) { if (!(isset ($server['host']) && isset ($server['port']) && is_string ($server['host']) && is_string ($server['port']) && $server['host'] && $server['port'])) return null; $server['host'] = isset ($server['host']) && is_numeric ($server['host']) ? $server['host'] : 0; return $server; }, $this->servers)))))
-      gg ('[Session] SessionMemcachedDriver 錯誤，至少需要一項 Servers。');
-  
+    ((isset ($this->config['servers']) && is_array ($this->config['servers']) && ($this->servers = $this->config['servers'])) || (isset ($this->config['server']) && is_array ($this->config['server']) && ($this->servers = array ($this->config['server'])))) && ($this->servers = array_filter (array_map (function ($server) { if (!(isset ($server['host']) && isset ($server['port']) && is_string ($server['host']) && is_string ($server['port']) && $server['host'] && $server['port'])) return null; $server['host'] = isset ($server['host']) && is_numeric ($server['host']) ? $server['host'] : 0; return $server; }, $this->servers))) || gg ('[Session] SessionMemcachedDriver 錯誤，至少需要一項 Servers。');
     $this->expiration = $expiration;
   }
 

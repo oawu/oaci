@@ -15,8 +15,7 @@ class CacheMemcachedDriver {
     $config = config ('cache', 'drivers', 'memcached');
     isset ($config['prefix']) && $this->prefix = $config['prefix'];
 
-    if (!$this->isSupported ())
-      gg ('[Cache] CacheMemcachedDriver 錯誤，載入 Memcached 失敗。');
+    $this->isSupported () || gg ('[Cache] CacheMemcachedDriver 錯誤，載入 Memcached 失敗。');
 
     $this->memcached = class_exists ('Memcached', false) ? new Memcached () : class_exists ('Memcache', false);
     $this->memcached->setOption (Memcached::OPT_BINARY_PROTOCOL, true);
@@ -33,10 +32,7 @@ class CacheMemcachedDriver {
   }
 
   public function get ($id) {
-    if (($data = $this->memcached->get ($this->prefix . $id)) === false)
-      return null;
-
-    return unserialize ($data);
+    return ($data = $this->memcached->get ($this->prefix . $id)) === false ? null : unserialize ($data);
   }
 
   public function save ($id, $data, $ttl = 60) {
@@ -68,10 +64,7 @@ class CacheMemcachedDriver {
   }
 
   public function metadata ($id) {
-    if (($metadata = $this->memcached->get ($this->prefix . $id)) === false)
-      return null;
-
-    if (count ($metadata) !== 3)
+    if (($metadata = $this->memcached->get ($this->prefix . $id)) === false || count ($metadata) !== 3)
       return null;
 
     list ($data, $time, $ttl) = $metadata;

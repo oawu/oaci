@@ -8,31 +8,67 @@
  */
 
 class Benchmark {
-  private static $marker = array ();
+  private static $times = array ();
+  private static $memories = array ();
 
   public static function init () {
-    Benchmark::mark ('total_execution_time_start');
-    Benchmark::mark ('loading_time:_base_classes_start');
+    Benchmark::markStar ('整體');
+    Benchmark::markStar ('核心');
   }
 
-  public static function mark ($name) {
-    self::$marker[$name] = microtime (true);
+  public static function markStar ($key) {
+    isset (self::$times[$key]) || self::$times[$key] = array ();
+    isset (self::$memories[$key]) || self::$memories[$key] = array ();
+    self::$times[$key]['s'] = microtime (true);
+    self::$memories[$key]['s'] = memory_get_usage ();
+  }
+  public static function markEnd ($key) {
+    isset (self::$times[$key]) || self::$times[$key] = array ();
+    isset (self::$memories[$key]) || self::$memories[$key] = array ();
+    self::$times[$key]['e'] = microtime (true);
+    self::$memories[$key]['e'] = memory_get_usage ();
+  }
+  // public static function mark ($key) {
+  //   self::$times[$key] = microtime (true);
+  // }
+
+  public static function elapsedTime ($key = null, $decimals = 4) {
+    if (!$key) {
+      $arr = [];
+      foreach (self::$times as $key => $time)
+        if (isset ($time['s']))
+          $arr[$key] = number_format ((isset ($time['e']) ? $time['e'] : microtime (true)) - $time['s'], $decimals);
+      return $arr;
+    }
+    if (!isset (self::$times[$key], self::$times[$key]['s']))
+      return null;
+
+    isset (self::$times[$key]['e']) || self::$times[$key]['e'] = microtime (true);
+
+    return number_format (self::$times[$key]['e'] - self::$times[$key]['s'], $decimals);
   }
 
-  public static function elapsedTime ($point1 = '', $point2 = '', $decimals = 4) {
-    if ($point1 === '')
-      return '{elapsed_time}';
+  public static function memoryUsage ($decimals = 4) {
+    return round (memory_get_usage () / pow (1024, 2), 4) . 'MB';
+  }
+  public static function elapsedMemory ($key = null, $decimals = 4) {
+    
+    if (!$key) {
+      $arr = [];
+      foreach (self::$memories as $key => $memory)
+        if (isset ($memory['s']))
+          $arr[$key] = round (((isset ($memory['e']) ? $memory['e'] : memory_get_usage ()) - $memory['s']) / pow (1024, 2), $decimals) . 'MB';
+      return $arr;
+    }
+    if (!isset (self::$memories[$key], self::$memories[$key]['s']))
+      return null;
 
-    if (!isset (self::$marker[$point1]))
-      return '';
+    isset (self::$memories[$key]['e']) || self::$memories[$key]['e'] = memory_get_usage ();
 
-    if (!isset (self::$marker[$point2]))
-      self::$marker[$point2] = microtime (true);
-
-    return number_format (self::$marker[$point2] - self::$marker[$point1], $decimals);
+    return round ((self::$memories[$key]['e'] - self::$memories[$key]['s']) / pow (1024, 2), $decimals) . 'MB';
   }
 
-  public static function memory_usage () {
-    return '{memory_usage}';
-  }
+  // public static function memory_usage () {
+  //   return '{memory_usage}';
+  // }
 }

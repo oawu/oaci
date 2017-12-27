@@ -14,17 +14,13 @@ class CacheFileDriver {
     $config = config ('cache', 'drivers', 'file');
     $this->path = $config['path'] . $config['prefix'];
 
-    if (!$this->isSupported ())
-      gg ('[Cache] CacheFileDriver 錯誤，路徑無法寫入。');
+    $this->isSupported () || gg ('[Cache] CacheFileDriver 錯誤，路徑無法寫入。');
 
     Load::sysFunc ('file.php');
   }
 
   public function get ($id) {
-    if (($data = $this->_get ($id)) === null)
-      return null;
-
-    return is_array ($data) ? $data['data'] : $data;
+    return ($data = $this->_get ($id)) !== null ? is_array ($data) ? $data['data'] : $data : null;
   }
 
   private function _get ($id) {

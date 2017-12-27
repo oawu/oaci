@@ -7,29 +7,26 @@
  * @link        https://www.ioa.tw/
  */
 
-Load::sysCore ('Common.php'    , true, "config ('defines');");
-Load::sysCore ('Charset.php'   , true, "Charset::init ();");
-Load::sysCore ('Benchmark.php' , true, "Benchmark::init ();");
-Load::sysCore ('Log.php'       , true);
-
-Load::sysCore ('Utf8.php'      , true, "Utf8::init ();");
-Load::sysCore ('URL.php'       , true, "URL::init ();");
-Load::sysCore ('Router.php'    , true, "Router::init ();");
-Load::sysCore ('Output.php'    , true, "Output::init ();");
-Load::sysCore ('Security.php'  , true, "Security::init ();");
-Load::sysCore ('Input.php'     , true, "Input::init ();");
+Load::sysCore ('Common.php', true, "config ('defines');");
+Load::sysCore ('Charset.php', true, "Charset::init ();");
+Load::sysCore ('Benchmark.php', true, "Benchmark::init ();");
+Load::sysCore ('Log.php', true);
+Load::sysCore ('Utf8.php', true, "Utf8::init ();");
+Load::sysCore ('URL.php', true, "URL::init ();");
+Load::sysCore ('Router.php', true, "Router::init ();");
+Load::sysCore ('Output.php', true, "Output::init ();");
+Load::sysCore ('Security.php', true, "Security::init ();");
+Load::sysCore ('Input.php', true, "Input::init ();");
 Load::sysCore ('Controller.php', true);
-Load::sysCore ('Model.php'     , true);
-Load::sysCore ('View.php'      , true);
-
-// 載入 Composer autoload
+Load::sysCore ('Model.php', true);
+Load::sysCore ('View.php', true);
 config ('other', 'composer_autoload') && Load::file (FCPATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php', true);
 
-Benchmark::mark ('loading_time:_base_classes_end');
+Benchmark::markEnd ('核心');
 
-$class = Router::getClass ();
+$class  = Router::getClass ();
 $method = Router::getMethod ();
-$path = APPPATH . 'controller' . DIRECTORY_SEPARATOR . Router::getDirectory () . $class . EXT;
+$path   = APPPATH . 'controller' . DIRECTORY_SEPARATOR . Router::getDirectory () . $class . EXT;
 
 if (!($class && $method !== '_' && file_exists ($path) && Load::file ($path) && class_exists ($class) && method_exists ($class, $method) && is_callable (array ($class, $method)) && ($reflection = new ReflectionMethod ($class, $method)) && ($reflection->isPublic () && !$reflection->isConstructor ())))
   return show404 ();
@@ -42,17 +39,14 @@ if (method_exists ($class, '_remap')) {
 }
 
 /* ======================================================
- *  開始 */
+ *  開始 Controller */
 
-Benchmark::mark ('controller_execution_time_( ' . $class . ' / ' . $method . ' )_start');
+Benchmark::markStar ('Controller ( ' . $class . ' / ' . $method . ' )');
 $output = call_user_func_array (array (new $class (), $method), $params);
-Benchmark::mark ('controller_execution_time_( ' . $class . ' / ' . $method . ' )_end');
+Benchmark::markEnd ('Controller ( ' . $class . ' / ' . $method . ' )');
 
-/*  結束
+/*  結束 Controller
  * ====================================================== */
 
 Output::display ($output);
-
-echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-var_dump (Benchmark::elapsedTime ('total_execution_time_start', 'total_execution_time_end'), round (memory_get_usage () / 1024 / 1024, 4) . 'MB');
-exit ();
+Benchmark::markEnd ('整體');

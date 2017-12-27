@@ -1,4 +1,4 @@
-<?php
+<?php defined ('OACI') || exit ('此檔案不允許讀取。');
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
@@ -6,7 +6,6 @@
  * @license     http://opensource.org/licenses/MIT  MIT License
  * @link        https://www.ioa.tw/
  */
-
 
 date_default_timezone_set ('Asia/Taipei');
 
@@ -23,13 +22,12 @@ define ('BASEPATH', FCPATH . 'sys' . DIRECTORY_SEPARATOR);
 define ('ENVIRONMENT', 'cmd');
 define ('CLI_LEN', 80);
 
-
 if (!function_exists ('params')) {
   function params ($params, $keys) {
     $ks = $return = $result = array ();
 
-    if (!$params) return $return;
-    if (!$keys) return $return;
+    if (!($params && $keys))
+      return $return;
 
     foreach ($keys as $key)
       if (is_array ($key)) foreach ($key as $k) array_push ($ks, $k);
