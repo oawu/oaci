@@ -20,10 +20,12 @@ if (!function_exists ('use_model')) {
     Load::file (BASEPATH . 'model' . DIRECTORY_SEPARATOR . 'ActiveRecord.php', true);
 
     ActiveRecord\Config::initialize (function ($cfg) use ($database) {
-      $cfg->set_model_directory (APPPATH . 'model');
-      $cfg->set_connections (array_combine (array_keys ($database['groups']), array_map (function ($group) { return $group['dbdriver'] . '://' . $group['username'] . ':' . $group['password'] . '@' . $group['hostname'] . '/' . $group['database'] . '?charset=' . $group['char_set']; }, $database['groups'])), $database['active_group']);
+      $cfg->set_model_directory (APPPATH . 'model')
+          ->set_connections (array_combine (array_keys ($database['groups']), array_map (function ($group) { return $group['dbdriver'] . '://' . $group['username'] . ':' . $group['password'] . '@' . $group['hostname'] . '/' . $group['database'] . '?charset=' . $group['char_set']; }, $database['groups'])), $database['active_group']);
 
-      class_exists ('Log') && $cfg->setLog ('Log');
+      ($cacheConfig = config ('model', 'cache')) && isset ($cacheConfig['enable'], $cacheConfig['driver']) && $cacheConfig['enable'] && Load::sysLib ('Cache.php') && $cfg->set_cache ($cacheConfig['driver'], isset ($cacheConfig['prefix']) ? $cacheConfig['prefix'] : null, isset ($cacheConfig['expire']) ? $cacheConfig['expire'] : null);
+
+      class_exists ('Log') && $cfg->setLog ('Log') && Log::queryLine ();
     });
 
     class_alias ('ActiveRecord\Connection', 'ModelConnection');

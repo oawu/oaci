@@ -12,9 +12,8 @@ class CacheRedisDriver {
   private $prefix = '';
   private $serializeKey = '_oaci_redis_serialized';
 
-  public function __construct () {
-    $config = config ('cache', 'drivers', 'redis');
-
+  public function __construct ($config = array ()) {
+    $config = array_merge (config ('cache', 'drivers', 'redis'), $config);
     isset ($config['prefix']) && $this->prefix = $config['prefix'];
 
     $this->isSupported () || gg ('[Cache] CacheRedisDriver 錯誤，載入 Redis 失敗。');

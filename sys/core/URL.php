@@ -81,9 +81,6 @@ class URL {
 
     return $str;
   }
-  public static function forceSetUriString ($str) {
-    return self::$uriString = $str;
-  }
   public static function uriString () {
     return self::$uriString;
   }

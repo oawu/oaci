@@ -11,8 +11,8 @@ class CacheMemcachedDriver {
   private $memcached = null;
   private $prefix = '';
 
-  public function __construct () {
-    $config = config ('cache', 'drivers', 'memcached');
+  public function __construct ($config = array ()) {
+    $config = array_merge (config ('cache', 'drivers', 'memcached'), $config);
     isset ($config['prefix']) && $this->prefix = $config['prefix'];
 
     $this->isSupported () || gg ('[Cache] CacheMemcachedDriver 錯誤，載入 Memcached 失敗。');

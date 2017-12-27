@@ -9,11 +9,12 @@
 
 class CacheFileDriver {
   private $path;
+  private $prefix = '';
 
-  public function __construct () {
-    $config = config ('cache', 'drivers', 'file');
-    $this->path = $config['path'] . $config['prefix'];
-
+  public function __construct ($config) {
+    $config = array_merge (config ('cache', 'drivers', 'file'), $config);
+    isset ($config['prefix']) && $this->prefix = $config['prefix'];
+    $this->path = $config['path'];
     $this->isSupported () || gg ('[Cache] CacheFileDriver 錯誤，路徑無法寫入。');
 
     Load::sysFunc ('file.php');
@@ -24,15 +25,15 @@ class CacheFileDriver {
   }
 
   private function _get ($id) {
-    if (!is_file ($this->path . $id))
+    if (!is_file ($this->path . $this->prefix . $id))
       return null;
 
-    $data = unserialize (read_file ($this->path . $id));
+    $data = unserialize (read_file ($this->path . $this->prefix . $id));
 
     if (!($data['ttl'] > 0 && time () > $data['time'] + $data['ttl']))
       return $data;
 
-    unlink ($this->path . $id);
+    unlink ($this->path . $this->prefix . $id);
     return null;
   }
 
@@ -43,15 +44,15 @@ class CacheFileDriver {
       'data' => $data
     );
 
-    if (!write_file ($this->path . $id, serialize ($contents)))
+    if (!write_file ($this->path . $this->prefix . $id, serialize ($contents)))
       return false;
 
-    chmod ($this->path . $id, 0640);
+    chmod ($this->path . $this->prefix . $id, 0640);
     return true;
   }
 
   public function delete ($id) {
-    return is_file ($this->path . $id) ? unlink ($this->path . $id) : false;
+    return is_file ($this->path . $this->prefix . $id) ? unlink ($this->path . $this->prefix . $id) : false;
   }
 
   public function clean () {
@@ -63,15 +64,15 @@ class CacheFileDriver {
   }
 
   public function metadata ($id) {
-    if (!is_file ($this->path . $id))
+    if (!is_file ($this->path . $this->prefix . $id))
       return null;
 
-    $data = unserialize (file_get_contents ($this->path . $id));
+    $data = unserialize (file_get_contents ($this->path . $this->prefix . $id));
 
     if (!is_array ($data))
       return null;
 
-    $mtime = filemtime ($this->path . $id);
+    $mtime = filemtime ($this->path . $this->prefix . $id);
 
     return !isset ($data['ttl'], $data['time']) ? false : array (
       'expire' => $data['time'] + $data['ttl'],

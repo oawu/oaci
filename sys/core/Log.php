@@ -8,6 +8,7 @@
  */
 
 class Log {
+  private static $type = null;
   private static $fps = array ();
   private static $lock = false;
 
@@ -26,6 +27,9 @@ class Log {
   }
   public static function error ($msg) {
     @self::message (self::formatLine (date (self::$config['dateFormat']), cc ('錯誤', 'r'), $msg), 'log-error-');
+  }
+  public static function queryLine () {
+    @self::message ('===============', 'query-');
   }
   public static function query ($valid, $time, $sql, $values) {
     @self::message (self::formatQuery (date (self::$config['dateFormat']), $valid, $time, $sql, $values), 'query-');
@@ -66,6 +70,7 @@ class Log {
     return cc ($date, 'w') . cc ('：', 'N') . $title . cc ('：', 'N') . $msg . "\n";
   }
   private static function formatQuery ($date, $valid, $time, $sql, $values) {
-    return (ENVIRONMENT !== 'cmd' ? request_is_cli () ? cc ('cli', 'c') : cc ('page', 'p') : cc ('cmd', 'y')) . cc (' ➜ ', 'N') . cc (($uri = URL::uriString ()) ? $uri : '首頁', ENVIRONMENT !== 'cmd' ? request_is_cli () ? 'C' : 'P' : 'Y') . cc (' │ ', 'N') . cc ($date, 'w') . cc (' ➜ ', 'N') . cc ($time, $time < 999 ? $time < 99 ? $time < 9 ? 'w' : 'W' : 'Y' : 'R') . '' . cc ('ms', $time < 999 ? $time < 99 ? $time < 9 ? 'N' : 'w' : 'y' : 'r') . cc (' │ ', 'N') . ($valid ? cc ('OK', 'g') : cc ('GG', 'r')) . cc (' ➜ ', 'N') . call_user_func_array ('sprintf', array_merge (array (preg_replace_callback ('/\?/', function ($matches) { return cc ('%s', 'W'); }, $sql)), $values)) . "\n";
+    self::$type || self::$type = ENVIRONMENT !== 'cmd' ? request_is_cli () ? cc ('cli', 'c') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'C') : cc ('web', 'p') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'P') : cc ('cmd', 'y') . cc (SELF);
+    return self::$type . cc (' │ ', 'N') . cc ($date, 'w') . cc (' ➜ ', 'N') . cc ($time, $time < 999 ? $time < 99 ? $time < 9 ? 'w' : 'W' : 'Y' : 'R') . '' . cc ('ms', $time < 999 ? $time < 99 ? $time < 9 ? 'N' : 'w' : 'y' : 'r') . cc (' │ ', 'N') . ($valid ? cc ('OK', 'g') : cc ('GG', 'r')) . cc (' ➜ ', 'N') . call_user_func_array ('sprintf', array_merge (array (preg_replace_callback ('/\?/', function ($matches) { return cc ('%s', 'W'); }, $sql)), $values)) . "\n";
   }
 }

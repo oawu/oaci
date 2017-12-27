@@ -9,4 +9,10 @@
 
 return array (
   'auto_load' => false,
+  'cache' => array (
+      'enable' => ENVIRONMENT == 'production',
+      'driver' => 'file', //  | file   | redis   | memcached
+      'prefix' => 'query-', // | query- | query:  | query:
+      'expire' => 30 //sec
+    ),
 );

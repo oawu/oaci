@@ -491,7 +491,7 @@ class Table
 		}
 		else
 		{
-			$this->cache_model_expire = Cache::$options['expire'];
+			$this->cache_model_expire = Cache::$expire;
 		}
 	}
 

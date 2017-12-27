@@ -14,28 +14,38 @@ class Cache {
       'memcached' => null,
     );
 
-  public static function __callStatic ($method, $args = array ()) {
-    if (!(count ($args) > 1 && is_string ($key = array_shift ($args)) && $key))
+  public static function initialize ($driver, $config = array ()) {
+    if (isset (self::$drivers[$driver]))
+      return self::$drivers[$driver];
+
+    if (!in_array ($driver, array_keys (self::$drivers)))
       return null;
 
-    $function = array_shift ($args);
-    $ttl = (($ttl = array_shift ($args)) !== null) && is_numeric ($ttl) ? (int)$ttl : 60;
+    if (!Load::sysLib ('CacheDrivers' . DIRECTORY_SEPARATOR . ucfirst ($driver) . '.php'))
+      return null;
 
-    if (!in_array ($method, array_keys (self::$drivers)))
-      gg ('[Cache] Cache 錯誤，為支援的 Driver 類型。Driver：' . $method);
+    if (!class_exists ($class = 'Cache' . ucfirst ($driver) . 'Driver'))
+      return null;
 
-    self::$drivers[$method] || Load::sysLib ('CacheDrivers' . DIRECTORY_SEPARATOR . ucfirst ($method) . '.php', 'Cache' . ucfirst ($method) . '」Driver 不存在。') && ($class = 'Cache' . ucfirst ($method) . 'Driver') && self::$drivers[$method] = new $class ();
+    return self::$drivers[$driver] = new $class ($config);
+  }
 
-    if (($data = call_user_func_array (array (self::$drivers[$method], 'get'), array ($key))) !== null)
+  public static function __callStatic ($method, $args = array ()) {
+    if (!$args)
+      return null;
+
+    $key = array_shift ($args);
+    if (($closure = array_shift ($args)) === null) return null;
+    is_numeric ($expire = array_shift ($args)) || $expire = 60;
+
+    if (!(($class = self::initialize ($method)) && (is_callable (array ($class, 'get')) && is_callable (array ($class, 'save')))))
+      return is_callable ($closure) ? $closure () : $closure;
+
+    if (($data = $class->get ($key)) !== null)
       return $data;
 
-    if (is_callable ($function) && (call_user_func_array (array (self::$drivers[$method], 'save'), array ($key, $function (), $ttl)) || true))
-      return $data;
+    $class->save ($key, $data = is_callable ($closure) ? $closure () : $closure, $expire);
 
-    foreach (array ('is_bool', 'is_numeric', 'is_string', 'is_array', 'is_object') as $check)
-      if ($check ($function) && (call_user_func_array (array (self::$drivers[$method], 'save'), array ($key, $function, $ttl)) || true))
-        return $function;
-
-    return $function;
+    return $data;
   }
 }
