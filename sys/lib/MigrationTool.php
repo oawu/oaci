@@ -137,7 +137,7 @@ class MigrationTool {
     file_exists ($path = self::$path . sprintf ('%03s_%s.php', $version, $name)) && Exceptions::showError ('[Migration] create 錯誤，檔案已經存在。Path：' . $path);
     Load::sysFunc ('file.php');
 
-    $content = "<?php if (!defined ('BASEPATH')) exit ('No direct script access allowed');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2017 OA Wu Design\n" . " * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/\n" . " */\n" . "\n" . "return array (\n" . "    'up' => \"\",\n" . "    'down' => \"\",\n" . "    'at' => \"" . date ('Y-m-d H:i:s') . "\",\n" . "  );";
+    $content = "<?php defined ('BASEPATH') || exit ('此檔案不允許讀取。');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2013 - " . date ('Y') . ", OACI\n" . " * @license     http://opensource.org/licenses/MIT  MIT License\n" . " * @link        https://www.ioa.tw/\n" . " */\n" . "\n" . "return array (\n" . "    'up' => \"\",\n" . "    'down' => \"\",\n" . "    'at' => \"" . date ('Y-m-d H:i:s') . "\",\n" . "  );";
 
     $err = $path;
 
