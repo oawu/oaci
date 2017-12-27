@@ -10,6 +10,8 @@
 date_default_timezone_set ('Asia/Taipei');
 
 define ('OACI', '1');
+define ('CLI_LEN', 80);
+
 define ('EXT', '.php');
 defined ('STDIN') && chdir (dirname (__FILE__));
 define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));

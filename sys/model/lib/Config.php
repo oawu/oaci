@@ -232,6 +232,7 @@ class Config extends Singleton
 		// 	throw new ConfigException ("Logger object must implement a public log method");
 
 		$this->log = $log;
+		return $this;
 	}
 
 	/**

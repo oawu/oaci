@@ -29,7 +29,8 @@ class Log {
     @self::message (self::formatLine (date (self::$config['dateFormat']), cc ('錯誤', 'r'), $msg), 'log-error-');
   }
   public static function queryLine () {
-    @self::message ('===============', 'query-');
+    self::$type || self::$type = ENVIRONMENT !== 'cmd' ? request_is_cli () ? cc ('cli', 'c') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'C') : cc ('web', 'p') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'P') : cc ('cmd', 'y') . cc (SELF);
+    @self::message ("\n" . self::$type . cc (' ╞' . str_repeat ('═', CLI_LEN - (strlen (self::$type) - 31)) . "\n", 'N'), 'query-');
   }
   public static function query ($valid, $time, $sql, $values) {
     @self::message (self::formatQuery (date (self::$config['dateFormat']), $valid, $time, $sql, $values), 'query-');

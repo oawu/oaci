@@ -61,10 +61,10 @@ if (!function_exists ('gg')) {
 
     if (request_is_cli ()) {
       @system ('clear');
-      $cliLen = 80;
-      echo "\n" . cc (str_repeat ('═', $cliLen), 'N') . "\n\n";
+      
+      echo "\n" . cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
       echo cc (' 錯誤', 'r') . cc (' :: ', 'N') . cc ($text, 'W') . "\n";
-      echo "\n" . cc (str_repeat ('═', $cliLen), 'N') . "\n\n";
+      echo "\n" . cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
       echo implode ("\n", array_filter (array_map (function ($content, $key) { return  $key != 'quote' ? $key != 'detail' ? $key == 'traces' ? implode ("\n", array_map (function ($val, $key) { return cc (' ◎ ', 'G') . $key . cc (' ➜ ', 'N') . $val; }, $content, array_keys ($content))) . "\n" : '' : implode ("\n", array_map (function ($val, $key) { return cc (' ◎ ', 'G') . $key . cc ('：', 'N') . $val; }, $content, array_keys ($content))) . "\n" : cc (' ◎ ', 'G') . cc ('“', 'N') . $content . cc ('”', 'N') . "\n"; }, $contents, array_keys ($contents))));
       echo "\n";
     } else {
