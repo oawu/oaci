@@ -59,17 +59,13 @@ class MigrationTool {
     return self::$model = self::createModel ($model);
   }
 
-  // public static function regex () {
-  //   return '/^\d{3}_(\w+)$/';
-  // }
-
   public static function nowVersion () {
     return $now = (int)self::$model->version;
   }
   public static function files ($re = false) {
     if (!$re && self::$files !== null)
       return self::$files;
-    $files = array_filter (array_map (function ($file) { return file_exists ($file) && is_readable ($file) && ($name = basename ($file, '.php')) && preg_match ('/^\d{3}_(\w+)$/', $name) && ($v = sscanf ($name, '%[0-9]+', $number) ? $number : 0) ? array ((int) $v, $file) : null; }, glob (self::$path . '*_*.php')));
+    $files = array_filter (array_map (function ($file) { return file_exists ($file) && is_readable ($file) && ($name = basename ($file, '.php')) && preg_match ('/^\d{3}_(.+)$/', $name) && ($v = sscanf ($name, '%[0-9]+', $number) ? $number : 0) ? array ((int) $v, $file) : null; }, glob (self::$path . '*_*.php')));
     $files = array_combine (array_column ($files, 0), array_column ($files, 1));
     ksort ($files);
     return self::$files = $files;
@@ -132,7 +128,7 @@ class MigrationTool {
     return self::run ($tmps, $isUp, $to);
   }
 
-  public static function create ($name) {
+  public static function create ($name, &$err = '') {
     is_really_writable (self::$path) || Exceptions::showError ('[Migration] create 錯誤，路徑無分寫入。Path：' . self::$path);
 
     $files = array_keys (self::files ());
@@ -141,8 +137,15 @@ class MigrationTool {
     file_exists ($path = self::$path . sprintf ('%03s_%s.php', $version, $name)) && Exceptions::showError ('[Migration] create 錯誤，檔案已經存在。Path：' . $path);
     Load::sysFunc ('file.php');
 
-    $content = "<?php if (!defined ('BASEPATH')) exit ('No direct script access allowed');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2017 OA Wu Design\n" . " * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/\n" . " */\n" . "\n" . "return array (\n" . "    'up' => \"\",\n" . "    'down' => \"\",\n" . "  );";
+    $content = "<?php if (!defined ('BASEPATH')) exit ('No direct script access allowed');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2017 OA Wu Design\n" . " * @license     http://creativecommons.org/licenses/by-nc/2.0/tw/\n" . " */\n" . "\n" . "return array (\n" . "    'up' => \"\",\n" . "    'down' => \"\",\n" . "    'at' => \"" . date ('Y-m-d H:i:s') . "\",\n" . "  );";
 
-    return write_file ($path, $content) || Exceptions::showError ('[Migration] create 錯誤，產生檔案失敗。Path：' . $path);
+    $err = $path;
+
+    if (write_file ($path, $content))
+      return true;
+
+    $err = '產生檔案失敗。Path：' . $path;
+
+    return false;
   }
 }

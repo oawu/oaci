@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2013 - 2017, OACI
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+include_once 'lib' . DIRECTORY_SEPARATOR . 'base.php';
+include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Load.php';
+
+Load::sysCore ('Common.php', true);
+Load::sysCore ('Benchmark.php' , true, "Benchmark::init ();");
+Load::sysCore ('Exceptions.php', true, "Exceptions::init ();");
+Load::sysFunc ('file.php', true);
+
+if (!function_exists ('headerText')) {
+  function headerText ($cho = 0) {
+    system ('clear');
+    echo cc ('╔' . str_repeat ('═', CLI_LEN - 2) . '╗', 'N') . "\n";
+    echo cc ('║' . str_repeat (' ', CLI_LEN - 2) . '║', 'N') . "\n";
+    echo cc ('║', 'N') . cc ('  歡迎使用 OACI Create 工具', 'y') . cc (' v1.0', 'N') . str_repeat (' ', CLI_LEN - 34) . cc ('║', 'N') . "\n";
+    echo cc ('║', 'N') . str_repeat (' ', CLI_LEN - 15) . '    ' . cc ('by', 'N') . ' ' . cc ('OA Wu ', 'W') . cc ('║', 'N') . "\n";
+    echo cc ('╠══════╦' . str_repeat ('═', CLI_LEN - 9) . '╣', 'N') . "\n";
+    echo cc ('║', 'N') . ' 選項 ' . cc ('║', 'N') . ' 名稱 ' . str_repeat (' ', CLI_LEN - 15) . cc ('║', 'N') . "\n";
+    echo cc ('╟──────╫' . str_repeat ('─', CLI_LEN - 9) . '╢', 'N') . "\n";
+    echo cc ('║', 'N') . ' ' . cc ($cho == '1' ? '➜' : ' ', 'y') . cc (' 1. ', $cho == '1' ? 'Y' : null) . cc ('║', 'N') . cc (' Controller ', $cho == '1' ? 'Y' : null) . str_repeat (' ', CLI_LEN - strlen ('Controller') - 11) . cc ('║', 'N') . "\n";
+    echo cc ('║', 'N') . ' ' . cc ($cho == '2' ? '➜' : ' ', 'y') . cc (' 2. ', $cho == '2' ? 'Y' : null) . cc ('║', 'N') . cc (' Model ', $cho == '2' ? 'Y' : null) . str_repeat (' ', CLI_LEN - strlen ('Model') - 11) . cc ('║', 'N') . "\n";
+    echo cc ('║', 'N') . ' ' . cc ($cho == '3' ? '➜' : ' ', 'y') . cc (' 3. ', $cho == '3' ? 'Y' : null) . cc ('║', 'N') . cc (' Migration ', $cho == '3' ? 'Y' : null) . str_repeat (' ', CLI_LEN - strlen ('Migration') - 11) . cc ('║', 'N') . "\n";
+    echo cc ('╟ ─ ─ ─║─' . str_repeat (' ─', (CLI_LEN - 9) / 2) . '║', 'N') . "\n";
+    echo cc ('║', 'N') . cc ('   q. ', 'W') . cc ('║', 'N') . ' 沒事，按錯.. 離開本程式 ' . str_repeat (' ', CLI_LEN - 23 - 11) . cc ('║', 'N') . "\n";
+    echo cc ('╚══════╩' . str_repeat ('═', CLI_LEN - 9) . '╝', 'N') . "\n";
+  }
+}
+
+do {
+  headerText ();
+  echo "\n";
+  echo ' ' . cc ('➜', 'R') . ' 請輸入您的選項' .  cc ('(q)', 'N') . '：';
+
+  ($cho = trim (fgets (STDIN))) || $cho = 'q';
+} while (!in_array (strtolower ($cho), array ('1', '2', '3', 'q')));
+
+if ($cho == 'q') {
+  echo "\n";
+  echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
+  echo "  😊  好的！下次別再按錯囉，期待您下次再使用，👋  " . cc ('掰掰', 'W') . "～  \n\n";
+  echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
+  exit();
+}
+
+if ($cho == '3') {
+  Load::sysCore ('Model.php', true);
+  Load::sysLib ('MigrationTool.php', '載入 MigrationTool 失敗！');
+  MigrationTool::init ();
+
+  $check = $name = '';
+  do {
+    headerText ('3');
+    echo "\n";
+    echo ' ' . cc ('➜', 'R') . ' 請輸入要建立的檔名' . cc ('(離開請按 control + c)', 'N') . '：' . ($name ? $name . "\n" : '');
+
+    if ($name || ($name = trim (fgets (STDIN)))) {
+      echo "\n";
+      echo ' ' . cc ('➜', 'R') . ' 檔名「' . cc ($name, 'W') . '」是否正確' . cc ('[Y：沒錯, n：不是]', 'N') . '？';
+      ($check = strtolower (trim (fgets (STDIN)))) == 'n' && $name = '';
+    }
+  } while ($check != 'y');
+  
+  echo "\n";
+  echo ' ' . cc ('◎', 'G') . ' Migration「' . cc ($name, 'W') . '」建立中.. ';
+
+  if (!MigrationTool::create ($name, $err)) {
+    echo cc ('失敗！', 'r') . "\n";
+    echo "\n";
+    echo ' ' . cc ('◎', 'G') . ' 錯誤原因：' . cc ($err, 'W');
+    echo "\n";
+    echo "\n";
+    exit;
+  }
+
+  echo cc ('成功！', 'g') . "\n";
+  echo "\n";
+  echo ' ' . cc ('◎', 'G') . ' 已經成功建立 Migration：' . cc ($err, 'W');
+  echo "\n";
+  echo "\n";
+  exit;
+}
+

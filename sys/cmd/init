@@ -20,15 +20,22 @@ $file = array_shift ($argv);
 if (!function_exists ('headerText')) {
   function headerText () {
     system ('clear');
-    echo cc (str_repeat ('═', CLI_LEN)) . "\n\n";
-    echo " 【 " . cc ('歡迎使用 OACI 初始化工具', 'y') . " 】" . str_repeat (' ', 30) . cc ('v 1.0', 'N') . '    ' . cc ('by', 'N') . ' ' . cc ('OA Wu', 'W') . "\n\n";
-    echo cc (str_repeat ('═', CLI_LEN)) . "\n\n";
+    // echo cc (str_repeat ('═', CLI_LEN)) . "\n\n";
+    // echo " 【 " . cc ('歡迎使用 OACI 初始化工具', 'y') . " 】" . str_repeat (' ', 30) . cc ('v 1.0', 'N') . '    ' . cc ('by', 'N') . ' ' . cc ('OA Wu', 'W') . "\n\n";
+    // echo cc (str_repeat ('═', CLI_LEN)) . "\n\n";
+
+    echo cc ('╔' . str_repeat ('═', CLI_LEN - 2) . '╗', 'N') . "\n";
+    echo cc ('║' . str_repeat (' ', CLI_LEN - 2) . '║', 'N') . "\n";
+    echo cc ('║', 'N') . cc ('  歡迎使用 OACI 初始化工具', 'y') . cc (' v1.0', 'N') . str_repeat (' ', CLI_LEN - 33) . cc ('║', 'N') . "\n";
+    echo cc ('║', 'N') . str_repeat (' ', CLI_LEN - 15) . '    ' . cc ('by', 'N') . ' ' . cc ('OA Wu ', 'W') . cc ('║', 'N') . "\n";
+    // echo cc ('╠════════' . str_repeat ('═', CLI_LEN - 12 - 20) . '╦' . str_repeat ('═', 21) . '╣', 'N') . "\n";
+    
   }
 }
 if (!function_exists ('results')) {
   function results ($env, $host, $acc, $psw, $table, $charset, $results = array ()) {
     headerText ();
-    echo ' ' . cc ('◎', 'G') . " 專 案 環 境" . cc ('：', 'N') . cc ($env == 1 ? '正式環境 ' . cc ('(production)', 'N') : '開發環境 ' . cc ('(development)', 'N'), 'W') . "\n";
+    echo ' ' . cc ('◎', 'G') . " 專 案 環 境" . cc ('：', 'N') . cc ($env == '2' ? '正式環境 ' . cc ('(production)', 'N') : '開發環境 ' . cc ('(development)', 'N'), 'W') . "\n";
     echo cc (str_repeat ('─', CLI_LEN), 'N') . "\n";
     echo ' ' . cc ('◎', 'G') . " 資料庫 主機" . cc ('：', 'N') . cc ($host, 'W') . "\n";
     echo ' ' . cc ('◎', 'G') . " 資料庫 帳號" . cc ('：', 'N') . cc ($acc, 'W') . "\n";
@@ -99,109 +106,145 @@ if (!is_really_writable ($dbp)) {
   exit(); 
 }
 
+
+function dbText ($env = 0, $host = null, $acc = null, $psw = null, $table = null, $charset = null) {
+  headerText ();
+  echo cc ('╠══════╦' . str_repeat ('═', CLI_LEN - 9) . '╣', 'N') . "\n";
+  echo cc ('║', 'N') . ' 選項 ' . cc ('║', 'N') . ' 開發環境 ' . str_repeat (' ', CLI_LEN - 19) . cc ('║', 'N') . "\n";
+  echo cc ('╟──────╫' . str_repeat ('─', CLI_LEN - 9) . '╢', 'N') . "\n";
+  echo cc ('║', 'N') . ' ' . cc ($env == '1' ? '➜' : ' ', 'y') . cc (' 1. ', $env == '1' ? 'Y' : null) . cc ('║', 'N') . cc (' 正式環境 ', $env == '1' ? 'Y' : null) . cc ('(production)', $env == '1' ? 'y' : 'N') . str_repeat (' ', CLI_LEN - 31) . cc ('║', 'N') . "\n";
+  echo cc ('║', 'N') . ' ' . cc ($env == '2' ? '➜' : ' ', 'y') . cc (' 2. ', $env == '2' ? 'Y' : null) . cc ('║', 'N') . cc (' 開發環境 ', $env == '2' ? 'Y' : null) . cc ('(development)', $env == '2' ? 'y' : 'N') . str_repeat (' ', CLI_LEN - 32) . cc ('║', 'N') . "\n";
+
+  if (!$env)
+    return;
+
+  if (!$host)
+    echo cc ('╚══════╩' . str_repeat ('═', CLI_LEN - 9) . '╝', 'N') . "\n" . cc ('╔' . str_repeat ('═', CLI_LEN - 2) . '╗', 'N') . "\n";
+  else
+    echo cc ('╠══════╩' . str_repeat ('═', CLI_LEN - 9) . '╣', 'N') . "\n";
+  
+  echo cc ('║', 'N') . " 設定資料庫 " . str_repeat (' ', CLI_LEN - 14) . cc('║', 'N') . "\n";
+
+  if (!$host)
+    return print (cc ('╚' . str_repeat ('═', CLI_LEN - 2) . '╝', 'N') . "\n");
+  else
+    echo cc ('╠' . str_repeat ('═', 16) . '╦' . str_repeat ('═', CLI_LEN - 2 - 16 - 1) . '╣', 'N') . "\n";
+
+  if ($host)
+    echo cc ('║', 'N') . " 位址" . cc ('(hostname) ║', 'N') . ' ' . sprintf ('%-' . (CLI_LEN - 20) . 's', $host) . cc('║', 'N') . "\n";
+  
+  if ($host && !$acc)
+    return print (cc ('╚' . str_repeat ('═', 16) . '╩' . str_repeat ('═', CLI_LEN - 2 - 16 - 1) . '╝', 'N') . "\n");
+  else
+    echo cc ('╟' . str_repeat ('─', 16) . '╫' . str_repeat ('─', CLI_LEN - 2 - 16 - 1) . '╢', 'N') . "\n";
+  
+  if ($acc)
+    echo cc ('║', 'N') . " 帳號" . cc ('(username) ║', 'N') . ' ' . sprintf ('%-' . (CLI_LEN - 20) . 's', $acc) . cc('║', 'N') . "\n";
+  
+  if ($host && $acc && !$psw)
+    return print (cc ('╚' . str_repeat ('═', 16) . '╩' . str_repeat ('═', CLI_LEN - 2 - 16 - 1) . '╝', 'N') . "\n");
+  else
+    echo cc ('╟' . str_repeat ('─', 16) . '╫' . str_repeat ('─', CLI_LEN - 2 - 16 - 1) . '╢', 'N') . "\n";
+  
+  if ($psw)
+    echo cc ('║', 'N') . " 密碼" . cc ('(password) ║', 'N') . ' ' . sprintf ('%-' . (CLI_LEN - 20) . 's', $psw) . cc('║', 'N') . "\n";
+  
+  if ($host && $acc && $psw && !$table)
+    return print (cc ('╚' . str_repeat ('═', 16) . '╩' . str_repeat ('═', CLI_LEN - 2 - 16 - 1) . '╝', 'N') . "\n");
+  else
+    echo cc ('╟' . str_repeat ('─', 16) . '╫' . str_repeat ('─', CLI_LEN - 2 - 16 - 1) . '╢', 'N') . "\n";
+  
+  if ($table)
+    echo cc ('║', 'N') . " 名稱" . cc ('(database) ║', 'N') . ' ' . sprintf ('%-' . (CLI_LEN - 20) . 's', $table) . cc('║', 'N') . "\n";
+  
+  
+  if ($host && $acc && $psw && $table && !$charset)
+    return print (cc ('╚' . str_repeat ('═', 16) . '╩' . str_repeat ('═', CLI_LEN - 2 - 16 - 1) . '╝', 'N') . "\n");
+  else
+    echo cc ('╟' . str_repeat ('─', 16) . '╫' . str_repeat ('─', CLI_LEN - 2 - 16 - 1) . '╢', 'N') . "\n";
+  
+  if ($charset)
+    echo cc ('║', 'N') . " 編碼" . cc ('(char set) ║', 'N') . ' ' . sprintf ('%-' . (CLI_LEN - 20) . 's', $charset) . cc('║', 'N') . "\n";
+  
+  if ($host && $acc && $psw && $table && $charset)
+    return print (cc ('╚' . str_repeat ('═', 16) . '╩' . str_repeat ('═', CLI_LEN - 2 - 16 - 1) . '╝', 'N') . "\n");
+}
+
 do {
-  do {
-    headerText ();
-    echo ' ' . cc ('※', 'r') . " 環境\n";
-    echo ' ' . cc (str_repeat ('═', 6), 'N') . "\n";
-    echo '   ' . cc ('1.', 'W') . ' ' . '正式環境 ' . cc ('(production)', 'N') . "\n";
-    echo '   ' . cc ('2.', 'W') . ' ' . '開發環境 ' . cc ('(development)', 'N') . "\n\n";
-    echo ' ' . cc ('➜', 'G') . ' 請選擇專案環境' . cc ('(2)', 'N') . '：';
+  if (!isset ($env, $host, $acc, $psw, $table)) {
+    do {
+      dbText ();
+      echo cc ('╟ ─ ─ ─║─' . str_repeat (' ─', (CLI_LEN - 9) / 2) . '║', 'N') . "\n";
+      echo cc ('║', 'N') . cc ('   q. ', 'W') . cc ('║', 'N') . ' 沒事，按錯.. 離開本程式 ' . str_repeat (' ', CLI_LEN - 23 - 11) . cc ('║', 'N') . "\n";
+      echo cc ('╚══════╩' . str_repeat ('═', CLI_LEN - 9) . '╝', 'N') . "\n";      
+      echo "\n";
+      echo ' ' . cc ('➜', 'G') . ' 請輸入您的選項' . cc ('(q)', 'N') . '：';
 
-    ($env = trim (fgets (STDIN))) || $env = '2';
-  } while (!in_array (strtolower ($env), array ('1', '2')));
+      ($env = trim (fgets (STDIN))) || $env = 'q';
+    } while (!in_array (strtolower ($env), array ('1', '2', 'q')));
 
-  do {
-    headerText ();
-    echo ' ' . cc ('※', 'R') . " 環境：" . cc ($env == 1 ? '正式環境 ' . cc ('(production)', 'N') : '開發環境 ' . cc ('(development)', 'N'), 'W') . "\n\n";
-    echo cc (str_repeat ('─', CLI_LEN), 'N') . "\n\n";
-    echo ' ' . cc ('※', 'r') . " 設定資料庫\n\n";
-    echo '  ' . cc ('➜', 'G') . ' 請輸入主機' . cc ('(127.0.0.1)', 'N') . '：';
-    
-    ($host = trim (fgets (STDIN))) || $host = '127.0.0.1';
-  } while (!$host);
+    if ($env == 'q') {
+      echo "\n";
+      echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
+      echo "  😊  好的！下次別再按錯囉，期待您下次再使用，👋  " . cc ('掰掰', 'W') . "～  \n\n";
+      echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
+      exit;
+    }
 
-  do {
-    headerText ();
-    echo ' ' . cc ('※', 'R') . " 環境" . cc ('：', 'N') . cc ($env == 1 ? '正式環境 ' . cc ('(production)', 'N') : '開發環境 ' . cc ('(development)', 'N'), 'W') . "\n\n";
-    echo cc (str_repeat ('─', CLI_LEN), 'N') . "\n\n";
-    echo ' ' . cc ('※', 'r') . " 設定資料庫\n\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入主機' . cc ('：', 'N') . cc ($host, 'W') . "\n";
-    echo '  ' . cc ('➜', 'G') . ' 請輸入帳號' . cc ('(root)', 'N') . '：';
+    do {
+      dbText ($env);
+      echo "\n";
+      echo ' ' . cc ('➜', 'G') . ' 請輸入主機' . cc ('(127.0.0.1)', 'N') . '：';
+      ($host = trim (fgets (STDIN))) || $host = '127.0.0.1';
+    } while (!$host);
 
-    ($acc = trim (fgets (STDIN))) || $acc = 'root';
-  } while (!$acc);
+    do {
+      dbText ($env, $host);
+      echo "\n";
+      echo ' ' . cc ('➜', 'G') . ' 請輸入帳號' . cc ('(root)', 'N') . '：';
+      ($acc = trim (fgets (STDIN))) || $acc = 'root';
+    } while (!$acc);
 
-  do {
-    headerText ();
-    echo ' ' . cc ('※', 'R') . " 環境" . cc ('：', 'N') . cc ($env == 1 ? '正式環境 ' . cc ('(production)', 'N') : '開發環境 ' . cc ('(development)', 'N'), 'W') . "\n\n";
-    echo cc (str_repeat ('─', CLI_LEN), 'N') . "\n\n";
-    echo ' ' . cc ('※', 'r') . " 設定資料庫\n\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入主機' . cc ('：', 'N') . cc ($host, 'W') . "\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入帳號' . cc ('：', 'N') . cc ($acc, 'W') . "\n";
-    echo '  ' . cc ('➜', 'G') . ' 請輸入密碼' . '：';
-    
-  } while (!$psw = trim (fgets (STDIN)));
+    do {
+      dbText ($env, $host, $acc);
+      echo "\n";
+      echo ' ' . cc ('➜', 'G') . ' 請輸入密碼' . '：';
+    } while (!$psw = trim (fgets (STDIN)));
 
-  do {
-    headerText ();
-    echo ' ' . cc ('※', 'R') . " 環境" . cc ('：', 'N') . cc ($env == 1 ? '正式環境 ' . cc ('(production)', 'N') : '開發環境 ' . cc ('(development)', 'N'), 'W') . "\n\n";
-    echo cc (str_repeat ('─', CLI_LEN), 'N') . "\n\n";
-    echo ' ' . cc ('※', 'r') . " 設定資料庫\n\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入主機' . cc ('：', 'N') . cc ($host, 'W') . "\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入帳號' . cc ('：', 'N') . cc ($acc, 'W') . "\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入密碼' . cc ('：', 'N') . cc ($psw, 'W') . "\n";
-    echo '  ' . cc ('➜', 'G') . ' 請輸入名稱' . '：';
-    
-  } while (!$table = trim (fgets (STDIN)));
+    do {
+      dbText ($env, $host, $acc, $psw);
+      echo "\n";
+      echo ' ' . cc ('➜', 'G') . ' 請輸入資料庫名稱' . '：';
+    } while (!$table = trim (fgets (STDIN)));
 
-  do {
-    headerText ();
-    echo ' ' . cc ('※', 'R') . " 環境" . cc ('：', 'N') . cc ($env == 1 ? '正式環境 ' . cc ('(production)', 'N') : '開發環境 ' . cc ('(development)', 'N'), 'W') . "\n\n";
-    echo cc (str_repeat ('─', CLI_LEN), 'N') . "\n\n";
-    echo ' ' . cc ('※', 'r') . " 設定資料庫\n\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入主機' . cc ('：', 'N') . cc ($host, 'W') . "\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入帳號' . cc ('：', 'N') . cc ($acc, 'W') . "\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入密碼' . cc ('：', 'N') . cc ($psw, 'W') . "\n";
-    echo '  ' . cc ('➜', 'g') . ' 請輸入名稱' . cc ('：', 'N') . cc ($table, 'W') . "\n";
-    echo '  ' . cc ('➜', 'G') . ' 資料庫編碼' . cc ('(char set)', 'N') . '：' . "\n\n";
-    echo '     ' . cc ('1.', 'W') . ' ' . 'utf8 ' . "\n";
-    echo '     ' . cc ('2.', 'W') . ' ' . 'utf8mb4 ' . "\n\n";
-    echo '  ' . cc ('➜', 'G') . ' 請選擇編碼方式' . cc ('(1)', 'N') . '：';
-    ($charset = trim (fgets (STDIN))) || $charset = '1';
-
-  } while (!in_array (strtolower ($charset), array ('1', '2')));
-  $charset = $charset == '1' ? 'utf8' : 'utf8mb4';
-
-  results ($env, $host, $acc, $psw, $table, $charset);
+    do {
+      dbText ($env, $host, $acc, $psw, $table);
+      echo "\n";
+      echo ' ' . cc ('➜', 'G') . ' 請輸入編碼方式' . cc ('(utf8)', 'N') . '：';
+      ($charset = trim (fgets (STDIN))) || $charset = 'utf8';
+    } while (!$charset);
+  }
+  dbText ($env, $host, $acc, $psw, $table, $charset);
 
   echo "\n";
-  echo ' ' . cc ('※', 'r') . " 確認設定\n";
-  echo ' ' . cc (str_repeat ('═', 10), 'N') . "\n";
-  echo '   ' . cc ('1.', 'W') . ' ' . '確定無誤！' . "\n";
-  echo '   ' . cc ('2.', 'W') . ' ' . '不對，我要重新設定' . "\n\n";
-  echo ' ' . cc ('➜', 'G') . ' 請問以上設定是否正確？' . cc ('(1)', 'N') . '：';
-
-  ($check = trim (fgets (STDIN))) || $check = '1';
-} while ($check !== '1');
-
-results ($env, $host, $acc, $psw, $table, $charset);
-
-$results = array ();
-echo $results[] = ' ' . cc ('◎', 'G') . " 寫入環境設定：" . (write_file (FCPATH . '_env.php', "<?php defined ('BASEPATH') || exit ('此檔案不允許讀取。');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2013 - 2017, OACI\n" . " * @license     http://opensource.org/licenses/MIT  MIT License\n" . " * @link        https://www.ioa.tw/\n" . " */\n" . "\n" . "define ('ENVIRONMENT', " . ($env == 1 ? "'production'" : "'development'") . ");", FOPEN_READ_WRITE_CREATE_DESTRUCTIVE) ? cc ('成功', 'g') : cc ('失敗', 'r')) . "\n";
-echo $results[] = ' ' . cc ('◎', 'G') . " 建立 cmd 捷徑：" . (mkCmd () ? cc ('成功', 'g') : cc ('失敗', 'r')) . "\n";
-echo $results[] = ' ' . cc ('◎', 'G') . " 寫入資料庫設定：" . (write_file ($dbp . 'database' . EXT, "<?php defined ('BASEPATH') || exit ('此檔案不允許讀取。');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2013 - 2017, OACI\n" . " * @license     http://opensource.org/licenses/MIT  MIT License\n" . " * @link        https://www.ioa.tw/\n" . " */\n" . "\n" . "return array (\n" . "    'active_group' => 'default',\n" . "    'groups' => array (\n" . "        'default' => array (\n" . "          'hostname' => '" . $host . "',\n" . "          'username' => '" . $acc . "',\n" . "          'password' => '" . $psw . "',\n" . "          'database' => '" . $table . "',\n" . "          'dbdriver' => 'mysql',\n" . "          'char_set' => '" . $charset . "',\n" . "          'dbcollat' => '" . $charset . "_general_ci',\n" . "          )\n" . "      )\n" . "  );\n", FOPEN_READ_WRITE_CREATE_DESTRUCTIVE) ? cc ('成功', 'g') : cc ('失敗', 'r')) . "\n";
-
-results ($env, $host, $acc, $psw, $table, $charset, $results);
-$results[] = '';
-
-$dirs = array ('log', 'cache', 'upload', 'session');
-foreach ($dirs as $dir)
-  echo $results[] = ' ' . cc ('◎', 'G') . " 新增資料夾：" . cc ($dir, 'W') . ' - ' . (!is_file ($path = FCPATH . $dir) ? !is_dir ($path) ? myMkdir (FCPATH . $dir) ? cc ('成功', 'g') : cc ('失敗', 'r') : (file_exists ($path . DIRECTORY_SEPARATOR . 'index.html') ? cc ('成功', 'g') . cc ('(存在)', 'N') : (writeIndex ($path) ? cc ('成功', 'g') . cc ('(存在，補充 index.html)', 'N') : cc ('(存在，補充 index.html 失敗)', 'R'))) : cc ('失敗', 'r')) . "\n";
-$results[] = '';
-
-results ($env, $host, $acc, $psw, $table, $charset, $results);
+  echo ' ' . cc ('➜', 'G') . ' 確認以上資訊是否正確' . cc ('[Y：正確, n：重填]', 'N') . '？';
+  ($check = strtolower (trim (fgets (STDIN)))) == 'n' && $env = $host = $acc = $psw = $table = $charset = null;
+} while ($check != 'y');
 
 echo "\n";
-echo ' ' . cc ('➜', 'R') . " 初始化" . cc ('順利完成', 'W') . "，專案初始化成功！\n";
-echo "         " . cc ('^^^^^^^^', 'N') . "\n";
+echo "" . cc (str_repeat ('─ ', CLI_LEN / 2), 'N') . "\n";
+echo ' ' . cc ('◎', 'G') . " 寫入環境設定 - " . (write_file (FCPATH . '_env.php', "<?php\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2013 - 2017, OACI\n" . " * @license     http://opensource.org/licenses/MIT  MIT License\n" . " * @link        https://www.ioa.tw/\n" . " */\n" . "\n" . "define ('ENVIRONMENT', " . ($env == '2' ? "'production'" : "'development'") . ");", FOPEN_READ_WRITE_CREATE_DESTRUCTIVE) ? cc ('成功', 'g') : cc ('失敗', 'r')) . "\n";
+echo ' ' . cc ('◎', 'G') . " 建立 cmd 捷徑 - " . (mkCmd () ? cc ('成功', 'g') : cc ('失敗', 'r')) . "\n";
+echo ' ' . cc ('◎', 'G') . " 寫入資料庫設定 - " . (write_file ($dbp . 'database' . EXT, "<?php defined ('BASEPATH') || exit ('此檔案不允許讀取。');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2013 - 2017, OACI\n" . " * @license     http://opensource.org/licenses/MIT  MIT License\n" . " * @link        https://www.ioa.tw/\n" . " */\n" . "\n" . "return array (\n" . "    'active_group' => 'default',\n" . "    'groups' => array (\n" . "        'default' => array (\n" . "          'hostname' => '" . $host . "',\n" . "          'username' => '" . $acc . "',\n" . "          'password' => '" . $psw . "',\n" . "          'database' => '" . $table . "',\n" . "          'dbdriver' => 'mysql',\n" . "          'char_set' => '" . $charset . "',\n" . "          'dbcollat' => '" . $charset . "_general_ci',\n" . "          )\n" . "      )\n" . "  );\n", FOPEN_READ_WRITE_CREATE_DESTRUCTIVE) ? cc ('成功', 'g') : cc ('失敗', 'r')) . "\n";
+
+echo "" . cc (str_repeat ('─ ', CLI_LEN / 2), 'N') . "\n";
+$dirs = array ('log', 'cache', 'upload', 'session');
+foreach ($dirs as $dir)
+  echo ' ' . cc ('◎', 'G') . " 新增 " . cc ($dir, 'W') . ' 資料夾 - ' . (!is_file ($path = FCPATH . $dir) ? !is_dir ($path) ? myMkdir (FCPATH . $dir) ? cc ('成功', 'g') : cc ('失敗', 'r') : (file_exists ($path . DIRECTORY_SEPARATOR . 'index.html') ? cc ('成功', 'g') . cc ('(存在)', 'N') : (writeIndex ($path) ? cc ('成功', 'g') . cc ('(存在，補充 index.html)', 'N') : cc ('(存在，補充 index.html 失敗)', 'R'))) : cc ('失敗', 'r')) . "\n";
+
+echo "" . cc (str_repeat ('─ ', CLI_LEN / 2), 'N') . "\n";
+
+echo "\n";
+echo ' ' . cc ('➜', 'R') . " 🎉  " . cc ($env == '2' ? '正式環境' : '開發環境', 'W') . cc ($env == '2' ? '(production)' : '(development)', 'N') . " 初始化" . cc ('順利完成', 'W') . '囉，' . ($env == '2' ? '快開啟網址確認一下吧' : '可以開始寫程式啦') . "！\n";
+echo "\n";
+exit;
