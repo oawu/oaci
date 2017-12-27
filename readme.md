@@ -2,10 +2,12 @@
 * 這是一套 [OA Wu](https://www.ioa.tw/) 自家使用的 [PHP](http://php.net/) 框架。
 * 它是以 [CodeIgniter](https://www.codeigniter.com/) [v 3.1.6](https://codeload.github.com/bcit-ci/CodeIgniter/zip/3.1.6) 做基礎修改的。
 
+<br/><br/>
 ## 功能
 * 簡化 CodeIgniter 不常用到的功能。
 * 加入使用 [PHP ActiveRecord](http://www.phpactiverecord.org/)。
 
+<br/><br/>
 ## 初始化
 * 進入 sys 資料夾 `cd sys/cmd`。
 * 執行初始化 `php init` 依據指示初始化。
@@ -15,6 +17,7 @@
 > * 環境設定會在專案下產生一隻 `_env.php` 的檔案。  
 > * 初始化完 database 後，會在 `app/config` 內產生一隻 `database.php` 的檔案。
 
+<br/><br/>
 ## MVC 命名
 ### Controller
 * class 與 method 大小寫均不拘，但有區別
@@ -36,14 +39,17 @@
 ### view 
 * 檔名大小寫不拘，可以被讀得到就好。
 
-## Migration
+<br/><br/>
+## 資料庫版控 Migration
 * 設定資料庫連線資料 `app/config/database.php` 確認可以正常資料庫連線。
 * 設定檔案在 `app/config/migration.php`，並需要建立在 config 所設定的 Model 檔案。
 
-### 新增
-* 至 `cmd/` 執行指令 `php create migration` 即會在設定檔案所指定的路徑下產生 migration 檔案。
+### 使用方式
+* 至 `cmd/` 執行指令 `php migration` 即可依據流程更換版本。
+* 快速指令升至指定版本，例如：第五版，則 `php migration 5`。
 
-### 更新
-* 至 `cmd/` 執行指令 `php migration` 即可更新至最新版本。
+<br/><br/>
+## 縮圖器 Thumbnail
 
-> 若要升至指定版本，例如：第五版，則 `php migration 5`。
+<br/><br/>
+## 上傳器 Uploader

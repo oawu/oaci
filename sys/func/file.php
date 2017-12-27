@@ -167,6 +167,25 @@ if (!function_exists ('get_mime_by_extension')) {
   }
 }
 
+if (!function_exists ('get_extension_by_mime')) {
+  function get_extension_by_mime ($m) {
+    static $mimes, $extensions;
+
+    if (isset ($extensions[$m]))
+      return $extensions[$m];
+
+    if (!is_array ($mimes))
+      if (!$mimes = config ('mimes'))
+        return false;
+
+      foreach ($mimes as $extension => $mime)
+        if ((is_string ($mime) && ($mime == $m)) || ((is_array ($mime) && in_array ($m, $mime))))
+          return $extensions[$m] = $extension;
+
+    return $extensions[$m] = false;
+  }
+}
+
 if (!function_exists ('symbolic_permissions')) {
   function symbolic_permissions ($perms) {
     if (($perms & 0xC000) === 0xC000) $symbolic = 's';

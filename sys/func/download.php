@@ -7,6 +7,57 @@
  * @link        https://www.ioa.tw/
  */
 
+if (!function_exists ('web_file_exists')) {
+  function web_file_exists ($url, $cainfo = null) {
+    $options = array (CURLOPT_URL => $url, CURLOPT_NOBODY => 1, CURLOPT_FAILONERROR => 1, CURLOPT_RETURNTRANSFER => 1);
+
+    if (is_readable ($cainfo))
+      $options[CURLOPT_CAINFO] = $cainfo;
+
+    $ch = curl_init ($url);
+    curl_setopt_array ($ch, $options);
+    return curl_exec ($ch) !== false;
+  }
+}
+if (!function_exists ('download_web_file')) {
+  function download_web_file ($url, $fileName = null, $is_use_reffer = false, $cainfo = null) {
+    if (!web_file_exists ($url, $cainfo))
+      return null;
+
+    if (is_readable ($cainfo))
+      $url = str_replace (' ', '%20', $url);
+
+    $options = array (
+      CURLOPT_URL => $url, CURLOPT_TIMEOUT => 120, CURLOPT_HEADER => false, CURLOPT_MAXREDIRS => 10,
+      CURLOPT_AUTOREFERER => true, CURLOPT_CONNECTTIMEOUT => 30, CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.76 Safari/537.36",
+    );
+
+    if (is_readable ($cainfo))
+      $options[CURLOPT_CAINFO] = $cainfo;
+
+    if ($is_use_reffer)
+      $options[CURLOPT_REFERER] = $url;
+
+    $ch = curl_init ($url);
+    curl_setopt_array ($ch, $options);
+    $data = curl_exec ($ch);
+    curl_close ($ch);
+
+    if (!$fileName)
+      return $data;
+
+    $write = fopen ($fileName, 'w');
+    fwrite ($write, $data);
+    fclose ($write);
+
+    $oldmask = umask (0);
+    @chmod ($fileName, 0777);
+    umask ($oldmask);
+
+    return filesize ($fileName) ?  $fileName : null;
+  }
+}
 if (!function_exists ('force_download')) {
 	function force_download ($filename = '', $data = '', $set_mime = false) {
 		if ($filename === '' || $data === '')

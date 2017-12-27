@@ -156,6 +156,17 @@ if (!function_exists ('array_2d_to_1d')) {
   }
 }
 
+if (!function_exists ('sort_2d_array')) {
+  function sort_2d_array ($key, $list) {
+    if ($list) {
+      $tmp = array ();
+      foreach ($list as &$ma) $tmp[] = &$ma[$key];
+      array_multisort ($tmp, SORT_DESC, $list);
+    }
+    return $list;
+  }
+}
+
 if (!function_exists ('cc')) {
   function cc ($str, $fc = null, $bc = null) {
     if (!strlen ($str)) return "";
