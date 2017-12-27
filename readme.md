@@ -10,7 +10,7 @@
 * 進入 sys 資料夾 `cd sys/cmd`。
 * 執行初始化 `php init` 依據指示初始化。
 
-> * 初始化會幫你建立起專案環境，包含 cache、session、log、upload 資料夾。  
+> * 初始化會幫你建立起專案環境，包含 cache、session、log、upload、tmp 資料夾。  
 > * 以及在專案下建立一個 `cmd` 路徑指向 `sys/cmd` 以方便日後開發使用。
 > * 環境設定會在專案下產生一隻 `_env.php` 的檔案。  
 > * 初始化完 database 後，會在 `app/config` 內產生一隻 `database.php` 的檔案。

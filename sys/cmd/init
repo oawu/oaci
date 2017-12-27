@@ -94,8 +94,8 @@ function dbText ($env = 0, $host = null, $acc = null, $psw = null, $table = null
   echo cc ('╠══════╦' . str_repeat ('═', CLI_LEN - 9) . '╣', 'N') . "\n";
   echo cc ('║', 'N') . ' 選項 ' . cc ('║', 'N') . ' 開發環境 ' . str_repeat (' ', CLI_LEN - 19) . cc ('║', 'N') . "\n";
   echo cc ('╟──────╫' . str_repeat ('─', CLI_LEN - 9) . '╢', 'N') . "\n";
-  echo cc ('║', 'N') . ' ' . cc ($env == '1' ? '➜' : ' ', 'y') . cc (' 1. ', $env == '1' ? 'Y' : null) . cc ('║', 'N') . cc (' 正式環境 ', $env == '1' ? 'Y' : null) . cc ('(production)', $env == '1' ? 'y' : 'N') . str_repeat (' ', CLI_LEN - 31) . cc ('║', 'N') . "\n";
-  echo cc ('║', 'N') . ' ' . cc ($env == '2' ? '➜' : ' ', 'y') . cc (' 2. ', $env == '2' ? 'Y' : null) . cc ('║', 'N') . cc (' 開發環境 ', $env == '2' ? 'Y' : null) . cc ('(development)', $env == '2' ? 'y' : 'N') . str_repeat (' ', CLI_LEN - 32) . cc ('║', 'N') . "\n";
+  echo cc ('║', 'N') . ' ' . cc ($env == '1' ? '➜' : ' ', 'y') . cc (' 1. ', $env == '1' ? 'Y' : null) . cc ('║', 'N') . cc (' 開發環境 ', $env == '1' ? 'Y' : null) . cc ('(development)', $env == '1' ? 'y' : 'N') . str_repeat (' ', CLI_LEN - 32) . cc ('║', 'N') . "\n";
+  echo cc ('║', 'N') . ' ' . cc ($env == '2' ? '➜' : ' ', 'y') . cc (' 2. ', $env == '2' ? 'Y' : null) . cc ('║', 'N') . cc (' 正式環境 ', $env == '2' ? 'Y' : null) . cc ('(production)', $env == '2' ? 'y' : 'N') . str_repeat (' ', CLI_LEN - 31) . cc ('║', 'N') . "\n";
 
   if (!$env)
     return;
@@ -220,7 +220,7 @@ echo ' ' . cc ('◎', 'G') . " 建立 cmd 捷徑 - " . (mkCmd () ? cc ('成功',
 echo ' ' . cc ('◎', 'G') . " 寫入資料庫設定 - " . (write_file ($dbp . 'database' . EXT, "<?php defined ('BASEPATH') || exit ('此檔案不允許讀取。');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2013 - 2017, OACI\n" . " * @license     http://opensource.org/licenses/MIT  MIT License\n" . " * @link        https://www.ioa.tw/\n" . " */\n" . "\n" . "return array (\n" . "    'active_group' => 'default',\n" . "    'groups' => array (\n" . "        'default' => array (\n" . "          'hostname' => '" . $host . "',\n" . "          'username' => '" . $acc . "',\n" . "          'password' => '" . $psw . "',\n" . "          'database' => '" . $table . "',\n" . "          'dbdriver' => 'mysql',\n" . "          'char_set' => '" . $charset . "',\n" . "          'dbcollat' => '" . $charset . "_general_ci',\n" . "          )\n" . "      )\n" . "  );\n", FOPEN_READ_WRITE_CREATE_DESTRUCTIVE) ? cc ('成功', 'g') : cc ('失敗', 'r')) . "\n";
 
 echo "" . cc (str_repeat ('─ ', CLI_LEN / 2), 'N') . "\n";
-$dirs = array ('log', 'cache', 'upload', 'session');
+$dirs = array ('log', 'cache', 'upload', 'session', 'tmp');
 foreach ($dirs as $dir)
   echo ' ' . cc ('◎', 'G') . " 新增 " . cc ($dir, 'W') . ' 資料夾 - ' . (!is_file ($path = FCPATH . $dir) ? !is_dir ($path) ? myMkdir (FCPATH . $dir) ? cc ('成功', 'g') : cc ('失敗', 'r') : (file_exists ($path . DIRECTORY_SEPARATOR . 'index.html') ? cc ('成功', 'g') . cc ('(存在)', 'N') : (writeIndex ($path) ? cc ('成功', 'g') . cc ('(存在，補充 index.html)', 'N') : cc ('(存在，補充 index.html 失敗)', 'R'))) : cc ('失敗', 'r')) . "\n";
 

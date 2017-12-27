@@ -12,6 +12,7 @@ composer.lock
 /cache/*
 /session/*
 /upload/*
+/tmp/*
 
 app/config/database.php
 
