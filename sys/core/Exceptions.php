@@ -16,10 +16,6 @@ class Exceptions {
     self::$obLevel = ob_get_level ();
   }
 
-  public static function logException ($severity, $message, $filepath, $line) {
-    class_exists ('Log', false) && Log::message ('Severity: ' . (($t = config ('exceptions', 'levels', $severity)) ? $t : $severity) . ' --> ' . $message . ' ' . $filepath . ' ' . $line);
-  }
-
   public static function setStatusHeader ($code = 200, $text = null) {
     if (request_is_cli ())
       return ;
@@ -64,8 +60,6 @@ class Exceptions {
       $heading = '此頁面不存在';
       $message = '找不到您的頁面(404)。';
     }
-
-    $logError && class_exists ('Log', false) && Log::message ($heading . ': ' . $page);
 
     self::showError ($message, 404, $heading);
   }
@@ -140,8 +134,6 @@ if (!function_exists ('_error_handler')) {
     if (($severity & error_reporting ()) !== $severity)
       return;
 
-    Exceptions::logException ($severity, $message, $filepath, $line);
-
     if (str_ireplace (array ('off', 'none', 'no', 'false', 'null'), '', ini_get ('display_errors')))
       Exceptions::showPhpError ($severity, $message, $filepath, $line);
 
@@ -152,8 +144,6 @@ if (!function_exists ('_error_handler')) {
 
 if (!function_exists ('_exception_handler')) {
   function _exception_handler ($exception) {
-    Exceptions::logException ('Error', 'Exception: ' . $exception->getMessage (), $exception->getFile (), $exception->getLine ());
-
     request_is_cli () || Exceptions::setStatusHeader (500);
 
     if (str_ireplace (array ('off', 'none', 'no', 'false', 'null'), '', ini_get ('display_errors')))

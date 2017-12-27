@@ -9,4 +9,23 @@
 
 class Article extends Model {
   static $table_name = 'articles';
+
+  static $belongs_to = array (
+    array ('user', 'class_name' => 'User'),
+  );
+
+  public function __construct ($attrs = array (), $guardAttrs = true, $instantiatingViafind = false, $newRecord = true) {
+    parent::__construct ($attrs, $guardAttrs, $instantiatingViafind, $newRecord);
+    Uploader::bind ('cover', 'ArticleCoverImageUploader');
+  }
+}
+
+class ArticleCoverImageUploader extends ImageUploader {
+  public function getVersions () {
+    return array (
+        '' => array (),
+        'c450x180' => array ('adaptiveResizeQuadrant', 450, 180, 'c'),
+        'c1200x630' => array ('adaptiveResizeQuadrant', 1200, 630, 't'),
+      );
+  }
 }

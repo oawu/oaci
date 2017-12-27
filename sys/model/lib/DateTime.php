@@ -38,7 +38,7 @@ class DateTime extends \DateTime implements DateTimeInterface
 	/**
 	 * Default format used for format() and __toString()
 	 */
-	public static $DEFAULT_FORMAT = 'rfc2822';
+	public static $DEFAULT_FORMAT = 'db';
 
 	/**
 	 * Pre-defined format strings.

@@ -110,6 +110,7 @@ class ThumbnailBase {
   public function getFormat () {
     return $this->format;
   }
+
   protected function setOptions ($options) {
     $this->config = array_merge ($this->config, $options);
   }

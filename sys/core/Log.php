@@ -8,7 +8,16 @@
  */
 
 class Log {
-  public static function message ($msg) {
+  public static function logMessage ($msg) {
+    self::message (cc ('紀錄', 'g'), $msg);
+  }
+  public static function warningMessage ($msg) {
+    self::message (cc ('警告', 'y'), $msg);
+  }
+  public static function errorMessage ($msg) {
+    self::message (cc ('錯誤', 'r'), $msg);
+  }
+  public static function message ($title, $msg) {
     $config = config ('log');
 
     if (!(is_dir ($config['path']) && is_really_writable ($config['path'])))
@@ -21,7 +30,7 @@ class Log {
 
     flock ($fp, LOCK_EX);
 
-    $msg = self::formatLine (date ($config['dateFormat']), $msg);
+    $msg = self::formatLine (date ($config['dateFormat']), $title, $msg);
 
     for ($written = 0, $length = Charset::strlen ($msg); $written < $length; $written += $result)
       if (($result = fwrite ($fp, Charset::substr ($msg, $written))) === false)
@@ -35,7 +44,7 @@ class Log {
     return is_int ($result);
   }
 
-  private static function formatLine ($date, $msg) {
-    return $date . ' --> ' . $msg . "\n";
+  private static function formatLine ($date, $title, $msg) {
+    return cc ($date, 'W') . cc ('：', 'N') . $title . cc ('：', 'N') . $msg . "\n";
   }
 }
