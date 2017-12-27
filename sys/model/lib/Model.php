@@ -1587,6 +1587,7 @@ class Model
 
 					// fall thru
 
+			 	case 'one':
 			 	case 'first':
 					$options['limit'] = 1;
 					$options['offset'] = 0;

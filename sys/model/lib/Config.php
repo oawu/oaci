@@ -59,18 +59,11 @@ class Config extends Singleton
 	private $model_directory;
 
 	/**
-	 * Switch for logging.
-	 *
-	 * @var bool
-	 */
-	private $logging = false;
-
-	/**
 	 * Contains a Logger object that must impelement a log() method.
 	 *
 	 * @var object
 	 */
-	private $logger;
+	private $log = null;
 
 	/**
 	 * Contains the class name for the Date class to use. Must have a public format() method and a
@@ -223,51 +216,28 @@ class Config extends Singleton
 	}
 
 	/**
-	 * Turn on/off logging
+	 * Sets the log object for future SQL logging
 	 *
-	 * @param boolean $bool
-	 * @return void
-	 */
-	public function set_logging($bool)
-	{
-		$this->logging = (bool)$bool;
-	}
-
-	/**
-	 * Sets the logger object for future SQL logging
-	 *
-	 * @param object $logger
+	 * @param object $log
 	 * @return void
 	 * @throws ConfigException if Logger objecct does not implement public log()
 	 */
-	public function set_logger($logger)
-	{
-		$klass = Reflections::instance()->add($logger)->get($logger);
+	public function setLog ($log) {
+		$klass = Reflections::instance ()->add ($log)->get ($log);
 
-		if (!$klass->getMethod('log') || !$klass->getMethod('log')->isPublic())
-			throw new ConfigException("Logger object must implement a public log method");
+		// if (!($klass->getMethod ('log') && $klass->getMethod ('log')->isPublic ()))
+		// 	throw new ConfigException ("Logger object must implement a public log method");
 
-		$this->logger = $logger;
+		$this->log = $log;
 	}
 
 	/**
-	 * Return whether or not logging is on
-	 *
-	 * @return boolean
-	 */
-	public function get_logging()
-	{
-		return $this->logging;
-	}
-
-	/**
-	 * Returns the logger
+	 * Returns the log
 	 *
 	 * @return object
 	 */
-	public function get_logger()
-	{
-		return $this->logger;
+	public function getLog () {
+		return $this->log;
 	}
 
 	public function set_date_class($date_class)

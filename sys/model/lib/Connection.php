@@ -42,17 +42,11 @@ abstract class Connection
 	 */
 	public $last_query;
 	/**
-	 * Switch for logging.
-	 *
-	 * @var bool
-	 */
-	private $logging = false;
-	/**
 	 * Contains a Logger object that must impelement a log() method.
 	 *
 	 * @var object
 	 */
-	private $logger;
+	private $log;
 	/**
 	 * The name of the protocol that is used.
 	 * @var string
@@ -121,8 +115,7 @@ abstract class Connection
 		try {
 			$connection = new $fqclass($info);
 			$connection->protocol = $info->protocol;
-			$connection->logging = $config->get_logging();
-			$connection->logger = $connection->logging ? $config->get_logger() : null;
+			$connection->log = $config->getLog();
 
 			if (isset($info->charset))
 				$connection->set_encoding($info->charset);
@@ -312,16 +305,10 @@ abstract class Connection
 	 */
 	public function query($sql, &$values=array())
 	{
-		if ($this->logging)
-		{
-			$this->logger->log($sql);
-			if ( $values ) $this->logger->log($values);
-		}
-
 		$this->last_query = $sql;
 
 		try {
-			if (!($sth = $this->connection->prepare($sql)))
+			if (!$sth = $this->connection->prepare ($sql))
 				throw new DatabaseException($this);
 		} catch (PDOException $e) {
 			throw new DatabaseException($this);
@@ -330,13 +317,26 @@ abstract class Connection
 		$sth->setFetchMode(PDO::FETCH_ASSOC);
 
 		try {
-			if (!$sth->execute($values))
+			if (!$this->execute ($sth, $sql, $values))
 				throw new DatabaseException($this);
 		} catch (PDOException $e) {
 			throw new DatabaseException($e);
 		}
 		return $sth;
 	}
+
+  private function execute ($sth, $sql, $values) {
+  	if (!$log = $this->log)
+  		return $sth->execute ($values);
+
+    $start = microtime (true);
+    $valid = $sth->execute ($values);
+    $time = number_format ((microtime (true) - $start) * 1000, 1);
+
+    $log::query ($valid ? true : false, $time, $sql, $values);
+    return $valid;
+  }
+
 
 	/**
 	 * Execute a query that returns maximum of one row with one field and return it.
