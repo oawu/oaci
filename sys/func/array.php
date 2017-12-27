@@ -8,26 +8,26 @@
  */
 
 if (!function_exists ('element')) {
-	function element ($item, array $array, $default = null) {
-		return array_key_exists ($item, $array) ? $array[$item] : $default;
-	}
+  function element ($item, array $array, $default = null) {
+    return array_key_exists ($item, $array) ? $array[$item] : $default;
+  }
 }
 
 if (!function_exists ('random_element')) {
-	function random_element ($array) {
-		return is_array ($array) ? $array[array_rand ($array)] : $array;
-	}
+  function random_element ($array) {
+    return is_array ($array) ? $array[array_rand ($array)] : $array;
+  }
 }
 
 if (!function_exists ('elements')) {
-	function elements ($items, array $array, $default = null) {
-		$return = array ();
+  function elements ($items, array $array, $default = null) {
+    $return = array ();
 
-		is_array ($items) || $items = array ($items);
+    is_array ($items) || $items = array ($items);
 
-		foreach ($items as $item)
-			$return[$item] = array_key_exists ($item, $array) ? $array[$item] : $default;
+    foreach ($items as $item)
+      $return[$item] = array_key_exists ($item, $array) ? $array[$item] : $default;
 
-		return $return;
-	}
+    return $return;
+  }
 }

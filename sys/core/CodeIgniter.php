@@ -36,13 +36,13 @@ $method = Router::getMethod ();
 $path = APPPATH . 'controller' . DIRECTORY_SEPARATOR . Router::getDirectory () . $class . EXT;
 
 if (!($class && $method !== '_' && file_exists ($path) && Load::file ($path) && class_exists ($class) && method_exists ($class, $method) && is_callable (array ($class, $method)) && ($reflection = new ReflectionMethod ($class, $method)) && ($reflection->isPublic () && !$reflection->isConstructor ())))
-	return Exceptions::show404 ();
+  return Exceptions::show404 ();
 
 $params = array_slice (URL::rsegments (), 2);
 
 if (method_exists ($class, '_remap')) {
-	$params = array ($method, $params);
-	$method = Router::setMethod ('_remap');
+  $params = array ($method, $params);
+  $method = Router::setMethod ('_remap');
 }
 
 /* ======================================================

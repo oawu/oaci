@@ -8,8 +8,8 @@
  */
 
 class Controller {
-	public function __construct () {
-	}
+  public function __construct () {
+  }
 }
 
 spl_autoload_register (function ($class) {

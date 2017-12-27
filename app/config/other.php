@@ -17,7 +17,7 @@ return array (
   'time_reference' => 'local',
   'global_xss_filtering' => false,
   
-  'language'	=> 'english',
+  'language'  => 'english',
   'subclass_prefix' => 'MY_',
   'permitted_uri_chars' => 'a-z 0-9~%.:_\-',
   'enable_query_strings' => false,

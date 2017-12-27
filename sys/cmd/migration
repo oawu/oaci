@@ -73,7 +73,7 @@ if (!((($version = array_shift ($argv)) != null) && $version >= 0 && $version <=
 if ($cho == 'q') {
   echo "\n";
   echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
-  echo "  😊  好的！下次別再按錯囉，期待您下次再使用，👋  " . cc ('掰掰', 'W') . "～  \n\n";
+  echo "  ������  好的！下次別再按錯囉，期待您下次再使用，������  " . cc ('掰掰', 'W') . "～  \n\n";
   echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
   exit;
 }
