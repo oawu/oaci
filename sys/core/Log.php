@@ -29,7 +29,7 @@ class Log {
     @self::message (self::formatLine (date (self::$config['dateFormat']), cc ('錯誤', 'r'), $msg), 'log-error-');
   }
   public static function queryLine () {
-    self::$type || self::$type = ENVIRONMENT !== 'cmd' ? request_is_cli () ? cc ('cli', 'c') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'C') : cc ('web', 'p') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'P') : cc ('cmd', 'y') . cc (SELF);
+    self::$type || self::$type = ENVIRONMENT !== 'cmd' ? request_is_cli () ? cc ('cli', 'c') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'C') : cc ('web', 'p') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'P') : cc ('cmd', 'y') . cc (' ➜ ', 'N') . cc (CMD_FILE, 'Y');
     @self::message ("\n" . self::$type . cc (' ╞' . str_repeat ('═', CLI_LEN - (strlen (self::$type) - 31)) . "\n", 'N'), 'query-');
   }
   public static function query ($valid, $time, $sql, $values) {
@@ -71,7 +71,7 @@ class Log {
     return cc ($date, 'w') . cc ('：', 'N') . $title . cc ('：', 'N') . $msg . "\n";
   }
   private static function formatQuery ($date, $valid, $time, $sql, $values) {
-    self::$type || self::$type = ENVIRONMENT !== 'cmd' ? request_is_cli () ? cc ('cli', 'c') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'C') : cc ('web', 'p') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'P') : cc ('cmd', 'y') . cc (SELF);
+    self::$type || self::$type = ENVIRONMENT !== 'cmd' ? request_is_cli () ? cc ('cli', 'c') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'C') : cc ('web', 'p') . cc (' ➜ ', 'N') . cc (URL::uriString (), 'P') : cc ('cmd', 'y') . cc (' ➜ ', 'N') . cc (CMD_FILE, 'Y');
     return self::$type . cc (' │ ', 'N') . cc ($date, 'w') . cc (' ➜ ', 'N') . cc ($time, $time < 999 ? $time < 99 ? $time < 9 ? 'w' : 'W' : 'Y' : 'R') . '' . cc ('ms', $time < 999 ? $time < 99 ? $time < 9 ? 'N' : 'w' : 'y' : 'r') . cc (' │ ', 'N') . ($valid ? cc ('OK', 'g') : cc ('GG', 'r')) . cc (' ➜ ', 'N') . call_user_func_array ('sprintf', array_merge (array (preg_replace_callback ('/\?/', function ($matches) { return cc ('%s', 'W'); }, $sql)), $values)) . "\n";
   }
 }

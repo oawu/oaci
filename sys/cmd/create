@@ -8,6 +8,7 @@
  */
 
 define ('OACI', '1');
+define ('CMD_FILE', array_shift ($argv));
 
 (@include_once 'core' . DIRECTORY_SEPARATOR . 'base.php') || exit ('初始化失敗！');
 (@include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Init.php') || exit ('初始化失敗！');
