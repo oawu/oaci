@@ -98,21 +98,15 @@ class CI_Hooks {
 		}
 
 		// Grab the "hooks" definition file.
-		if (file_exists(APPPATH.'config/hooks.php'))
-		{
-			include(APPPATH.'config/hooks.php');
-		}
+		if (file_exists (APPPATH.'config/hooks.php'))
+			$hook = include (APPPATH.'config/hooks.php');
+		else if (file_exists (APPPATH.'config/'.ENVIRONMENT.'/hooks.php'))
+			$hook = include (APPPATH.'config/'.ENVIRONMENT.'/hooks.php');
+		else
+			$hook = array ();
 
-		if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/hooks.php'))
-		{
-			include(APPPATH.'config/'.ENVIRONMENT.'/hooks.php');
-		}
-
-		// If there are no hooks, we're done.
-		if ( ! isset($hook) OR ! is_array($hook))
-		{
+		if (!$hook)
 			return;
-		}
 
 		$this->hooks =& $hook;
 		$this->enabled = TRUE;

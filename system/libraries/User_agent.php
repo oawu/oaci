@@ -193,49 +193,40 @@ class CI_User_agent {
 	 */
 	protected function _load_agent_file()
 	{
-		if (($found = file_exists(APPPATH.'config/user_agents.php')))
-		{
-			include(APPPATH.'config/user_agents.php');
-		}
+		if (file_exists (APPPATH.'config/user_agents.php'))
+			$user_agents = include (APPPATH.'config/user_agents.php');
+		else if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/user_agents.php'))
+			$user_agents = include (APPPATH.'config/'.ENVIRONMENT.'/user_agents.php');
+		else 
+			$user_agents = null;
 
-		if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/user_agents.php'))
-		{
-			include(APPPATH.'config/'.ENVIRONMENT.'/user_agents.php');
-			$found = TRUE;
-		}
+		if ($user_agents === null)
+			return false;
 
-		if ($found !== TRUE)
-		{
-			return FALSE;
-		}
 
 		$return = FALSE;
 
-		if (isset($platforms))
+		if (isset($user_agents['platforms']))
 		{
-			$this->platforms = $platforms;
-			unset($platforms);
+			$this->platforms = $user_agents['platforms'];
 			$return = TRUE;
 		}
 
-		if (isset($browsers))
+		if (isset($user_agents['browsers']))
 		{
-			$this->browsers = $browsers;
-			unset($browsers);
+			$this->browsers = $user_agents['browsers'];
 			$return = TRUE;
 		}
 
-		if (isset($mobiles))
+		if (isset($user_agents['mobiles']))
 		{
-			$this->mobiles = $mobiles;
-			unset($mobiles);
+			$this->mobiles = $user_agents['mobiles'];
 			$return = TRUE;
 		}
 
-		if (isset($robots))
+		if (isset($user_agents['robots']))
 		{
-			$this->robots = $robots;
-			unset($robots);
+			$this->robots = $user_agents['robots'];
 			$return = TRUE;
 		}
 

@@ -395,35 +395,29 @@ if ( ! function_exists('convert_accented_characters'))
 	 * @param	string	$str	Input string
 	 * @return	string
 	 */
-	function convert_accented_characters($str)
-	{
+	function convert_accented_characters($str) {
 		static $array_from, $array_to;
 
-		if ( ! is_array($array_from))
-		{
-			if (file_exists(APPPATH.'config/foreign_chars.php'))
-			{
-				include(APPPATH.'config/foreign_chars.php');
-			}
+		if (!is_array ($array_from)) {
 
-			if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/foreign_chars.php'))
-			{
-				include(APPPATH.'config/'.ENVIRONMENT.'/foreign_chars.php');
-			}
+			if (file_exists (APPPATH.'config/foreign_chars.php'))
+				$foreign_characters = include (APPPATH.'config/foreign_chars.php');
+			else if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/foreign_chars.php'))
+				$foreign_characters = include (APPPATH.'config/'.ENVIRONMENT.'/foreign_chars.php');
+			else 
+				$foreign_characters = array ();
 
-			if (empty($foreign_characters) OR ! is_array($foreign_characters))
-			{
-				$array_from = array();
-				$array_to = array();
-
+			if (!$foreign_characters){
+				$array_from = array ();
+				$array_to = array ();
 				return $str;
 			}
 
-			$array_from = array_keys($foreign_characters);
-			$array_to = array_values($foreign_characters);
+			$array_from = array_keys ($foreign_characters);
+			$array_to = array_values ($foreign_characters);
 		}
 
-		return preg_replace($array_from, $array_to, $str);
+		return preg_replace ($array_from, $array_to, $str);
 	}
 }
 

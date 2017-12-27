@@ -80,13 +80,13 @@ class CI_Cache_memcached extends CI_Driver {
 	public function __construct()
 	{
 		// Try to load memcached server info from the config file.
-		$CI =& get_instance();
 		$defaults = $this->_config['default'];
 
-		if ($CI->config->load('memcached', TRUE, TRUE))
-		{
-			$this->_config = $CI->config->config['memcached'];
-		}
+		if (file_exists (APPPATH.'config/memcached.php'))
+			$this->_config = include (APPPATH.'config/memcached.php');
+		else if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/memcached.php'))
+			$this->_config = include (APPPATH.'config/'.ENVIRONMENT.'/memcached.php');
+		else; 
 
 		if (class_exists('Memcached', FALSE))
 		{

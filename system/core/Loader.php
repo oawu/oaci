@@ -1291,53 +1291,35 @@ class CI_Loader {
 	 */
 	protected function _ci_autoloader()
 	{
-		if (file_exists(APPPATH.'config/autoload.php'))
-		{
-			include(APPPATH.'config/autoload.php');
-		}
 
-		if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/autoload.php'))
-		{
-			include(APPPATH.'config/'.ENVIRONMENT.'/autoload.php');
-		}
+		if (file_exists (APPPATH.'config/autoload.php'))
+			$autoload = include (APPPATH.'config/autoload.php');
+		else if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/autoload.php'))
+			$autoload = include (APPPATH.'config/'.ENVIRONMENT.'/autoload.php');
+		else 
+			$autoload = null;
 
-		if ( ! isset($autoload))
-		{
+		if ($autoload === null)
 			return;
-		}
 
 		// Autoload packages
 		if (isset($autoload['packages']))
-		{
 			foreach ($autoload['packages'] as $package_path)
-			{
 				$this->add_package_path($package_path);
-			}
-		}
 
 		// Load any custom config file
 		if (count($autoload['config']) > 0)
-		{
 			foreach ($autoload['config'] as $val)
-			{
 				$this->config($val);
-			}
-		}
 
 		// Autoload helpers and languages
 		foreach (array('helper', 'language') as $type)
-		{
 			if (isset($autoload[$type]) && count($autoload[$type]) > 0)
-			{
 				$this->$type($autoload[$type]);
-			}
-		}
 
 		// Autoload drivers
 		if (isset($autoload['drivers']))
-		{
 			$this->driver($autoload['drivers']);
-		}
 
 		// Load libraries
 		if (isset($autoload['libraries']) && count($autoload['libraries']) > 0)
@@ -1355,9 +1337,7 @@ class CI_Loader {
 
 		// Autoload models
 		if (isset($autoload['model']))
-		{
 			$this->model($autoload['model']);
-		}
 	}
 
 	// --------------------------------------------------------------------

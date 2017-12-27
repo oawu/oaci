@@ -239,42 +239,31 @@ if ( ! function_exists('get_config'))
 	{
 		static $config;
 
-		if (empty($config))
-		{
-			$file_path = APPPATH.'config/config.php';
-			$found = FALSE;
-			if (file_exists($file_path))
-			{
-				$found = TRUE;
-				require($file_path);
-			}
+		if (empty($config)) {
+			
+			if (file_exists (APPPATH.'config/general.php'))
+				$config = include (APPPATH.'config/general.php');
+			else if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/general.php'))
+				$config = include (APPPATH.'config/'.ENVIRONMENT.'/general.php');
+			else 
+				$config = null;
 
-			// Is the config file in the environment folder?
-			if (file_exists($file_path = APPPATH.'config/'.ENVIRONMENT.'/config.php'))
-			{
-				require($file_path);
-			}
-			elseif ( ! $found)
-			{
-				set_status_header(503);
+
+			if ($config === null) {
+				set_status_header (503);
 				echo 'The configuration file does not exist.';
-				exit(3); // EXIT_CONFIG
+				exit (3); // EXIT_CONFIG
 			}
 
-			// Does the $config array exist in the file?
-			if ( ! isset($config) OR ! is_array($config))
-			{
-				set_status_header(503);
+			if (!is_array ($config)) {
+				set_status_header (503);
 				echo 'Your config file does not appear to be formatted correctly.';
-				exit(3); // EXIT_CONFIG
+				exit (3); // EXIT_CONFIG
 			}
 		}
 
-		// Are any values being dynamically added or replaced?
 		foreach ($replace as $key => $val)
-		{
 			$config[$key] = $val;
-		}
 
 		return $config;
 	}
