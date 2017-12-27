@@ -29,17 +29,26 @@ if (!function_exists ('use_model')) {
     });
 
     class_alias ('ActiveRecord\Connection', 'ModelConnection');
+    
     class Model extends ActiveRecord\Model {}
 
-    Load::sysLib ('Uploader.php');
 
+
+    spl_autoload_register (function ($class) {
+      if (class_exists ($class, false))
+        return;
+
+      if (preg_match ("/Uploader$/", $class))
+        Load::sysLib ('Uploader' . EXT) || gg ('找不到 Model 相關工具：' . $class);
+
+      if ($class === 'WhereBuilder')
+        Load::sysLib ('WhereBuilder' . EXT) || gg ('找不到 Model 相關工具：' . $class);
+    });
+
+    // Load::sysLib ('Uploader.php');
+    // Load::sysLib ('WhereBuilder.php');
+   
     return $used = true;
-  }
-
-  if (!function_exists ('create_model')) {
-    function create_model ($modelName, $arr) {
-      return ($obj = $modelName::create (array_intersect_key ($arr, $modelName::table ()->columns))) && $obj->is_valid () ? $obj : null;
-    }
   }
 }
 

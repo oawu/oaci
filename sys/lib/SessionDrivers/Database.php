@@ -93,7 +93,7 @@ class SessionDatabaseDriver extends SessionDriver implements SessionHandlerInter
     }
 
     if ($this->rowExists === false) {
-      if (create_model ($model, array ('session_id' => $session_id, 'ip_address' => $_SERVER['REMOTE_ADDR'], 'timestamp' => time (), 'data' => $session_data))) {
+      if ($model::create (array ('session_id' => $session_id, 'ip_address' => $_SERVER['REMOTE_ADDR'], 'timestamp' => time (), 'data' => $session_data))) {
         $this->fingerprint = md5 ($session_data);
         $this->rowExists = true;
         return $this->succ ();

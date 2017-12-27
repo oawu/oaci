@@ -42,7 +42,7 @@ class MigrationTool {
   }
 
   private static function createModel ($model) {
-    return create_model ($model, array ('version' => 0)); 
+    return $model::create (array ('version' => 0)); 
   }
 
   private static function createTable ($model) {
