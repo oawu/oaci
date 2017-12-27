@@ -10,8 +10,8 @@
 include_once 'lib' . DIRECTORY_SEPARATOR . 'base.php';
 include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Load.php';
 
-Load::sysCore ('Common.php', true);
-Load::sysCore ('Exceptions.php', true, "Exceptions::init ();");
+Load::sysCore ('Common.php', true, "config ('defines');");
+Load::sysCore ('Exception.php', true, "Exception::init ();");
 Load::sysCore ('Model.php', true);
 
 Load::sysLib ('MigrationTool.php', '載入 MigrationTool 失敗！');

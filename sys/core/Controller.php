@@ -1,4 +1,4 @@
-<?php defined ('BASEPATH') || exit ('此檔案不允許讀取。');
+<?php defined ('OACI') || exit ('此檔案不允許讀取。');
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
