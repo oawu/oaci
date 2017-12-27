@@ -64,7 +64,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 	 *
 	 * @var array
 	 */
-	static protected $valid_association_options = array('class_name', 'class', 'foreign_key', 'conditions', 'select', 'readonly', 'namespace');
+	static protected $valid_association_options = array('include', 'class_name', 'class', 'foreign_key', 'conditions', 'select', 'readonly', 'namespace');
 
 	/**
 	 * Constructs a relationship.
@@ -136,6 +136,8 @@ abstract class AbstractRelationship implements InterfaceRelationship
 
 		foreach ($attributes as $column => $value)
 			$values[] = $value[$inflector->variablize($model_values_key)];
+
+		// $values = array_unique ($values);
 
 		$values = array($values);
 		$conditions = SQLBuilder::create_conditions_from_underscored_string($table->conn,$query_key,$values);
