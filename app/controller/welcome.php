@@ -10,5 +10,8 @@
 class welcome extends Controller {
 
   public function index () {
+    
+    return Output::html (View::create ('create.php')
+            ->get ());
   }
 }

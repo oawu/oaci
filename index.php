@@ -29,7 +29,7 @@ is_dir ($view_dir = realpath ($view_dir)) || gg ('您的 view 資料夾路徑似
 
 define ('BASEPATH', $sys_dir . DIRECTORY_SEPARATOR);
 define ('APPPATH', $app_dir . DIRECTORY_SEPARATOR);
-define('VIEWPATH', $view_dir . DIRECTORY_SEPARATOR);
+define ('VIEWPATH', $view_dir . DIRECTORY_SEPARATOR);
 
 (@include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Load.php') || gg ('初始化失敗！', 503);
 Load::file ('_env.php', true);

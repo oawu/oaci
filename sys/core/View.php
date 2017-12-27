@@ -26,6 +26,9 @@ class View {
     return $this;
   }
 
+  public function output () {
+    return View::load ($this->path, $this->vals);
+  }
   public function get () {
     return View::load ($this->path, $this->vals, true);
   }
@@ -59,7 +62,8 @@ class View {
     extract ($_x_oa_x_params);
     ob_start ();
 
-    @include ($_x_oa_x_path) || gg ('無法載入 View：' . $_x_oa_x_path);
+    if (!@include $_x_oa_x_path)
+      gg ('無法載入 View：' . $_x_oa_x_path);
 
     $buffer = ob_get_contents ();
     @ob_end_clean ();

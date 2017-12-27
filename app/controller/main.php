@@ -9,6 +9,10 @@
 
 class main extends Controller {
 
-  public function index ($a = 0) {
+  public function index () {
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($a, $b);
+    // exit ();
+    // echo "1111";
   }
 }

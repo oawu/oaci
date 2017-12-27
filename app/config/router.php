@@ -7,11 +7,9 @@
  * @link        https://www.ioa.tw/
  */
 
-// $route['default_controller'] = 'welcome';
-// $route['404_override'] = '';
-// $route['translate_uri_dashes'] = FALSE;
+Router::get ('', 'main');
 
-Router::root ('main');
-Router::post ('main/a');
-Router::post ('main/b', 'main@a');
-Router::get ('main/c', 'main@a');
+Router::group ('admin', function () {
+  Router::resource (array ('articles'), 'articles');
+  Router::resource (array ('tag', 'articles'), 'tag_articles');
+});
