@@ -174,21 +174,21 @@ class Table
 		if (array_key_exists('select',$options))
 			$sql->select($options['select']);
 
-		if (array_key_exists('conditions',$options))
+		if (array_key_exists('where',$options))
 		{
-			if (!is_hash($options['conditions']))
+			if (!is_hash($options['where']))
 			{
-				if (is_string($options['conditions']))
-					$options['conditions'] = array($options['conditions']);
+				if (is_string($options['where']))
+					$options['where'] = array($options['where']);
 
-				call_user_func_array(array($sql,'where'),$options['conditions']);
+				call_user_func_array(array($sql,'where'),$options['where']);
 			}
 			else
 			{
 				if (!empty($options['mapped_names']))
-					$options['conditions'] = $this->map_names($options['conditions'],$options['mapped_names']);
+					$options['where'] = $this->map_names($options['where'],$options['mapped_names']);
 
-				$sql->where($options['conditions']);
+				$sql->where($options['where']);
 			}
 		}
 
@@ -403,7 +403,7 @@ class Table
 	}
 
 	/**
-	 * Replaces any aliases used in a hash based condition.
+	 * Replaces any aliases used in a hash based where.
 	 *
 	 * @param $hash array A hash
 	 * @param $map array Hash of used_name => real_name

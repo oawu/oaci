@@ -9,4 +9,8 @@
 
 class User extends Model {
   static $table_name = 'users';
+  
+  static $has_many = array (
+    array ('comments', 'class_name' => 'Comment'),
+  );
 }

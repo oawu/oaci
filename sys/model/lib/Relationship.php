@@ -64,7 +64,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 	 *
 	 * @var array
 	 */
-	static protected $valid_association_options = array('include', 'class_name', 'class', 'foreign_key', 'conditions', 'select', 'readonly', 'namespace');
+	static protected $valid_association_options = array('include', 'class_name', 'class', 'foreign_key', 'where', 'select', 'readonly', 'namespace');
 
 	/**
 	 * Constructs a relationship.
@@ -82,8 +82,8 @@ abstract class AbstractRelationship implements InterfaceRelationship
 		if ($relationship === 'hasmany' || $relationship === 'hasandbelongstomany')
 			$this->poly_relationship = true;
 
-		if (isset($this->options['conditions']) && !is_array($this->options['conditions']))
-			$this->options['conditions'] = array($this->options['conditions']);
+		if (isset($this->options['where']) && !is_array($this->options['where']))
+			$this->options['where'] = array($this->options['where']);
 
 		if (isset($this->options['class']))
 			$this->set_class_name($this->options['class']);
@@ -140,12 +140,12 @@ abstract class AbstractRelationship implements InterfaceRelationship
 		// $values = array_unique ($values);
 
 		$values = array($values);
-		$conditions = SQLBuilder::create_conditions_from_underscored_string($table->conn,$query_key,$values);
+		$where = SQLBuilder::create_where_from_underscored_string($table->conn,$query_key,$values);
 
-		if (isset($options['conditions']) && strlen($options['conditions'][0]) > 1)
-			Utils::add_condition($options['conditions'], $conditions);
+		if (isset($options['where']) && strlen($options['where'][0]) > 1)
+			Utils::add_where($options['where'], $where);
 		else
-			$options['conditions'] = $conditions;
+			$options['where'] = $where;
 
 		if (!empty($includes))
 			$options['include'] = $includes;
@@ -302,24 +302,24 @@ abstract class AbstractRelationship implements InterfaceRelationship
 		$this->class_name = $class_name;
 	}
 
-	protected function create_conditions_from_keys(Model $model, $condition_keys=array(), $value_keys=array())
+	protected function create_where_from_keys(Model $model, $where_keys=array(), $value_keys=array())
 	{
-		$condition_string = implode('_and_', $condition_keys);
-		$condition_values = array_values($model->get_values_for($value_keys));
+		$where_string = implode('_and_', $where_keys);
+		$where_values = array_values($model->get_values_for($value_keys));
 
 		// return null if all the foreign key values are null so that we don't try to do a query like "id is null"
-		if (all(null,$condition_values))
+		if (all(null,$where_values))
 			return null;
 
-		$conditions = SQLBuilder::create_conditions_from_underscored_string(Table::load(get_class($model))->conn,$condition_string,$condition_values);
+		$where = SQLBuilder::create_where_from_underscored_string(Table::load(get_class($model))->conn,$where_string,$where_values);
 
-		# DO NOT CHANGE THE NEXT TWO LINES. add_condition operates on a reference and will screw options array up
-		if (isset($this->options['conditions']))
-			$options_conditions = $this->options['conditions'];
+		# DO NOT CHANGE THE NEXT TWO LINES. add_where operates on a reference and will screw options array up
+		if (isset($this->options['where']))
+			$options_where = $this->options['where'];
 		else
-			$options_conditions = array();
+			$options_where = array();
 
-		return Utils::add_condition($options_conditions, $conditions);
+		return Utils::add_where($options_where, $where);
 	}
 
 	/**
@@ -419,7 +419,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
  *     array('people',
  *           'through'    => 'payments',
  *           'select'     => 'people.*, payments.amount',
- *           'conditions' => 'payments.amount < 200')
+ *           'where' => 'payments.amount < 200')
  *     );
  * }
  * </code>
@@ -523,11 +523,11 @@ class HasMany extends AbstractRelationship
 			$this->initialized = true;
 		}
 
-		if (!($conditions = $this->create_conditions_from_keys($model, $this->foreign_key, $this->primary_key)))
+		if (!($where = $this->create_where_from_keys($model, $this->foreign_key, $this->primary_key)))
 			return null;
 
 		$options = $this->unset_non_finder_options($this->options);
-		$options['conditions'] = $conditions;
+		$options['where'] = $where;
 		return $class_name::find($this->poly_relationship ? 'all' : 'first',$options);
 	}
 
@@ -716,11 +716,11 @@ class BelongsTo extends AbstractRelationship
 		foreach ($this->foreign_key as $key)
 			$keys[] = $inflector->variablize($key);
 
-		if (!($conditions = $this->create_conditions_from_keys($model, $this->primary_key, $keys)))
+		if (!($where = $this->create_where_from_keys($model, $this->primary_key, $keys)))
 			return null;
 
 		$options = $this->unset_non_finder_options($this->options);
-		$options['conditions'] = $conditions;
+		$options['where'] = $where;
 		$class = $this->class_name;
 		return $class::first($options);
 	}

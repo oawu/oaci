@@ -11,7 +11,11 @@ class Article extends Model {
   static $table_name = 'articles';
 
   static $belongs_to = array (
-    array ('user', 'class_name' => 'User'),
+    // array ('user', 'class_name' => 'User'),
+  );
+  static $has_many = array (
+    array ('comments', 'class_name' => 'Comment', 'include' => array ('user')),
+    // array ('comment_users', 'class_name' => 'User', 'from' => 'comments'),
   );
 
   public function __construct ($attrs = array (), $guardAttrs = true, $instantiatingViafind = false, $newRecord = true) {

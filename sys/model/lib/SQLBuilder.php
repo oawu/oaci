@@ -93,9 +93,9 @@ class SQLBuilder
 		return $this->where_values;
 	}
 
-	public function where(/* (conditions, values) || (hash) */)
+	public function where(/* (where, values) || (hash) */)
 	{
-		$this->apply_where_conditions(func_get_args());
+		$this->apply_where_where(func_get_args());
 		return $this;
 	}
 
@@ -173,7 +173,7 @@ class SQLBuilder
 	public function delete()
 	{
 		$this->operation = 'DELETE';
-		$this->apply_where_conditions(func_get_args());
+		$this->apply_where_where(func_get_args());
 		return $this;
 	}
 
@@ -202,35 +202,35 @@ class SQLBuilder
 	}
 
 	/**
-	 * Converts a string like "id_and_name_or_z" into a conditions value like array("id=? AND name=? OR z=?", values, ...).
+	 * Converts a string like "id_and_name_or_z" into a where value like array("id=? AND name=? OR z=?", values, ...).
 	 *
 	 * @param Connection $connection
 	 * @param $name Underscored string
 	 * @param $values Array of values for the field names. This is used
 	 *   to determine what kind of bind marker to use: =?, IN(?), IS NULL
 	 * @param $map A hash of "mapped_column_name" => "real_column_name"
-	 * @return A conditions array in the form array(sql_string, value1, value2,...)
+	 * @return A where array in the form array(sql_string, value1, value2,...)
 	 */
-	public static function create_conditions_from_underscored_string(Connection $connection, $name, &$values=array(), &$map=null)
+	public static function create_where_from_underscored_string(Connection $connection, $name, &$values=array(), &$map=null)
 	{
 		if (!$name)
 			return null;
 
 		$parts = preg_split('/(_and_|_or_)/i',$name,-1,PREG_SPLIT_DELIM_CAPTURE);
 		$num_values = count($values);
-		$conditions = array('');
+		$where = array('');
 
 		for ($i=0,$j=0,$n=count($parts); $i<$n; $i+=2,++$j)
 		{
 			if ($i >= 2)
-				$conditions[0] .= preg_replace(array('/_and_/i','/_or_/i'),array(' AND ',' OR '),$parts[$i-1]);
+				$where[0] .= preg_replace(array('/_and_/i','/_or_/i'),array(' AND ',' OR '),$parts[$i-1]);
 
 			if ($j < $num_values)
 			{
 				if (!is_null($values[$j]))
 				{
 					$bind = is_array($values[$j]) ? ' IN(?)' : '=?';
-					$conditions[] = $values[$j];
+					$where[] = $values[$j];
 				}
 				else
 					$bind = ' IS NULL';
@@ -241,13 +241,13 @@ class SQLBuilder
 			// map to correct name if $map was supplied
 			$name = $map && isset($map[$parts[$i]]) ? $map[$parts[$i]] : $parts[$i];
 
-			$conditions[0] .= $connection->quote_name($name) . $bind;
+			$where[0] .= $connection->quote_name($name) . $bind;
 		}
-		return $conditions;
+		return $where;
 	}
 
 	/**
-	 * Like create_conditions_from_underscored_string but returns a hash of name => value array instead.
+	 * Like create_where_from_underscored_string but returns a hash of name => value array instead.
 	 *
 	 * @param string $name A string containing attribute names connected with _and_ or _or_
 	 * @param $args Array of values for each attribute in $name
@@ -289,7 +289,7 @@ class SQLBuilder
 		return $new;
 	}
 
-	private function apply_where_conditions($args)
+	private function apply_where_where($args)
 	{
 		require_once 'Expressions.php';
 		$num_args = count($args);

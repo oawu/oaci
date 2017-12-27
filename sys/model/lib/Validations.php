@@ -586,14 +586,14 @@ class Validations
 			}
 
 			$sql = "";
-			$conditions = array("");
+			$where = array("");
 			$pk_quoted = $connection->quote_name($pk[0]);
 			if ($pk_value === null)
 				$sql = "{$pk_quoted} IS NOT NULL";
 			else
 			{
 				$sql = "{$pk_quoted} != ?";
-				array_push($conditions,$pk_value);
+				array_push($where,$pk_value);
 			}
 
 			foreach ($fields as $field)
@@ -601,12 +601,12 @@ class Validations
 				$field = $this->model->get_real_attribute_name($field);
 				$quoted_field = $connection->quote_name($field);
 				$sql .= " AND {$quoted_field}=?";
-				array_push($conditions,$this->model->$field);
+				array_push($where,$this->model->$field);
 			}
 
-			$conditions[0] = $sql;
+			$where[0] = $sql;
 
-			if ($this->model->exists(array('conditions' => $conditions)))
+			if ($this->model->exists(array('where' => $where)))
 				$this->record->add($add_record, $options['message']);
 		}
 	}

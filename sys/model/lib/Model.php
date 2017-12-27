@@ -908,32 +908,32 @@ class Model
 	}
 
 	/**
-	 * Deletes records matching conditions in $options
+	 * Deletes records matching where in $options
 	 *
 	 * Does not instantiate models and therefore does not invoke callbacks
 	 *
 	 * Delete all using a hash:
 	 *
 	 * <code>
-	 * YourModel::delete_all(array('conditions' => array('name' => 'Tito')));
+	 * YourModel::delete_all(array('where' => array('name' => 'Tito')));
 	 * </code>
 	 *
 	 * Delete all using an array:
 	 *
 	 * <code>
-	 * YourModel::delete_all(array('conditions' => array('name = ?', 'Tito')));
+	 * YourModel::delete_all(array('where' => array('name = ?', 'Tito')));
 	 * </code>
 	 *
 	 * Delete all using a string:
 	 *
 	 * <code>
-	 * YourModel::delete_all(array('conditions' => 'name = "Tito"'));
+	 * YourModel::delete_all(array('where' => 'name = "Tito"'));
 	 * </code>
 	 *
 	 * An options array takes the following parameters:
 	 *
 	 * <ul>
-	 * <li><b>conditions:</b> Conditions using a string/hash/array</li>
+	 * <li><b>where:</b> Conditions using a string/hash/array</li>
 	 * <li><b>limit:</b> Limit number of records to delete (MySQL & Sqlite only)</li>
 	 * <li><b>order:</b> A SQL fragment for ordering such as: 'name asc', 'id desc, name asc' (MySQL & Sqlite only)</li>
 	 * </ul>
@@ -947,12 +947,12 @@ class Model
 		$conn = static::connection();
 		$sql = new SQLBuilder($conn, $table->get_fully_qualified_table_name());
 
-		$conditions = is_array($options) ? $options['conditions'] : $options;
+		$where = is_array($options) ? $options['where'] : $options;
 
-		if (is_array($conditions) && !is_hash($conditions))
-			call_user_func_array(array($sql, 'delete'), $conditions);
+		if (is_array($where) && !is_hash($where))
+			call_user_func_array(array($sql, 'delete'), $where);
 		else
-			$sql->delete($conditions);
+			$sql->delete($where);
 
 		if (isset($options['limit']))
 			$sql->limit($options['limit']);
@@ -986,7 +986,7 @@ class Model
 	 *
 	 * <ul>
 	 * <li><b>set:</b> String/hash of field names and their values to be updated with
-	 * <li><b>conditions:</b> Conditions using a string/hash/array</li>
+	 * <li><b>where:</b> Conditions using a string/hash/array</li>
 	 * <li><b>limit:</b> Limit number of records to update (MySQL & Sqlite only)</li>
 	 * <li><b>order:</b> A SQL fragment for ordering such as: 'name asc', 'id desc, name asc' (MySQL & Sqlite only)</li>
 	 * </ul>
@@ -1002,12 +1002,12 @@ class Model
 
 		$sql->update($options['set']);
 
-		if (isset($options['conditions']) && ($conditions = $options['conditions']))
+		if (isset($options['where']) && ($where = $options['where']))
 		{
-			if (is_array($conditions) && !is_hash($conditions))
-				call_user_func_array(array($sql, 'where'), $conditions);
+			if (is_array($where) && !is_hash($where))
+				call_user_func_array(array($sql, 'where'), $where);
 			else
-				$sql->where($conditions);
+				$sql->where($where);
 		}
 
 		if (isset($options['limit']))
@@ -1311,13 +1311,13 @@ class Model
 	 *
 	 * @var array
 	 */
-	static $VALID_OPTIONS = array('conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having');
+	static $VALID_OPTIONS = array('where', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having');
 
 	/**
 	 * Enables the use of dynamic finders.
 	 *
 	 * Dynamic finders are just an easy way to do queries quickly without having to
-	 * specify an options array with conditions in it.
+	 * specify an options array with where in it.
 	 *
 	 * <code>
 	 * SomeModel::find_by_first_name('Tito');
@@ -1372,7 +1372,7 @@ class Model
 		if (substr($method,0,7) === 'find_by')
 		{
 			$attributes = substr($method,8);
-			$options['conditions'] = SQLBuilder::create_conditions_from_underscored_string(static::connection(),$attributes,$args,static::$alias_attribute);
+			$options['where'] = SQLBuilder::create_where_from_underscored_string(static::connection(),$attributes,$args,static::$alias_attribute);
 
 			if (!($ret = static::find('first',$options)) && $create)
 				return static::create(SQLBuilder::create_hash_from_underscored_string($attributes,$args,static::$alias_attribute));
@@ -1381,12 +1381,12 @@ class Model
 		}
 		elseif (substr($method,0,11) === 'find_all_by')
 		{
-			$options['conditions'] = SQLBuilder::create_conditions_from_underscored_string(static::connection(),substr($method,12),$args,static::$alias_attribute);
+			$options['where'] = SQLBuilder::create_where_from_underscored_string(static::connection(),substr($method,12),$args,static::$alias_attribute);
 			return static::find('all',$options);
 		}
 		elseif (substr($method,0,8) === 'count_by')
 		{
-			$options['conditions'] = SQLBuilder::create_conditions_from_underscored_string(static::connection(),substr($method,9),$args,static::$alias_attribute);
+			$options['where'] = SQLBuilder::create_where_from_underscored_string(static::connection(),substr($method,9),$args,static::$alias_attribute);
 			return static::count($options);
 		}
 
@@ -1440,7 +1440,7 @@ class Model
 	 * Get a count of qualifying records.
 	 *
 	 * <code>
-	 * YourModel::count(array('conditions' => 'amount > 3.14159265'));
+	 * YourModel::count(array('where' => 'amount > 3.14159265'));
 	 * </code>
 	 *
 	 * @see find
@@ -1455,9 +1455,9 @@ class Model
 		if (!empty($args) && !is_null($args[0]) && !empty($args[0]))
 		{
 			if (is_hash($args[0]))
-				$options['conditions'] = $args[0];
+				$options['where'] = $args[0];
 			else
-				$options['conditions'] = call_user_func_array('static::pk_conditions',$args);
+				$options['where'] = call_user_func_array('static::pk_where',$args);
 		}
 
 		$table = static::table();
@@ -1471,7 +1471,7 @@ class Model
 	 *
 	 * <code>
 	 * SomeModel::exists(123);
-	 * SomeModel::exists(array('conditions' => array('id=? and name=?', 123, 'Tito')));
+	 * SomeModel::exists(array('where' => array('id=? and name=?', 123, 'Tito')));
 	 * SomeModel::exists(array('id' => 123, 'name' => 'Tito'));
 	 * </code>
 	 *
@@ -1521,13 +1521,13 @@ class Model
 	 * YourModel::find(123,array('order' => 'name desc'));
 	 * </code>
 	 *
-	 * Finding by using a conditions array:
+	 * Finding by using a where array:
 	 *
 	 * <code>
-	 * YourModel::find('first', array('conditions' => array('name=?','Tito'),
+	 * YourModel::find('first', array('where' => array('name=?','Tito'),
 	 *   'order' => 'name asc'))
-	 * YourModel::find('all', array('conditions' => 'amount > 3.14159265'));
-	 * YourModel::find('all', array('conditions' => array('id in(?)', array(1,2,3))));
+	 * YourModel::find('all', array('where' => 'amount > 3.14159265'));
+	 * YourModel::find('all', array('where' => array('id in(?)', array(1,2,3))));
 	 * </code>
 	 *
 	 * Finding by using a hash:
@@ -1544,7 +1544,7 @@ class Model
 	 * <li><b>select:</b> A SQL fragment for what fields to return such as: '*', 'people.*', 'first_name, last_name, id'</li>
 	 * <li><b>joins:</b> A SQL join fragment such as: 'JOIN roles ON(roles.user_id=user.id)' or a named association on the model</li>
 	 * <li><b>include:</b> TODO not implemented yet</li>
-	 * <li><b>conditions:</b> A SQL fragment such as: 'id=1', array('id=1'), array('name=? and id=?','Tito',1), array('name IN(?)', array('Tito','Bob')),
+	 * <li><b>where:</b> A SQL fragment such as: 'id=1', array('id=1'), array('name=? and id=?','Tito',1), array('name IN(?)', array('Tito','Bob')),
 	 * array('name' => 'Tito', 'id' => 1)</li>
 	 * <li><b>limit:</b> Number of records to limit the query to</li>
 	 * <li><b>offset:</b> The row offset to return results from for the query</li>
@@ -1602,7 +1602,7 @@ class Model
 			$args = $args[0];
 
 		// anything left in $args is a find by pk
-		if ($num_args > 0 && !isset($options['conditions']))
+		if ($num_args > 0 && !isset($options['where']))
 			return static::find_by_pk($args, $options);
 
 		$options['mapped_names'] = static::$alias_attribute;
@@ -1629,7 +1629,7 @@ class Model
 
 		foreach($pks as $pk)
 		{
-			$options['conditions'] = static::pk_conditions($pk);
+			$options['where'] = static::pk_where($pk);
 			$models[] = Cache::get($table->cache_key_for_model($pk), function() use ($table, $options)
 			{
 				$res = $table->find($options);
@@ -1663,7 +1663,7 @@ class Model
 		}
 		else
 		{
-			$options['conditions'] = static::pk_conditions($values);
+			$options['where'] = static::pk_where($values);
 			$list = $table->find($options);
 		}
 		$results = count($list);
@@ -1746,7 +1746,7 @@ class Model
 	 * @param mixed $args Primary key value(s)
 	 * @return array An array in the form array(name => value, ...)
 	 */
-	public static function pk_conditions($args)
+	public static function pk_where($args)
 	{
 		$table = static::table();
 		$ret = array($table->pk[0] => $args);
@@ -1781,7 +1781,7 @@ class Model
 				if (!is_hash($last))
 					throw $e;
 
-				$options = array('conditions' => $last);
+				$options = array('where' => $last);
 			}
 		}
 		return $options;
