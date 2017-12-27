@@ -47,11 +47,11 @@ class MigrationTool {
     ($database = config ('database')) && isset ($database['active_group']) && ($active = $database['active_group']) && isset ($database['groups'][$active]['char_set']) && ($char_set = $database['groups'][$active]['char_set']) && isset ($database['groups'][$active]['dbcollat']) && ($dbcollat = $database['groups'][$active]['dbcollat']) || Exceptions::showError ('[Migration] createTable 錯誤，Database Config 錯誤。');
 
     $sql = "CREATE TABLE `" . $model::$table_name . "` ("
-         . "`id` int(11) unsigned NOT NULL AUTO_INCREMENT,"
-         . "`version` varchar(14) NOT NULL DEFAULT '0' COMMENT '版本',"
-         . "`updated_at` datetime NOT NULL DEFAULT '" . date ('Y-m-d H:i:s') . "' COMMENT '更新時間',"
-         . "`created_at` datetime NOT NULL DEFAULT '" . date ('Y-m-d H:i:s') . "' COMMENT '新增時間',"
-         . "PRIMARY KEY (`id`)"
+           . "`id` int(11) unsigned NOT NULL AUTO_INCREMENT,"
+           . "`version` varchar(14) NOT NULL DEFAULT '0' COMMENT '版本',"
+           . "`updated_at` datetime NOT NULL DEFAULT '" . date ('Y-m-d H:i:s') . "' COMMENT '更新時間',"
+           . "`created_at` datetime NOT NULL DEFAULT '" . date ('Y-m-d H:i:s') . "' COMMENT '新增時間',"
+           . "PRIMARY KEY (`id`)"
          . ") ENGINE=InnoDB DEFAULT CHARSET=" . $char_set . " COLLATE=" . $dbcollat . ";";
 
     ($err = self::query ($sql)) && Exceptions::showError ('[Migration] createTable 錯誤，建置 Table 失敗。SQL：' . $sql . '，Error：' . $err);

@@ -20,32 +20,10 @@ $file = array_shift ($argv);
 if (!function_exists ('headerText')) {
   function headerText () {
     system ('clear');
-    // echo cc (str_repeat ('═', CLI_LEN)) . "\n\n";
-    // echo " 【 " . cc ('歡迎使用 OACI 初始化工具', 'y') . " 】" . str_repeat (' ', 30) . cc ('v 1.0', 'N') . '    ' . cc ('by', 'N') . ' ' . cc ('OA Wu', 'W') . "\n\n";
-    // echo cc (str_repeat ('═', CLI_LEN)) . "\n\n";
-
     echo cc ('╔' . str_repeat ('═', CLI_LEN - 2) . '╗', 'N') . "\n";
     echo cc ('║' . str_repeat (' ', CLI_LEN - 2) . '║', 'N') . "\n";
     echo cc ('║', 'N') . cc ('  歡迎使用 OACI 初始化工具', 'y') . cc (' v1.0', 'N') . str_repeat (' ', CLI_LEN - 33) . cc ('║', 'N') . "\n";
     echo cc ('║', 'N') . str_repeat (' ', CLI_LEN - 15) . '    ' . cc ('by', 'N') . ' ' . cc ('OA Wu ', 'W') . cc ('║', 'N') . "\n";
-    // echo cc ('╠════════' . str_repeat ('═', CLI_LEN - 12 - 20) . '╦' . str_repeat ('═', 21) . '╣', 'N') . "\n";
-    
-  }
-}
-if (!function_exists ('results')) {
-  function results ($env, $host, $acc, $psw, $table, $charset, $results = array ()) {
-    headerText ();
-    echo ' ' . cc ('◎', 'G') . " 專 案 環 境" . cc ('：', 'N') . cc ($env == '2' ? '正式環境 ' . cc ('(production)', 'N') : '開發環境 ' . cc ('(development)', 'N'), 'W') . "\n";
-    echo cc (str_repeat ('─', CLI_LEN), 'N') . "\n";
-    echo ' ' . cc ('◎', 'G') . " 資料庫 主機" . cc ('：', 'N') . cc ($host, 'W') . "\n";
-    echo ' ' . cc ('◎', 'G') . " 資料庫 帳號" . cc ('：', 'N') . cc ($acc, 'W') . "\n";
-    echo ' ' . cc ('◎', 'G') . " 資料庫 密碼" . cc ('：', 'N') . cc ($psw, 'W') . "\n";
-    echo ' ' . cc ('◎', 'G') . " 資料庫 名稱" . cc ('：', 'N') . cc ($table, 'W') . "\n";
-    echo ' ' . cc ('◎', 'G') . " 資料庫 編碼" . cc ('：', 'N') . cc ($charset, 'W') . "\n";
-    echo cc (str_repeat ('═', CLI_LEN)) . "\n";
-
-    foreach ($results as $result)
-      echo !$result ? "" . cc (str_repeat ('═', CLI_LEN)) . "\n" : $result;
   }
 }
 
@@ -57,8 +35,12 @@ if (!function_exists ('writeIndex')) {
 
 if (!function_exists ('myMkdir')) {
   function myMkdir ($path) {
-    if (!@mkdir ($path, 0777, true))
-      return false;
+    $oldmask = umask (0);
+    $return = @mkdir ($path, 0777, true);
+    umask ($oldmask);
+
+    if (!$return) return false;
+
     return writeIndex ($path);
   }
 }

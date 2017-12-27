@@ -42,18 +42,3 @@ return array (
         ),
     ),
 );
-
-/*
- * --------------------------------------------------------
- * CREATE TABLE `session_datas` (
- *   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
- *   `session_id` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'Session ID',
- *   `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'IP',
- *   `timestamp` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Timestamp',
- *   `data` blob NOT NULL COMMENT 'Data',
- *   PRIMARY KEY (`id`),
- *   KEY `ip_address_session_id_index` (`ip_address`,`session_id`),
- *   KEY `session_id_index` (`session_id`)
- * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
- * --------------------------------------------------------
- * */

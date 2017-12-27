@@ -20,10 +20,38 @@ class SessionDatabaseDriver extends SessionDriver implements SessionHandlerInter
 		if (!($this->config['model'] && class_exists ($this->config['model'])))
 			Exceptions::showError ('[Session] SessionDatabaseDriver 錯誤，找不到指定的 Model。Model：' . $this->config['model']);
 
-		$this->model = $this->config['model'];
+		$model = $this->config['model'];
+		($obj = ModelConnection::instance ()->query ("SHOW TABLES LIKE '" . $model::$table_name . "';")->fetch (PDO::FETCH_NUM)) && ($obj[0] == $model::$table_name) || $this->createTable ($model);
+		$this->model = $model;
 		ini_set ('session.save_path', $this->model);
 	}
 
+  private function query ($sql) {
+    try {
+      ModelConnection::instance ()->query ($sql);
+      return '';
+    } catch (Exception $e) {
+      return $e->getMessage ();
+    }
+  }
+	private function createTable ($model) {
+		($database = config ('database')) && isset ($database['active_group']) && ($active = $database['active_group']) && isset ($database['groups'][$active]['char_set']) && ($char_set = $database['groups'][$active]['char_set']) && isset ($database['groups'][$active]['dbcollat']) && ($dbcollat = $database['groups'][$active]['dbcollat']) || Exceptions::showError ('[Session] SessionDatabaseDriver createTable 錯誤，Database Config 錯誤。');
+
+		$sql = "CREATE TABLE `" . $model::$table_name . "` ("
+						. "`id` int(11) unsigned NOT NULL AUTO_INCREMENT,"
+						. "`session_id` varchar(128) COLLATE " . $dbcollat . " NOT NULL DEFAULT '' COMMENT 'Session ID',"
+						. "`ip_address` varchar(45) COLLATE " . $dbcollat . " NOT NULL DEFAULT '' COMMENT 'IP',"
+						. "`timestamp` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Timestamp',"
+						. "`data` blob NOT NULL COMMENT 'Data',"
+						. "PRIMARY KEY (`id`),"
+						. "KEY `ip_address_session_id_index` (`ip_address`,`session_id`),"
+						. "KEY `session_id_index` (`session_id`)"
+ 	        . ") ENGINE=InnoDB DEFAULT CHARSET=" . $char_set . " COLLATE=" . $dbcollat . ";";
+ 
+    ($err = $this->query ($sql)) && Exceptions::showError ('[Session] SessionDatabaseDriver createTable 錯誤，建置 Table 失敗。SQL：' . $sql . '，Error：' . $err);
+
+    return true;
+	}
 	public function open ($model, $name) {
 		if (!($model && class_exists ($model)))
 			Exceptions::showError ('[Session] SessionDatabaseDriver 錯誤，找不到指定的 Model。Model：' . $model);
