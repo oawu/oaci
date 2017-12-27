@@ -25,7 +25,11 @@ class S3 {
     return true;
   }
 
-  private static function getMimeType (&$file) {
+  private static function error () {
+    throw new S3Exception (call_user_func_array ('sprintf', func_get_args ()));
+  }
+
+  private static function getMimeType ($file) {
     return ($extension = get_mime_by_extension ($file)) ? $extension : 'text/plain';
   }
 
@@ -33,20 +37,16 @@ class S3 {
     return base64_encode (md5_file ($filePath, true));
   }
   
-  private static function isFailure ($rest) {
-    return !($rest->error === null && $rest->code == 200);
+  private static function isSuccess ($rest, $codes = array (200)) {
+    return $rest->error === null && in_array ($rest->code, $codes);
   }
 
   public static function test () {
-    return !self::isFailure (S3Request::create ('GET')->getResponse ());
+    return self::isSuccess (S3Request::create ('GET')->getResponse ());
   }
 
   public static function buckets () {
-    if (self::isFailure ($rest = S3Request::create ('GET')->getResponse ()))
-      throw new Exception (sprintf (
-        "S3::listBuckets(): [%s] %s",
-          $rest->code,
-          'Unexpected HTTP status'));
+    self::isSuccess ($rest = S3Request::create ('GET')->getResponse ()) || self::error ("S3::listBuckets(): [%s] %s", $rest->code, 'Unexpected HTTP status');
 
     $buckets = array ();
 
@@ -60,11 +60,7 @@ class S3 {
   }
 
   public static function detailBuckets () {
-    if (self::isFailure ($rest = S3Request::create ('GET')->getResponse ()))
-      throw new Exception (sprintf (
-        "S3::listBuckets(): [%s] %s",
-          $rest->code,
-          'Unexpected HTTP status'));
+    self::isSuccess ($rest = S3Request::create ('GET')->getResponse ()) || self::error ("S3::listBuckets(): [%s] %s", $rest->code, 'Unexpected HTTP status');
 
     $results = array ();
 
@@ -72,27 +68,17 @@ class S3 {
       return $results;
 
     if (isset ($rest->body->Owner, $rest->body->Owner->ID, $rest->body->Owner->DisplayName))
-      $results['owner'] = array (
-        'id' => (String)$rest->body->Owner->ID,
-        'name' => (String)$rest->body->Owner->ID
-      );
+      $results['owner'] = array ('id' => (String)$rest->body->Owner->ID, 'name' => (String)$rest->body->Owner->ID);
 
     $results['buckets'] = array ();
     foreach ($rest->body->Buckets->Bucket as $bucket)
-      array_push ($results['buckets'], array (
-        'name' => (String)$bucket->Name,
-        'time' => date ('Y-m-d H:i:s', strtotime ((String)$bucket->CreationDate))
-      ));
+      array_push ($results['buckets'], array ('name' => (String)$bucket->Name, 'time' => date ('Y-m-d H:i:s', strtotime ((String)$bucket->CreationDate))));
 
     return $results;
   }
 
   public static function bucket ($bucket, $prefix = null, $marker = null, $maxKeys = null, $delimiter = null, $returnCommonPrefixes = false) {
-    if (self::isFailure ($rest = S3Request::create ('GET', $bucket)->setParameter ('prefix', $prefix)->setParameter ('marker', $marker)->setParameter ('max-keys', $maxKeys)->setParameter ('delimiter', $delimiter)->getResponse ()))
-      throw new Exception (sprintf (
-        "S3::getBucket(): [%s] %s",
-          $rest->code,
-          'Unexpected HTTP status'));
+    self::isSuccess ($rest = S3Request::create ('GET', $bucket)->setParameter ('prefix', $prefix)->setParameter ('marker', $marker)->setParameter ('max-keys', $maxKeys)->setParameter ('delimiter', $delimiter)->getResponse ()) || self::error ("S3::getBucket(): [%s] %s", $rest->code, 'Unexpected HTTP status');
 
     $nextMarker = null;
     $results = array ();
@@ -115,7 +101,7 @@ class S3 {
       return $results;
 
     do {
-      if (self::isFailure ($rest = S3Request::create ('GET', $bucket)->setParameter ('marker', $nextMarker)->setParameter ('prefix', $prefix)->setParameter ('delimiter', $delimiter)->getResponse ()))
+      if (!self::isSuccess ($rest = S3Request::create ('GET', $bucket)->setParameter ('marker', $nextMarker)->setParameter ('prefix', $prefix)->setParameter ('delimiter', $delimiter)->getResponse ()))
         break;
 
       if (isset ($rest->body, $rest->body->Contents))
@@ -135,145 +121,59 @@ class S3 {
   }
 
   public static function createBucket ($bucket, $acl = self::ACL_PRIVATE, $location = false) {
-    $rest = S3Request::create ('PUT', $bucket)
-              ->setAmzHeader ('x-amz-acl', $acl);
+    $rest = S3Request::create ('PUT', $bucket)->setAmzHeader ('x-amz-acl', $acl);
 
-    if ($location !== false) {
+    if ($location) {
       $dom = new DOMDocument ();
-      $createBucketConfiguration = $dom->createElement ('CreateBucketConfiguration');
-      $locationConstraint = $dom->createElement ('LocationConstraint', strtoupper ($location));
-      $createBucketConfiguration->appendChild ($locationConstraint);
-      $dom->appendChild ($createBucketConfiguration);
-      
-      $rest->data = $dom->saveXML ();
-      $rest->size = strlen ($rest->data);
-      $rest->setHeader ('Content-Type', 'application/xml');
+      $configuration = $dom->createElement ('CreateBucketConfiguration');
+      $configuration->appendChild ($dom->createElement ('LocationConstraint', strtoupper ($location)));
+      $dom->appendChild ($configuration);
+
+      $rest->setHeader ('Content-Type', 'application/xml')
+           ->setData ($dom->saveXML ());
     }
 
-    if (self::isFailure ($rest = $rest->getResponse ()))
-      throw new Exception (sprintf (
-        "S3::putBucket(%s, %s, %s): [%s] %s",
-          $bucket,
-          $acl,
-          $location,
-          $rest->code,
-          'Unexpected HTTP status'));
+    self::isSuccess ($rest = $rest->getResponse ()) || self::error ("S3::putBucket(%s, %s, %s): [%s] %s", $bucket, $acl, $location, $rest->code, 'Unexpected HTTP status');
 
     return true;
   }
 
   public static function deleteBucket ($bucket) {
-    $rest = S3Request::create ('DELETE', $bucket)->getResponse ();
-    
-    if (!($rest->error === null && in_array ($rest->code, array (200, 204))))
-      throw new Exception (sprintf (
-        "S3::deleteBucket(%s): [%s] %s",
-          $bucket,
-          $rest->code,
-          'Unexpected HTTP status'));
-
+    self::isSuccess ($rest = S3Request::create ('DELETE', $bucket)->getResponse (), array (200, 204)) || self::error ("S3::deleteBucket(%s): [%s] %s", $bucket, $rest->code, 'Unexpected HTTP status');
     return true;
   }
 
   // $headers => "Cache-Control" => "max-age=5", setcache
   public static function putObject ($filePath, $bucket, $s3Path, $acl = self::ACL_PUBLIC_READ, $amzHeaders = array (), $headers = array ()) {
-    if (!(is_file ($filePath) && is_readable ($filePath)))
-      throw new Exception (
-        "S3::putFile(): Unable to open input file: %s",
-          $filePath);
+    is_file ($filePath) && is_readable ($filePath) || self::error ("S3::putObject (): Unable to open input file: %s", $filePath);
 
-    $rest = S3Request::create ('PUT', $bucket, $s3Path)
-              ->setHeaders (array_merge (array ('Content-Type' => self::getMimeType ($filePath), 'Content-MD5' => self::fileMD5 ($filePath)), $headers))
-              ->setAmzHeaders (array_merge (array ( 'x-amz-acl' => $acl), $amzHeaders));
-    
-    $rest->fp = @fopen ($filePath, 'rb');
-    $rest->size = filesize ($filePath);
-    
-    if (!(($rest->size >= 0) && ($rest->fp !== null)))
-      throw new Exception (sprintf (
-        "S3::putObject(): [%s] %s",
-          0,
-          'Missing input parameters'));
+    $rest = S3Request::create ('PUT', $bucket, $s3Path)->setHeaders (array_merge (array ('Content-Type' => self::getMimeType ($filePath), 'Content-MD5' => self::fileMD5 ($filePath)), $headers))->setAmzHeaders (array_merge (array ( 'x-amz-acl' => $acl), $amzHeaders))->setFile ($filePath);
 
-    if (self::isFailure ($rest = $rest->getResponse ()))
-      throw new Exception (sprintf (
-        "S3::putObject(): [%s] %s",
-          $rest->response->code,
-          'Unexpected HTTP status'));
+    $rest->getSize () >= 0 && $rest->getFile () !== null || self::error ("S3::putObject(): [%s] %s", 0, 'Missing input parameters');
+    self::isSuccess ($rest = $rest->getResponse ()) || self::error ("S3::putObject(): [%s] %s", $rest->response->code, 'Unexpected HTTP status');
 
     return true;
   }
 
   public static function getObject ($bucket, $uri, $saveTo = null) {
     $rest = S3Request::create ('GET', $bucket, $uri);
-    
-    if ($saveTo)
-      if (($rest->fp = @fopen ($saveTo, 'wb')) !== false)
-        $rest->file = realpath ($saveTo);
-      else
-        throw new Exception (sprintf (
-          "S3::getObject(%s, %s): [%s] %s",
-            $bucket,
-            $uri,
-            0,
-            'Unable to open save file for writing: ' . $saveTo));
-
-    if (self::isFailure ($rest = $rest->getResponse ()))
-      throw new Exception (sprintf (
-        "S3::getObject(%s, %s): [%s] %s",
-          $bucket,
-          $uri,
-          $rest->response->code,
-          'Unexpected HTTP status'));
-
+    $saveTo && ($rest->setFile ($saveTo, 'wb', false)->getFile () !== null && $rest->file = realpath ($saveTo) || self::error ("S3::getObject(%s, %s): [%s] %s", $bucket, $uri, 0, 'Unable to open save file for writing: ' . $saveTo));
+    self::isSuccess ($rest = $rest->getResponse ()) || self::error ("S3::getObject(%s, %s): [%s] %s", $bucket, $uri, $rest->response->code, 'Unexpected HTTP status');
     return $rest;
   }
 
   public static function getObjectInfo ($bucket, $uri) {
-    $rest = S3Request::create ('HEAD', $bucket, $uri)->getResponse ();
-
-    if (!($rest->error === null && in_array ($rest->code, array (200, 404))))
-      throw new Exception (sprintf (
-        "S3::getObjectInfo(%s, %s): [%s] %s",
-          $bucket,
-          $uri,
-          $rest->code,
-          'Unexpected HTTP status'));
-
+    self::isSuccess ($rest = S3Request::create ('HEAD', $bucket, $uri)->getResponse (), array (200, 404)) || self::error ("S3::getObjectInfo(%s, %s): [%s] %s", $bucket, $uri, $rest->code, 'Unexpected HTTP status');
     return $rest->code == 200 ? $rest->headers : false;
   }
 
   public static function copyObject ($srcBucket, $srcUri, $bucket, $uri, $acl = self::ACL_PUBLIC_READ, $amzHeaders = array (), $headers = array ()) {
-    $rest = S3Request::create ('PUT', $bucket, $uri)
-              ->setHeaders ($headers = array_merge (array ('Content-Length' => 0), $headers))
-              ->setAmzHeaders ($amzHeaders = array_merge (array ('x-amz-acl' => $acl, 'x-amz-copy-source' => sprintf ('/%s/%s', $srcBucket, $srcUri)), $amzHeaders))
-              ->setAmzHeader ('x-amz-metadata-directive', $headers || $amzHeaders ? 'REPLACE' : null)
-              ->getResponse ();
-
-    if (self::isFailure ($rest))
-      throw new Exception (sprintf (
-        "S3::copyObject(%s, %s, %s, %s): [%s] %s",
-          $srcBucket,
-          $srcUri,
-          $bucket,
-          $uri,
-          $rest->code,
-          'Unexpected HTTP status'));
-
-    return isset ($rest->body->LastModified, $rest->body->ETag) ? array (
-      'time' => date ('Y-m-d H:i:s', strtotime ((String)$rest->body->LastModified)),
-      'hash' => substr ((String)$rest->body->ETag, 1, -1)) : false;
+    self::isSuccess ($rest = S3Request::create ('PUT', $bucket, $uri)->setHeaders ($headers = array_merge (array ('Content-Length' => 0), $headers))->setAmzHeaders ($amzHeaders = array_merge (array ('x-amz-acl' => $acl, 'x-amz-copy-source' => sprintf ('/%s/%s', $srcBucket, $srcUri)), $amzHeaders))->setAmzHeader ('x-amz-metadata-directive', $headers || $amzHeaders ? 'REPLACE' : null)->getResponse ()) || self::error ("S3::copyObject(%s, %s, %s, %s): [%s] %s", $srcBucket, $srcUri, $bucket, $uri, $rest->code, 'Unexpected HTTP status');
+    return isset ($rest->body->LastModified, $rest->body->ETag) ? array ('time' => date ('Y-m-d H:i:s', strtotime ((String)$rest->body->LastModified)), 'hash' => substr ((String)$rest->body->ETag, 1, -1)) : false;
   }
 
   public static function deleteObject ($bucket, $uri) {
-    $rest = S3Request::create ('DELETE', $bucket, $uri)->getResponse ();
-
-    if (!($rest->error === null && in_array ($rest->code, array (200, 204))))
-      throw new Exception (sprintf (
-        "S3::deleteObject(): [%s] %s",
-          $rest->code,
-          'Unexpected HTTP status'));
-
+    self::isSuccess ($rest = S3Request::create ('DELETE', $bucket, $uri)->getResponse (), array (200, 204)) || self::error ("S3::deleteObject(): [%s] %s", $rest->code, 'Unexpected HTTP status');
     return true;
   }
 
@@ -285,6 +185,8 @@ class S3 {
     return base64_encode (extension_loaded ('hash') ? hash_hmac ('sha1', $string, self::$secretKey, true) : pack ('H*', sha1 ((str_pad (self::$secretKey, 64, chr (0x00)) ^ (str_repeat (chr (0x5c), 64))) . pack ('H*', sha1 ((str_pad (self::$secretKey, 64, chr (0x00)) ^ (str_repeat (chr (0x36), 64))) . $string)))));
   }
 }
+
+class S3Exception extends Exception {}
 
 final class S3Request {
   private $verb;
@@ -343,7 +245,28 @@ final class S3Request {
   }
 
   public function setAmzHeader ($key, $value) {
-    $value && $this->amzHeaders[preg_match ('/^x-amz-/', $key) ? $key : 'x-amz-meta-' . $key] = $value;
+    $value && $this->amzHeaders[preg_match ('/^x-amz-.*$/', $key) ? $key : 'x-amz-meta-' . $key] = $value;
+    return $this;
+  }
+
+  public function setData ($data) {
+    $this->data = $data;
+    $this->setSize (strlen ($data));
+    return $this;
+  }
+  public function getSize () {
+    return $this->fp;
+  }
+  public function setFile ($file, $mode = 'rb', $autoSetSize = true) {
+    $this->fp = @fopen ($file, $mode);
+    $autoSetSize && $this->setSize (filesize ($file));
+    return $this;
+  }
+  public function getFile () {
+    return $this->size;
+  }
+  public function setSize ($size) {
+    $this->size = $size;
     return $this;
   }
 
@@ -478,12 +401,11 @@ final class S3Request {
       $this->response->code = (int)substr ($data, 9, 3);
     } else {
       list ($header, $value) = explode (': ', trim ($data), 2);
-
-      if ($header == 'Last-Modified') $this->response->headers['time'] = strtotime ($value);
-      elseif ($header == 'Content-Length') $this->response->headers['size'] = (int)$value;
-      elseif ($header == 'Content-Type') $this->response->headers['type'] = $value;
-      elseif ($header == 'ETag') $this->response->headers['hash'] = $value{0} == '"' ? substr ($value, 1, -1) : $value;
-      elseif (preg_match ('/^x-amz-meta-.*$/', $header)) $this->response->headers[$header] = is_numeric ($value) ? (int)$value : $value;
+      $header == 'Last-Modified' && $this->response->headers['time'] = strtotime ($value);
+      $header == 'Content-Length' && $this->response->headers['size'] = (int)$value;
+      $header == 'Content-Type' && $this->response->headers['type'] = $value;
+      $header == 'ETag' && $this->response->headers['hash'] = $value{0} == '"' ? substr ($value, 1, -1) : $value;
+      preg_match ('/^x-amz-meta-.*$/', $header) && $this->response->headers[$header] = is_numeric ($value) ? (int)$value : $value;
     }
 
     return $strlen;
