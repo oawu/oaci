@@ -9,7 +9,14 @@ namespace ActiveRecord;
  *
  * @package ActiveRecord
  */
-class ActiveRecordException extends \Exception {}
+class ActiveRecordException extends \Exception {
+	public static $stackTrace = false;
+
+	public function __construct($adapter_or_string_or_mystery)
+	{
+			parent::__construct(self::$stackTrace ? $adapter_or_string_or_mystery : $adapter_or_string_or_mystery->getMessage ());
+	}
+}
 
 /**
  * Thrown when a record cannot be found.
