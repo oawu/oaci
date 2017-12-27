@@ -9,13 +9,4 @@
 
 class Article extends Model {
   static $table_name = 'articles';
-
-  static $has_one = array (
-  );
-
-  static $has_many = array (
-  );
-
-  static $belongs_to = array (
-  );
 }

@@ -9,13 +9,4 @@
 
 class Migration extends Model {
   static $table_name = 'migrations';
-
-  static $has_one = array (
-  );
-
-  static $has_many = array (
-  );
-
-  static $belongs_to = array (
-  );
 }

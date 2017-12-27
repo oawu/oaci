@@ -10,15 +10,6 @@
 class SessionData extends Model {
   static $table_name = 'session_datas';
 
-  static $has_one = array (
-  );
-
-  static $has_many = array (
-  );
-
-  static $belongs_to = array (
-  );
-
   public function destroy () {
     if (!isset ($this->id)) return false;
 

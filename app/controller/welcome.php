@@ -22,9 +22,8 @@ class welcome extends Controller {
     // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
     // var_dump ($a);
     // exit ();
-
-    // Load::sysLib ('Session.php');
-    // Session::init ();
+    Load::sysLib ('Session.php');
+    Session::init ();
 
     // use_model ();
 
