@@ -19,14 +19,14 @@ class SessionFileDriver extends SessionDriver implements SessionHandlerInterface
     $this->sidRegexp = $sidRegexp;
 
     if (!(isset ($this->config['path']) && is_dir ($this->config['path']) && is_really_writable ($this->config['path'])))
-      Exceptions::showError ('[Session] SessionFileDriver 錯誤，路徑不存在或無法寫入。Path：' . $this->config['path']);
+      gg ('[Session] SessionFileDriver 錯誤，路徑不存在或無法寫入。Path：' . $this->config['path']);
 
     ini_set ('session.save_path', $this->config['path']);
   }
 
   public function open ($path, $name) {
     if (!(isset ($path) && is_dir ($path) && is_really_writable ($path)))
-      Exceptions::showError ('[Session] SessionFileDriver 錯誤，路徑不存在或無法寫入。Path：' . $path);
+      gg ('[Session] SessionFileDriver 錯誤，路徑不存在或無法寫入。Path：' . $path);
 
     $this->config['path'] = $path;
     $this->path = $this->config['path'] . $name . '_' . ($this->config['match_ip'] ? md5 ($_SERVER['REMOTE_ADDR']) : '');

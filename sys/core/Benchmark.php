@@ -11,7 +11,6 @@ class Benchmark {
   private static $marker = array ();
 
   public static function init () {
-    config ('defines');
     Benchmark::mark ('total_execution_time_start');
     Benchmark::mark ('loading_time:_base_classes_start');
   }

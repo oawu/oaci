@@ -29,7 +29,7 @@ class Session {
     self::$time2Update = $session['time_to_update'];
     self::$regenerateDestroy = $session['regenerate_destroy'];
     self::$expiration = $session['expiration'];
-    isset ($session['drivers'][$session['driver']]) || Exceptions::showError ('Session Driver 類型錯誤！ Driver：' . $session['driver'] . '，可用類型有：' . implode (', ', array_keys ($session['drivers'])) . '。');
+    isset ($session['drivers'][$session['driver']]) || gg ('Session Driver 類型錯誤！ Driver：' . $session['driver'] . '，可用類型有：' . implode (', ', array_keys ($session['drivers'])) . '。');
 
     $cookie = config ('cookie');
     self::$cookie['name'] = $session['cookie_name'];
@@ -51,7 +51,7 @@ class Session {
         register_shutdown_function ('session_write_close');
       }
     } else {
-      Exceptions::showError ('Session Driver(' . self::$driver . ') 未遵守 SessionHandlerInterface。');
+      gg ('Session Driver(' . self::$driver . ') 未遵守 SessionHandlerInterface。');
     }
 
     if (isset ($_COOKIE[self::$cookie['name']]) && !(is_string ($_COOKIE[self::$cookie['name']]) && preg_match ('#\A' . self::$sidRegexp . '\z#', $_COOKIE[self::$cookie['name']])))
@@ -331,7 +331,7 @@ abstract class SessionDriver implements SessionHandlerInterface {
   public function __construct ($cookie) {
     $this->cookie = $cookie;
     $this->config['match_ip'] = config ('session', 'match_ip');
-    ($t = config ('session', 'drivers', Session::driver ())) === null && Exceptions::showError ('Session Config 錯誤; 請檢查 「' . Session::driver () . '」 Config 是否存在。');
+    ($t = config ('session', 'drivers', Session::driver ())) === null && gg ('Session Config 錯誤; 請檢查 「' . Session::driver () . '」 Config 是否存在。');
     $this->config = array_merge ($this->config, $t);
 
     if (is_php ('7')) {

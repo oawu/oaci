@@ -9,65 +9,46 @@
 
 date_default_timezone_set ('Asia/Taipei');
 
-file_exists ('_env.php') || exit ('尚未初始化！');
+define ('OACI', '1');
+define ('CLI_LEN', 80);
+define ('EXT', '.php');
+defined ('STDIN') && chdir (dirname (__FILE__));
+define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));
+define ('FCPATH', dirname (__FILE__) . DIRECTORY_SEPARATOR);
 
-include '_env.php';
+$sys_dir  = 'sys';
+$app_dir  = 'app';
+$view_dir = 'app' . DIRECTORY_SEPARATOR . 'view';
 
-defined ('ENVIRONMENT') || define ('ENVIRONMENT', isset ($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+include_once $sys_dir . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'Error.php';
+
+is_dir ($sys_dir = realpath ($sys_dir)) || gg ('您的 sys 資料夾路徑似乎沒有正確設置！', 503, array ('detail' => array ('檔案' => SELF, '變數' => '$sys_dir', '內容' => $sys_dir)));
+define ('BASEPATH', $sys_dir . DIRECTORY_SEPARATOR);
+
+is_dir ($app_dir = realpath ($app_dir)) || gg ('您的 app 資料夾路徑似乎沒有正確設置！', 503, array ('detail' => array ('檔案' => SELF, '變數' => '$app_dir', '內容' => $app_dir)));
+define ('APPPATH', $app_dir . DIRECTORY_SEPARATOR);
+
+is_dir ($view_dir = realpath ($view_dir)) || gg ('您的 view 資料夾路徑似乎沒有正確設置！', 503, array ('detail' => array ('檔案' => SELF, '變數' => '$view_dir', '內容' => $view_dir)));
+define('VIEWPATH', $view_dir . DIRECTORY_SEPARATOR);
+
+include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Load.php';
+
+Load::file ('_env.php', true);
 
 switch (ENVIRONMENT) {
   case 'development':
-    error_reporting (-1);
     ini_set ('display_errors', 1);
-  break;
+    error_reporting (-1);
+    break;
 
   case 'production':
     ini_set ('display_errors', 0);
-    
-    if (version_compare (PHP_VERSION, '5.3', '>='))
-      error_reporting (E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-    else
-      error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
-  break;
+    error_reporting (is_php ('5.3') ? E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED : E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
+    break;
 
   default:
-    header ('HTTP/1.1 503 Service Unavailable.', true, 503);
-    echo 'The application environment is not set correctly.';
-    exit(1); // EXIT_ERROR
+    gg ('您的 環境變數 設定不在選項內或設定錯誤！', 503, array ('detail' => array ('檔案' => SELF, '變數' => 'ENVIRONMENT', '內容' => ENVIRONMENT)));
+   break;
 }
-
-$system_path = 'sys';
-$app_folder = 'app';
-$view_folder = '';
-
-if (defined ('STDIN')) chdir (dirname (__FILE__));
-
-if (!is_dir ($system_path = ($_temp = realpath ($system_path)) !== false ? $_temp . DIRECTORY_SEPARATOR : (strtr (rtrim ($system_path, '/\\'), '/\\', DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR))) {
-  header ('HTTP/1.1 503 Service Unavailable.', true, 503);
-  echo 'Your system folder path does not appear to be set correctly. Please open the following file and correct this: ' . pathinfo (__FILE__, PATHINFO_BASENAME);
-  exit (3);
-}
-
-define ('EXT', '.php');
-define ('SELF', pathinfo (__FILE__, PATHINFO_BASENAME));
-define ('BASEPATH', $system_path);
-define ('FCPATH', dirname (__FILE__) . DIRECTORY_SEPARATOR);
-define ('SYSDIR', basename (BASEPATH));
-
-if (null === ($app_folder = is_dir ($app_folder) ? ($_temp = realpath ($app_folder)) !== false ? $_temp : strtr (rtrim ($app_folder, '/\\'), '/\\', DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR) : (is_dir(BASEPATH.$app_folder.DIRECTORY_SEPARATOR) ? BASEPATH . strtr (trim ($app_folder, '/\\'), '/\\', DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR) : null))) {
-  header ('HTTP/1.1 503 Service Unavailable.', true, 503);
-  echo 'Your application folder path does not appear to be set correctly. Please open the following file and correct this: ' . SELF;
-  exit (3);
-}
-
-define ('APPPATH', $app_folder . DIRECTORY_SEPARATOR);
-
-if (null === ($view_folder = !isset ($view_folder[0]) && is_dir (APPPATH . 'view' . DIRECTORY_SEPARATOR) ? APPPATH . 'view' : (is_dir ($view_folder) ? (($_temp = realpath($view_folder)) !== false) ? $_temp : strtr (rtrim ($view_folder, '/\\'), '/\\', DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR) : (is_dir (APPPATH . $view_folder . DIRECTORY_SEPARATOR) ? APPPATH . strtr (trim ($view_folder, '/\\'), '/\\', DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR) : null)))) {
-  header ('HTTP/1.1 503 Service Unavailable.', true, 503);
-  echo 'Your view folder path does not appear to be set correctly. Please open the following file and correct this: '.SELF;
-  exit (3);
-}
-
-define('VIEWPATH', $view_folder . DIRECTORY_SEPARATOR);
 
 require_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'CodeIgniter.php';

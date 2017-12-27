@@ -15,7 +15,7 @@ class CacheFileDriver {
     $this->path = $config['path'] . $config['prefix'];
 
     if (!$this->isSupported ())
-      Exceptions::showError ('[Cache] CacheFileDriver 錯誤，路徑無法寫入。');
+      gg ('[Cache] CacheFileDriver 錯誤，路徑無法寫入。');
 
     Load::sysFunc ('file.php');
   }

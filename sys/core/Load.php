@@ -15,7 +15,7 @@ if (!function_exists ('_i_r')) {
       return true;
 
     if (!file_exists ($path) || ((include_once ($path)) === false))
-      if ($notExistsExit) exit ((!is_bool ($notExistsExit) ? $notExistsExit : '初始化失敗！') . ' 路徑：' . $path);
+      if ($notExistsExit) is_bool ($notExistsExit) ? gg ('載入檔案失敗。', 503, array ('detail' => array ('檔案路徑' => $path)), array (503, 'Service Unavailable')) : exit ('初始化失敗！');
       else return false;
 
     // is_callable ($class) ? $class () : 

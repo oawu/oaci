@@ -17,18 +17,13 @@ class CacheRedisDriver {
 
     isset ($config['prefix']) && $this->prefix = $config['prefix'];
 
-    if (!$this->isSupported ())
-      Exceptions::showError ('[Cache] CacheRedisDriver 錯誤，載入 Redis 失敗。');
+    $this->isSupported () || gg ('[Cache] CacheRedisDriver 錯誤，載入 Redis 失敗。');
 
     $redis = new Redis ();
-    if (!$redis->connect ($config['host'], $config['port'], $config['timeout']))
-      Exceptions::showError ('[Cache] CacheRedisDriver 錯誤，連不上 Redis。Host：' . $config['host'] . '，Port：' . $config['port'] . '，Timeout：' . $config['timeout']);
+    $redis->connect ($config['host'], $config['port'], $config['timeout']) || gg ('[Cache] CacheRedisDriver 錯誤，連不上 Redis。Host：' . $config['host'] . '，Port：' . $config['port'] . '，Timeout：' . $config['timeout']);
 
-    if ($config['password'] && !$redis->auth ($config['password']))
-      Exceptions::showError ('[Cache] CacheRedisDriver 錯誤，請確認密碼。Password：' . $config['password']);
-
-    if ($config['database'] && !$redis->select ($config['database']))
-      Exceptions::showError ('[Cache] CacheRedisDriver 錯誤，找不到指定的 Database，Database：' . $config['database']);
+    $config['password'] && !$redis->auth ($config['password']) && gg ('[Cache] CacheRedisDriver 錯誤，請確認密碼。Password：' . $config['password']);
+    $config['database'] && !$redis->select ($config['database']) &&  gg ('[Cache] CacheRedisDriver 錯誤，找不到指定的 Database，Database：' . $config['database']);
     
     $this->redis = $redis;
 

@@ -16,7 +16,7 @@ class CacheMemcachedDriver {
     isset ($config['prefix']) && $this->prefix = $config['prefix'];
 
     if (!$this->isSupported ())
-      Exceptions::showError ('[Cache] CacheMemcachedDriver 錯誤，載入 Memcached 失敗。');
+      gg ('[Cache] CacheMemcachedDriver 錯誤，載入 Memcached 失敗。');
 
     $this->memcached = class_exists ('Memcached', false) ? new Memcached () : class_exists ('Memcache', false);
     $this->memcached->setOption (Memcached::OPT_BINARY_PROTOCOL, true);

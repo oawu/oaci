@@ -7,15 +7,11 @@
  * @link        https://www.ioa.tw/
  */
 
-const CI_VERSION = '3.1.6';
-
-include_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'Load.php';
-
-Load::sysCore ('Common.php'    , true);
+Load::sysCore ('Common.php'    , true, "config ('defines');");
 Load::sysCore ('Charset.php'   , true, "Charset::init ();");
 Load::sysCore ('Benchmark.php' , true, "Benchmark::init ();");
 Load::sysCore ('Log.php'       , true);
-Load::sysCore ('Exceptions.php', true, "Exceptions::init ();");
+
 Load::sysCore ('Utf8.php'      , true, "Utf8::init ();");
 Load::sysCore ('URL.php'       , true, "URL::init ();");
 Load::sysCore ('Router.php'    , true, "Router::init ();");
@@ -36,7 +32,7 @@ $method = Router::getMethod ();
 $path = APPPATH . 'controller' . DIRECTORY_SEPARATOR . Router::getDirectory () . $class . EXT;
 
 if (!($class && $method !== '_' && file_exists ($path) && Load::file ($path) && class_exists ($class) && method_exists ($class, $method) && is_callable (array ($class, $method)) && ($reflection = new ReflectionMethod ($class, $method)) && ($reflection->isPublic () && !$reflection->isConstructor ())))
-  return Exceptions::show404 ();
+  return show404 ();
 
 $params = array_slice (URL::rsegments (), 2);
 

@@ -14,20 +14,19 @@ class MigrationTool {
   private static $files;
 
   public static function init () {
-    if (!use_model ())
-      Exceptions::showError ('[Migration] init 錯誤，無法連線資料庫。');
+    use_model () || gg ('[Migration] init 錯誤，無法連線資料庫。');
 
     self::$gets = array ();
     self::$files = null;
     $config = config ('migration');
 
-    isset ($config['model']) && class_exists ($model = $config['model']) || Exceptions::showError ('[Migration] init 錯誤，找不到指定的 Model。Model：' . $config['model']);
-    isset ($config['path']) && is_readable (self::$path = $config['path']) || Exceptions::showError ('[Migration] init 錯誤，找不到指定的 Migration 路徑。Path：' . $config['path']);
+    isset ($config['model']) && class_exists ($model = $config['model']) || gg ('[Migration] init 錯誤，找不到指定的 Model。Model：' . $config['model']);
+    isset ($config['path']) && is_readable (self::$path = $config['path']) || gg ('[Migration] init 錯誤，找不到指定的 Migration 路徑。Path：' . $config['path']);
 
     if (!(($obj = ModelConnection::instance ()->query ("SHOW TABLES LIKE '" . $model::$table_name . "';")->fetch (PDO::FETCH_NUM)) && ($obj[0] == $model::$table_name)))
       self::createTable ($model);
 
-    self::$model || (self::$model = $model::find ('first')) || (self::$model = self::createModel ($model)) || Exceptions::showError ('[Migration] init 錯誤，初始化失敗。');
+    self::$model || (self::$model = $model::find ('first')) || (self::$model = self::createModel ($model)) || gg ('[Migration] init 錯誤，初始化失敗。');
   }
 
   private static function query ($sql) {
@@ -44,7 +43,7 @@ class MigrationTool {
   }
 
   private static function createTable ($model) {
-    ($database = config ('database')) && isset ($database['active_group']) && ($active = $database['active_group']) && isset ($database['groups'][$active]['char_set']) && ($char_set = $database['groups'][$active]['char_set']) && isset ($database['groups'][$active]['dbcollat']) && ($dbcollat = $database['groups'][$active]['dbcollat']) || Exceptions::showError ('[Migration] createTable 錯誤，Database Config 錯誤。');
+    ($database = config ('database')) && isset ($database['active_group']) && ($active = $database['active_group']) && isset ($database['groups'][$active]['char_set']) && ($char_set = $database['groups'][$active]['char_set']) && isset ($database['groups'][$active]['dbcollat']) && ($dbcollat = $database['groups'][$active]['dbcollat']) || gg ('[Migration] createTable 錯誤，Database Config 錯誤。');
 
     $sql = "CREATE TABLE `" . $model::$table_name . "` ("
            . "`id` int(11) unsigned NOT NULL AUTO_INCREMENT,"
@@ -54,7 +53,7 @@ class MigrationTool {
            . "PRIMARY KEY (`id`)"
          . ") ENGINE=InnoDB DEFAULT CHARSET=" . $char_set . " COLLATE=" . $dbcollat . ";";
 
-    ($err = self::query ($sql)) && Exceptions::showError ('[Migration] createTable 錯誤，建置 Table 失敗。SQL：' . $sql . '，Error：' . $err);
+    ($err = self::query ($sql)) && gg ('[Migration] createTable 錯誤，建置 Table 失敗。SQL：' . $sql . '，Error：' . $err);
 
     return self::$model = self::createModel ($model);
   }
@@ -77,7 +76,7 @@ class MigrationTool {
     
     $data = include_once ($file);
 
-    isset ($data['up']) && (is_string ($data['up']) || is_array ($data['up'])) && isset ($data['at']) && is_string ($data['at']) && isset ($data['down']) && (is_string ($data['down']) || is_array ($data['down'])) || Exceptions::showError ('[Migration] Struct 錯誤，檔案結構格式錯誤，up、down 以及 at 功能有缺。File：' . $file);
+    isset ($data['up']) && (is_string ($data['up']) || is_array ($data['up'])) && isset ($data['at']) && is_string ($data['at']) && isset ($data['down']) && (is_string ($data['down']) || is_array ($data['down'])) || gg ('[Migration] Struct 錯誤，檔案結構格式錯誤，up、down 以及 at 功能有缺。File：' . $file);
     
     $data['up'] = is_string ($data['up']) ? array ($data['up']) : $data['up'];
     $data['down'] = is_string ($data['down']) ? array ($data['down']) : $data['down'];
@@ -93,7 +92,7 @@ class MigrationTool {
       foreach (self::get ($file[1], $isUp) as $sql)
         if ($sql && ($err = self::query ($sql)))
           return array ("SQL 語法：" . $sql, '錯誤原因：' . $err);
-        // && Exceptions::showError ('[Migration] run 錯誤，檔案格式內容有誤。SQL：' . $sql . '，Error：' . $err);
+        // && gg ('[Migration] run 錯誤，檔案格式內容有誤。SQL：' . $sql . '，Error：' . $err);
       
       self::$model->version = $file[0];
       self::$model->save ();
@@ -129,12 +128,12 @@ class MigrationTool {
   }
 
   public static function create ($name, &$err = '') {
-    is_really_writable (self::$path) || Exceptions::showError ('[Migration] create 錯誤，路徑無分寫入。Path：' . self::$path);
+    is_really_writable (self::$path) || gg ('[Migration] create 錯誤，路徑無分寫入。Path：' . self::$path);
 
     $files = array_keys (self::files ());
     $version = $files ? end ($files) + 1 : 1;
 
-    file_exists ($path = self::$path . sprintf ('%03s_%s.php', $version, $name)) && Exceptions::showError ('[Migration] create 錯誤，檔案已經存在。Path：' . $path);
+    file_exists ($path = self::$path . sprintf ('%03s_%s.php', $version, $name)) && gg ('[Migration] create 錯誤，檔案已經存在。Path：' . $path);
     Load::sysFunc ('file.php');
 
     $content = "<?php defined ('BASEPATH') || exit ('此檔案不允許讀取。');\n" . "\n" . "/**\n" . " * @author      OA Wu <comdan66@gmail.com>\n" . " * @copyright   Copyright (c) 2013 - " . date ('Y') . ", OACI\n" . " * @license     http://opensource.org/licenses/MIT  MIT License\n" . " * @link        https://www.ioa.tw/\n" . " */\n" . "\n" . "return array (\n" . "    'up' => \"\",\n" . "    'down' => \"\",\n" . "    'at' => \"" . date ('Y-m-d H:i:s') . "\",\n" . "  );";

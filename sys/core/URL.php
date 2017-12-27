@@ -49,7 +49,7 @@ class URL {
 
     $uri = parse_url ('http://dummy' . $_SERVER['REQUEST_URI']);
     $query = isset ($uri['query']) ? $uri['query'] : '';
-    $uri = isset ($uri['path']) ? $uri['path'] : '';
+    $uri = urldecode (isset ($uri['path']) ? $uri['path'] : '');
 
     if (isset ($_SERVER['SCRIPT_NAME'][0]))
       $uri = strpos ($uri, $_SERVER['SCRIPT_NAME']) === 0 ? (string) substr ($uri, strlen ($_SERVER['SCRIPT_NAME'])) : (strpos ($uri, dirname ($_SERVER['SCRIPT_NAME'])) === 0 ? (string) substr ($uri, strlen (dirname ($_SERVER['SCRIPT_NAME']))) : $uri);
@@ -88,7 +88,7 @@ class URL {
     $c = config ('other', 'permitted_uri_chars');
 
     if ($str && $c && !preg_match ('/^[' . $c . ']+$/i' . (UTF8_ENABLED ? 'u' : ''), $str))
-      class_exists ('Exceptions') && Exceptions::showError ('網址有不合法的字元！', 400);
+      gg ('網址有不合法的字元！', 400);
   }
   public static function uriString () {
     return self::$uriString;
@@ -108,7 +108,7 @@ class URL {
   }
   public static function baseUrl () {
     $baseUrl =& self::$baseUrl;
-    $baseUrl || ($baseUrl = config ('other', 'base_url')) || (isset ($_SERVER['HTTP_HOST']) && isset ($_SERVER['HTTP_HOST']) && ($baseUrl = (isset ($_SERVER['HTTPS']) && strtolower ($_SERVER['HTTPS']) !== 'off' ? 'https' : 'http') . '://'. $_SERVER['HTTP_HOST'] . '/')) || Exceptions::showError ('尚未設定 base_url');
+    $baseUrl || ($baseUrl = config ('other', 'base_url')) || (isset ($_SERVER['HTTP_HOST']) && isset ($_SERVER['HTTP_HOST']) && ($baseUrl = (isset ($_SERVER['HTTPS']) && strtolower ($_SERVER['HTTPS']) !== 'off' ? 'https' : 'http') . '://'. $_SERVER['HTTP_HOST'] . '/')) || gg ('尚未設定 base_url');
 
     if (!(($args = func_get_args ()) && ($args = ltrim (preg_replace ('/\/+/', '/', implode ('/', array_2d_to_1d ($args))), '/'))))
       return $baseUrl;

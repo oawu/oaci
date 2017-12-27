@@ -53,7 +53,7 @@ class Input {
       if ($fatal === true) {
         return false;
       } else {
-        Exceptions::setStatusHeader (503);
+        setStatusHeader (503);
         echo '有不合法的字元！';
         exit (7); // EXIT_USER_INPUT
       }

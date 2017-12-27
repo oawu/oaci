@@ -57,14 +57,14 @@ class View {
 
   public static function load ($_x_oa_x_path, $_x_oa_x_params = array (), $_x_oa_x_return = false) {
     if (!(($_x_oa_x_path = ltrim ($_x_oa_x_path, DIRECTORY_SEPARATOR)) && file_exists ($_x_oa_x_path = VIEWPATH . $_x_oa_x_path)))
-      Exceptions::showError ('無法載入 View：' . $_x_oa_x_path);
+      gg ('無法載入 View：' . $_x_oa_x_path);
     
     extract ($_x_oa_x_params);
 
     ob_start ();
 
     if (!@include ($_x_oa_x_path))
-      Exceptions::showError ('無法載入 View：' . $_x_oa_x_path);
+      gg ('無法載入 View：' . $_x_oa_x_path);
 
     $buffer = ob_get_contents ();
       @ob_end_clean ();

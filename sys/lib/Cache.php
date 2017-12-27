@@ -22,7 +22,7 @@ class Cache {
     $ttl = (($ttl = array_shift ($args)) !== null) && is_numeric ($ttl) ? (int)$ttl : 60;
 
     if (!in_array ($method, array_keys (self::$drivers)))
-      Exceptions::showError ('[Cache] Cache 錯誤，為支援的 Driver 類型。Driver：' . $method);
+      gg ('[Cache] Cache 錯誤，為支援的 Driver 類型。Driver：' . $method);
 
     self::$drivers[$method] || Load::sysLib ('CacheDrivers' . DIRECTORY_SEPARATOR . ucfirst ($method) . '.php', 'Cache' . ucfirst ($method) . '」Driver 不存在。') && ($class = 'Cache' . ucfirst ($method) . 'Driver') && self::$drivers[$method] = new $class ();
 

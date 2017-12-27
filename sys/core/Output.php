@@ -176,7 +176,7 @@ class Output {
     $max_age = $expiration - $_SERVER['REQUEST_TIME'];
 
     if (isset ($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $last_modified <= strtotime ($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
-      Exceptions::setStatusHeader (304);
+      setStatusHeader (304);
       exit;
     }
 

@@ -18,10 +18,10 @@ class SessionRedisDriver extends SessionDriver implements SessionHandlerInterfac
     parent::__construct ($cookie);
 
     if (!extension_loaded ('redis'))
-      Exceptions::showError ('[Session] SessionRedisDriver 錯誤，載入 Redis 失敗。');
+      gg ('[Session] SessionRedisDriver 錯誤，載入 Redis 失敗。');
 
     if (!(is_string ($this->config['host']) && $this->config['host'] && is_string ($this->config['port']) && $this->config['port']))
-      Exceptions::showError ('[Session] SessionRedisDriver 錯誤，未設定 Host 與 Port。Host：' . $this->config['host'] . '，Port：' . $this->config['port']);
+      gg ('[Session] SessionRedisDriver 錯誤，未設定 Host 與 Port。Host：' . $this->config['host'] . '，Port：' . $this->config['port']);
 
     isset ($this->config['password']) && is_string ($this->config['password']) || $this->config['password'] = '';
     isset ($this->config['database']) && is_numeric ($this->config['database']) || $this->config['database'] = null;
@@ -35,13 +35,13 @@ class SessionRedisDriver extends SessionDriver implements SessionHandlerInterfac
     $redis = new Redis();
 
     if (!$redis->connect ($this->config['host'], $this->config['port'], $this->config['timeout']))
-      Exceptions::showError ('[Session] SessionRedisDriver 錯誤，連不上 Redis。Host：' . $this->config['host'] . '，Port：' . $this->config['port'] . '，Timeout：' . $this->config['timeout']);
+      gg ('[Session] SessionRedisDriver 錯誤，連不上 Redis。Host：' . $this->config['host'] . '，Port：' . $this->config['port'] . '，Timeout：' . $this->config['timeout']);
 
     if ($this->config['password'] && !$redis->auth ($this->config['password']))
-      Exceptions::showError ('[Session] SessionRedisDriver 錯誤，請確認密碼。Password：' . $this->config['password']);
+      gg ('[Session] SessionRedisDriver 錯誤，請確認密碼。Password：' . $this->config['password']);
 
     if ($this->config['database'] && !$redis->select ($this->config['database']))
-      Exceptions::showError ('[Session] SessionRedisDriver 錯誤，找不到指定的 Database，Database：' . $this->config['database']);
+      gg ('[Session] SessionRedisDriver 錯誤，找不到指定的 Database，Database：' . $this->config['database']);
     
     $this->redis = $redis;
     return $this->succ ();

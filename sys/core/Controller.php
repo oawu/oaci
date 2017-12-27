@@ -14,6 +14,6 @@ class Controller {
 
 spl_autoload_register (function ($class) {
   if (!class_exists ($class) && preg_match ("/Controller$/", $class) && !Load::file (APPPATH . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . $class . EXT))
-    Exceptions::showError ('找不到 Controller：' . $class);
+    gg ('找不到 Controller：' . $class);
 });
 
