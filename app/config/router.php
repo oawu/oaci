@@ -7,9 +7,23 @@
  * @link        https://www.ioa.tw/
  */
 
-Router::get ('', 'main');
+// Router::get ('', 'main');
 
-Router::group ('admin', function () {
-  Router::resource (array ('articles'), 'articles');
-  Router::resource (array ('tag', 'articles'), 'tag_articles');
+Router::restful ('tags', 'tags', 'Tag');
+// Router::restful (array ('tag', 'articles'), 'tag_articles', array ('Tag', 'Article'));
+// Router::restful (array ('tag', 'article', 'comments'), 'tag_articles', array ('Tag', 'Tag', 'Tag'));
+// Router::post ('banner', 'banner@index');
+
+Router::dir ('admin', function () {
+  // Router::post ('banner', 'banner@index');
+  // Router::restful ('tags', 'tags', 'Tag');
+  // Router::restful (array ('tag', 'articles'), 'tag_articles', array ('Tag', 'Article'));
+  // Router::restful (array ('tag', 'article', 'comments'), 'tag_articles', array ('Tag', 'Tag', 'Tag'));
+
+// Router::restful ('articles', 'articles');
+// Router::restful (array ('articles'), 'articles');
+// Router::restful (array ('tag', 'articles'), 'articles');
 });
+
+// print (json_encode(Router::$routers));
+// exit ();

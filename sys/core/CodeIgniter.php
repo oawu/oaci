@@ -26,12 +26,13 @@ Benchmark::markEnd ('核心');
 
 $class  = Router::getClass ();
 $method = Router::getMethod ();
+$params = Router::getParams ();
 $path   = APPPATH . 'controller' . DIRECTORY_SEPARATOR . Router::getDirectory () . $class . EXT;
-
-if (!($class && $method !== '_' && file_exists ($path) && Load::file ($path) && class_exists ($class) && method_exists ($class, $method) && is_callable (array ($class, $method)) && ($reflection = new ReflectionMethod ($class, $method)) && ($reflection->isPublic () && !$reflection->isConstructor ())))
+// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+// var_dump ($path ,$class,$method,$params);
+// exit ();
+if (!($class && $method !== '_' && file_exists ($path) && Load::file ($path) && class_exists ($class, false) && method_exists ($class, $method) && is_callable (array ($class, $method)) && ($reflection = new ReflectionMethod ($class, $method)) && ($reflection->isPublic () && !$reflection->isConstructor ())))
   return show404 ();
-
-$params = array_slice (URL::rsegments (), 2);
 
 if (method_exists ($class, '_remap')) {
   $params = array ($method, $params);

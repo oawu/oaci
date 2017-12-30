@@ -10,25 +10,29 @@
 class Article extends Model {
   static $table_name = 'articles';
 
-  static $belongs_to = array (
-    // array ('user', 'class_name' => 'User'),
+  static $has_one = array (
   );
+
   static $has_many = array (
-    array ('comments', 'class_name' => 'Comment', 'include' => array ('user')),
-    // array ('comment_users', 'class_name' => 'User', 'from' => 'comments'),
+  );
+
+  static $belongs_to = array (
   );
 
   public function __construct ($attrs = array (), $guardAttrs = true, $instantiatingViafind = false, $newRecord = true) {
     parent::__construct ($attrs, $guardAttrs, $instantiatingViafind, $newRecord);
+
+    // 設定圖片上傳器
     Uploader::bind ('cover', 'ArticleCoverImageUploader');
   }
 }
 
+/* -- 圖片上傳器物件 ------------------------------------------------------------------ */
 class ArticleCoverImageUploader extends ImageUploader {
   public function getVersions () {
     return array (
         '' => array (),
-        'c450x180' => array ('adaptiveResizeQuadrant', 450, 180, 'c'),
+        'w100' => array ('resize', 100, 100, 'width'),
         'c1200x630' => array ('adaptiveResizeQuadrant', 1200, 630, 't'),
       );
   }

@@ -11,106 +11,115 @@ class Router {
   private static $directories;
   private static $class;
   private static $method;
-  private static $routers = array ();
+  private static $params;
+  static $routers;
+  static $router;
 
   public static function init ($routing = null) {
-    self::$routers = array ();
-    self::setDirectories (array ());
-    self::setMethod ('index');
-    self::setRoutes ();
-    self::parseRoutes ();
+    self::$router = self::$class = self::$method = null;
+    self::$routers = self::$params = self::$directories = array ();
+
+    Load::file (APPPATH . 'config' . DIRECTORY_SEPARATOR . 'router.php', true);
+
+    self::parseRouters ();
   }
  
-  public static function group ($prefix, $callback) {
+  public static function dir ($prefix, $callback) {
     $callback ();
   }
-  private static function _getGroup () {
-    if (($group = array_filter (array_map (function ($trace) {
-                  return isset ($trace['class']) && ($trace['class'] == 'Router') && isset ($trace['function']) && ($trace['function'] == 'group') && isset ($trace['type']) && ($trace['type'] == '::') && isset ($trace['args'][0]) ? $trace['args'][0] : null;
-                }, debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)))) && ($group = array_shift ($group)))
-      return trim ($group, '/') . '/';
+  private static function getDirs () {
+    if (($dir = array_filter (array_map (function ($trace) {
+                  return isset ($trace['class']) && ($trace['class'] == 'Router') && isset ($trace['function']) && ($trace['function'] == 'dir') && isset ($trace['type']) && ($trace['type'] == '::') && isset ($trace['args'][0]) ? $trace['args'][0] : null;
+                }, debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)))) && ($dir = array_shift ($dir)))
+      return ($t = trim ($dir, '/')) ? is_dir (APPPATH . 'controller' . DIRECTORY_SEPARATOR . str_replace ('/', DIRECTORY_SEPARATOR, $t)) ? explode ('/', $t) : gg ('Router dir 設定錯誤，不存在的目錄：' . $t) : array ();
     else
-      return '';    
+      return array ();
   }
-  public static function resource ($uris, $controller) {
-    is_array ($uris) || $uris = array ($uris);
-    $c = count ($uris);
+  public static function restful ($uris, $controller, $models) {
+    class_exists ('Restful', false) || Load::sysLib ('Restful.php', true);
 
-    $group = self::_getGroup ();
-    $prefix = trim ($group, '/') . '/';
+    is_array ($uris) || $uris = array ($uris);
+    is_array ($models) || $models = array ($models);
+    $c = count ($uris);
 
     $t1 = $c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (1, $c - 1))) : '';
     $t2 = $c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '';
 
-    self::get    ($prefix . implode ('/(:num)/', $uris) . '/',                 $prefix . $controller . '@index(' . $t1 . ')');
-    self::get    ($prefix . implode ('/(:num)/', $uris) . '/(:num)',           $prefix . $controller . '@show($1' . $t2 . ')');
-    self::get    ($prefix . implode ('/(:num)/', $uris) . '/add',              $prefix . $controller . '@add(' . $t1 . ')');
-    self::post   ($prefix . implode ('/(:num)/', $uris) . '/',                 $prefix . $controller . '@create(' . $t1 . ')');
-    self::get    ($prefix . implode ('/(:num)/', $uris) . '/(:num)' . '/edit', $prefix . $controller . '@edit($1' . $t2 . ')');
-    self::put    ($prefix . implode ('/(:num)/', $uris) . '/(:num)',           $prefix . $controller . '@update($1' . $t2 . ')');
-    self::delete ($prefix . implode ('/(:num)/', $uris) . '/(:num)',           $prefix . $controller . '@destroy($1' . $t2 . ')');
+    $prefixs = implode ('/', array_merge (self::getDirs (), array ($controller)));
+    Restful::addGroup ($prefixs, 'index', self::method ('get', explode ('/', implode ('/(:id)/', $uris)), $controller . '@index(' . $t1 . ')', $models));
+    Restful::addGroup ($prefixs, 'show', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@show($1' . $t2 . ')', $models));
+    Restful::addGroup ($prefixs, 'add', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/add'), $controller . '@add(' . $t1 . ')', $models));
+    Restful::addGroup ($prefixs, 'create', self::method ('post', explode ('/', implode ('/(:id)/', $uris)), $controller . '@create(' . $t1 . ')', $models));
+    Restful::addGroup ($prefixs, 'edit', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/(:id)/edit'), $controller . '@edit($1' . $t2 . ')', $models));
+    Restful::addGroup ($prefixs, 'update', self::method ('put', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@update($1' . $t2 . ')', $models));
+    Restful::addGroup ($prefixs, 'destroy', self::method ('delete', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@destroy($1' . $t2 . ')', $models));
   }
-  private static function method ($m, $params) {
-    (($uri = array_shift ($params)) === null || ($params = array_shift ($params)) === null) && gg ('設定 Router 錯誤。');
+  private static function method ($m, $formats, $uri, $models = array ()) {
+    $prefixs = self::getDirs ();
 
-    $params = preg_split ('/[@,\(\)\s]+/', $params);
-    $controller = array_shift ($params);
-    $method = array_shift ($params);
-    $params = array_filter ($params, function ($param) { return $param !== null && $param !== ''; });
+    $uri = preg_split ('/[@,\(\)\s]+/', $uri);
 
-    isset (self::$routers[$m]) || self::$routers[$m] = array ();
-    self::$routers[$m][trim ($uri, '/')] = $controller . ($method !== null ? '/' . $method : '') . ($params !== null ? '/' . implode ('/', $params) : '');
+    $controller = array_shift ($uri);
+    $method = array_shift ($uri);
+    $params = array_filter ($uri, function ($param) { return $param !== null && $param !== ''; });
+    $position = array_merge ($prefixs, array ($controller, $method), $params);
+
+    array_push (self::$routers, array (
+        'method' => $m,
+        'format' => $return = str_replace (array (':any', ':num', ':id'), array ('[^/]+', '[0-9]+', '[0-9]+'), implode ('/', array_merge ($prefixs, $formats))),
+        'position' => implode ('/', $position),
+        'params' => count ($prefixs) + 2,
+        'models' => $models,
+        'group' => array_merge ($prefixs, array ($controller))
+      ));
+
+    return $return;
   }
 
   public static function __callStatic ($name, $arguments) {
-    if (in_array ($name, array ('get', 'post', 'put', 'delete', 'cli')))
-      return self::method ($name, $arguments);
+    in_array ($name == strtolower ($name), array ('get', 'post', 'put', 'delete', 'cli')) || gg ('Router 沒有此「' . $name . '」Method！');
+    return self::method ($name, array (array_shift ($arguments)), array_shift ($arguments));
   }
 
-  public static function setRoutes () {
-    Load::file (APPPATH . 'config' . DIRECTORY_SEPARATOR . 'router.php', true);
-  }
-
-  private static function parseRoutes () {
+  private static function parseRouters () {
     $uri = implode ('/', URL::segments ());
 
-    $method = strtolower (request_is_cli () ? 'cli' : (isset ($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : (isset ($_POST['_method']) ? $_POST['_method'] : 'get')));
+    $method = strtolower (request_is_cli () ? 'cli' : (isset ($_POST['_method']) ? $_POST['_method'] : (isset ($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'get')));
 
-    if (isset (self::$routers[$method]))
-      foreach (self::$routers[$method] as $key => $controller) {
-        $key = str_replace (array (':any', ':num'), array ('[^/]+', '[0-9]+'), $key);
+    foreach (self::$routers as $router)
+      if ($router['method'] == $method && preg_match ('#^' . $router['format'] . '$#', $uri, $matches)) {
+        strpos ($router['position'], '$') !== false && strpos ($router['format'], '(') !== false && $router['position'] = preg_replace ('#^' . $router['format'] . '$#', $router['position'], $uri);
 
-        if (preg_match ('#^' . $key . '$#', $uri, $matches)) {
-          strpos ($controller, '$') !== false && strpos ($key, '(') !== false && $controller = preg_replace ('#^' . $key . '$#', $controller, $uri);
-          self::setRequest (explode ('/', $controller));
-          return;
-        }
+        $position = explode ('/', $router['position']);
+
+        self::$router = $router;
+        self::$routers = array_slice ($position, self::$router['params']);
+        self::$router['params'] = array ();
+
+        foreach (self::$routers as $i => $id)
+          isset (self::$router['models'][$i]) ? array_push (self::$router['params'], array (self::$router['models'][$i], $id)) : gg ('請確認 Router 的 Restful Model 數量設定是否正確。');
+
+        unset (self::$router['models']);
+
+        return self::setRequest ($position);
       }
 
-    self::setRequest (array_values (URL::segments ()));
+    self::setRequest (URL::segments ());
   }
-  private static function setRequest ($segments = array ()) {
+  private static function setRequest ($segments) {
     if (!$segments = self::validateRequest ($segments))
       return ;
 
-    $segments[0] = str_replace ('-', '_', $segments[0]);
-    $segments[1] = isset ($segments[1]) ? str_replace ('-', '_', $segments[1]) : 'index';
-
-    self::setClass ($segments[0]);
-    self::setMethod ($segments[1]);
-
-    array_unshift ($segments, null);
-    unset($segments[0]);
-
-    URL::setRsegments ($segments);
+    self::setClass (array_shift ($segments));
+    self::setMethod (array_shift ($segments));
+    
+    self::setParams ($segments);
   }
   private static function validateRequest ($segments) {
-    $c = count ($segments = array_filter ($segments, function ($segment) {
-      return $segment !== null && $segment !== '';
-    }));
+    $c = count ($segments = array_values (array_filter ($segments, function ($segment) { return $segment !== null && $segment !== ''; })));
 
     while ($c-- > 0)
-      if (($test = self::getDirectory () . str_replace ('-', '_', $segments[0])) && !file_exists (APPPATH . 'controller' . DIRECTORY_SEPARATOR . $test . EXT) && is_dir (APPPATH . 'controllers' . DIRECTORY_SEPARATOR . self::getDirectory () . $segments[0]) && self::appendDirectory (array_shift ($segments)))
+      if (($test = self::getDirectory () . str_replace ('-', '_', $segments[0])) && !file_exists (APPPATH . 'controller' . DIRECTORY_SEPARATOR . $test . EXT) && is_dir (APPPATH . 'controller' . DIRECTORY_SEPARATOR . self::getDirectory () . $segments[0]) && self::appendDirectory (array_shift ($segments)))
         continue;
       else
         return $segments;
@@ -123,19 +132,22 @@ class Router {
   public static function appendDirectory ($dir) {
     return array_push (self::$directories, $dir);
   }
-  public static function setDirectories ($dirs) {
-    self::$directories = $dirs;
-  }
   public static function setClass ($class) {
     return self::$class = $class;
   }
   public static function setMethod ($method) {
-    return self::$method = $method;
+    return self::$method = $method ? $method : 'index';
+  }
+  public static function setParams ($params) {
+    return self::$params = $params;
   }
   public static function getClass () {
     return self::$class;
   }
   public static function getMethod () {
     return self::$method;
+  }
+  public static function getParams () {
+    return self::$params;
   }
 }

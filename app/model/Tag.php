@@ -7,8 +7,8 @@
  * @link        https://www.ioa.tw/
  */
 
-class Comment extends Model {
-  static $table_name = 'comments';
+class Tag extends Model {
+  static $table_name = 'tags';
 
   static $has_one = array (
   );
@@ -17,11 +17,16 @@ class Comment extends Model {
   );
 
   static $belongs_to = array (
-    array ('user', 'class_name' => 'User'),
-    array ('article', 'class_name' => 'Article'),
   );
 
   public function __construct ($attrs = array (), $guardAttrs = true, $instantiatingViafind = false, $newRecord = true) {
     parent::__construct ($attrs, $guardAttrs, $instantiatingViafind, $newRecord);
+  }
+
+  public function destroy () {
+    if (!isset ($this->id))
+      return false;
+    
+    return $this->delete ();
   }
 }

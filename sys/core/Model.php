@@ -9,6 +9,7 @@
 
 if (!function_exists ('use_model')) {
   function use_model () {
+
     static $used;
 
     if (!empty ($used))
@@ -47,7 +48,14 @@ if (!function_exists ('use_model')) {
 
     // Load::sysLib ('Uploader.php');
     // Load::sysLib ('WhereBuilder.php');
-   
+    if (!function_exists ('array_orm_column')) {
+      function array_orm_column ($arr, $key) {
+        return array_map (function ($t) use ($key) {
+          is_callable ($key) && $key = $key ();
+          return $t->$key;
+        }, $arr);
+      }
+    }
     return $used = true;
   }
 }

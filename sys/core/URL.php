@@ -10,13 +10,12 @@
 class URL {
   private static $uriString;
   private static $segments;
-  private static $rsegments;
   private static $baseUrl;
 
   public static function init () {
     self::$uriString = '';
     self::$baseUrl = null;
-    self::$segments = self::$rsegments = array ();
+    self::$segments = array ();
 
     !request_is_cli () && config ('other', 'enable_query_strings') || self::setUriString (request_is_cli () ? self::parseArgv () : self::parseRequestUri ());
   }
@@ -25,20 +24,20 @@ class URL {
     self::$uriString = trim (remove_invisible_characters ($str, false), '/');
 
     if (self::$uriString !== '') {
-      self::$segments[0] = null;
+      // self::$segments[0] = null;
       
       foreach (explode ('/', trim (self::$uriString, '/')) as $val)
         self::filterUri ($val = trim ($val)) && array_push (self::$segments, $val);
 
-      unset (self::$segments[0]);
+      // unset (self::$segments[0]);
     }
   }
 
   private static function parseRequestUri () {
     if (!isset ($_SERVER['REQUEST_URI'], $_SERVER['SCRIPT_NAME']))
-      return '';
+      return array ();
 
-    $uri = parse_url ('http://dummy' . $_SERVER['REQUEST_URI']);
+    $uri = parse_url ('http://oaci' . $_SERVER['REQUEST_URI']);
     $query = isset ($uri['query']) ? $uri['query'] : '';
     $uri = urldecode (isset ($uri['path']) ? $uri['path'] : '');
 
@@ -58,9 +57,11 @@ class URL {
 
     return self::removeRelativeDirectory ($uri);
   }
+
   private static function parseArgv () {
     return ($args = array_slice ($_SERVER['argv'], 1)) ? implode ('/', $args) : '';
   }
+
   private static function removeRelativeDirectory ($uri) {
     $uris = array ();
     $tok = strtok ($uri, '/');
@@ -73,6 +74,7 @@ class URL {
 
     return implode ('/', $uris);
   }
+
   public static function filterUri ($str) {
     $c = config ('other', 'permitted_uri_chars');
 
@@ -81,23 +83,20 @@ class URL {
 
     return $str;
   }
+
   public static function uriString () {
     return self::$uriString;
   }
+
   public static function segments () {
     return self::$segments;
   }
-  public static function rsegments () {
-    return self::$rsegments;
-  }
-  public static function setRsegments ($rsegments) {
-    return self::$rsegments = $rsegments;
-  }
 
-  public static function currentUrl () {
-    return self::baseUrl (self::uriString ());
+  public static function current () {
+    return self::base (self::uriString ());
   }
-  public static function baseUrl () {
+  
+  public static function base () {
     $baseUrl =& self::$baseUrl;
     $baseUrl || ($baseUrl = config ('other', 'base_url')) || (isset ($_SERVER['HTTP_HOST']) && isset ($_SERVER['HTTP_HOST']) && ($baseUrl = (isset ($_SERVER['HTTPS']) && strtolower ($_SERVER['HTTPS']) !== 'off' ? 'https' : 'http') . '://'. $_SERVER['HTTP_HOST'] . '/')) || gg ('尚未設定 base_url');
 
@@ -106,23 +105,35 @@ class URL {
 
     return $baseUrl . $args;
   }
+  
   public static function refresh ($args = '') {
-    if (!(($args = func_get_args ()) && ($args = ltrim (preg_replace ('/\/+/', '/', implode ('/', array_2d_to_1d ($args))), '/'))))
-      $args = '';
+    if (!$args = func_get_args ())
+      return ;
 
-    header ('Refresh:0;url=' . self::baseUrl ($args));
+    if (is_string ($args[0]) && preg_match ('/^(http|https):\/{2}/', $args[0], $matches))
+      return header ('Refresh:0;url=' . $args[0]);
+
+    if (!$args = ltrim (preg_replace ('/\/+/', '/', implode ('/', array_2d_to_1d ($args))), '/'))
+      return ;
+
+    header ('Refresh:0;url=' . self::base ($args));
     exit;
   }
+  
   public static function redirect ($code = 302) {
-    $args = func_get_args ();
+    if (!$args = func_get_args ())
+      return ;
+
     $code = array_shift ($args);
-
-    if (!($args && ($args = ltrim (preg_replace ('/\/+/', '/', implode ('/', array_2d_to_1d ($args))), '/'))))
-      $args = '';
-
     $code = !is_numeric ($code) ? isset ($_SERVER['SERVER_PROTOCOL'], $_SERVER['REQUEST_METHOD']) && $_SERVER['SERVER_PROTOCOL'] === 'HTTP/1.1' ? $_SERVER['REQUEST_METHOD'] !== 'GET' ? 303 : 307 : 302 : $code;
 
-    header ('Location: ' . self::baseUrl ($args), true, $code);
+    if (is_string ($args[0]) && preg_match ('/^(http|https):\/{2}/', $args[0], $matches))
+      return header ('Location: ' . $args[0], true, $code);
+
+    if (!$args = ltrim (preg_replace ('/\/+/', '/', implode ('/', array_2d_to_1d ($args))), '/'))
+      return ;
+
+    header ('Location: ' . self::base ($args), true, $code);
     exit;
   }
 }
