@@ -173,22 +173,22 @@ class Utils
 		return is_array(end($options)) ? end($options) : array();
 	}
 
-	public static function add_where(&$where=array(), $where, $conjuction='AND')
+	public static function add_where(&$wheres=array(), $where, $conjuction='AND')
 	{
 		if (is_array($where))
 		{
-			if (empty($where))
-				$where = array_flatten($where);
+			if (empty($wheres))
+				$wheres = array_flatten($where);
 			else
 			{
-				$where[0] .= " $conjuction " . array_shift($where);
-				$where[] = array_flatten($where);
+				$wheres[0] .= " $conjuction " . array_shift($where);
+				$wheres[] = array_flatten($where);
 			}
 		}
 		elseif (is_string($where))
-			$where[0] .= " $conjuction $where";
+			$wheres[0] .= " $conjuction $where";
 
-		return $where;
+		return $wheres;
 	}
 
 	public static function human_attribute($attr)
