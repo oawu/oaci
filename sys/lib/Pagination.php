@@ -30,7 +30,11 @@ class Pagination {
     isset ($gets[$offsetKey]) || $gets[$offsetKey] = 1;
 
     if (!($total && ($cnt = (int)ceil ($total / $gets[$limitKey])) > 1))
-      return '';
+      return array (
+          'offset' => ($gets[$offsetKey] - 1) * $gets[$limitKey],
+          'limit' => $gets[$limitKey],
+          'links' => array ()
+        );
 
     $gets[$offsetKey] < 1 && $gets[$offsetKey] = 1;
     $gets[$offsetKey] > $cnt && $gets[$offsetKey] = $cnt;

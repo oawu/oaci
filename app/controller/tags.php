@@ -11,7 +11,6 @@ class tags extends RestfulController {
   public function index () {
     $total = Tag::count ();
     $pgn = Pagination::info ($total);
-
     $tags = Tag::find ('all', array (
       'order' => 'id DESC',
       'offset' => $pgn['offset'],
@@ -74,8 +73,11 @@ class tags extends RestfulController {
     return $result && URL::refresh (Restful::index ());
   }
   public function show ($obj) {
+    $content = View::create ('tags/show.php')
+                   ->with ('tag', $obj)
+                   ->get ();
     return View::create ('layout.php')
-               ->with ('tag', $obj)
+               ->with ('content', $content)
                ->output ();
   }
 }

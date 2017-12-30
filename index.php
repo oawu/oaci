@@ -52,6 +52,6 @@ switch (ENVIRONMENT) {
 
 require_once BASEPATH . 'core' . DIRECTORY_SEPARATOR . 'CodeIgniter.php';
 
-echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-var_dump (Benchmark::elapsedTime (), Benchmark::elapsedMemory (), Benchmark::memoryUsage ());
-exit ();
+// echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+// var_dump (Benchmark::elapsedTime (), Benchmark::elapsedMemory (), Benchmark::memoryUsage ());
+// exit ();
