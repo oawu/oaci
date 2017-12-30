@@ -59,9 +59,10 @@ if (!function_exists ('gg')) {
     else
       $contents = array_merge (array ('quote' => $str), $contents);
 
+    isset ($contents['traces']) || $contents['traces'] = array_combine (array_map (function ($trace) { return (isset ($trace['file']) ? str_replace ('', '', $trace['file']) : '[呼叫函式]') . (isset ($trace['line']) ? '(' . $trace['line'] . ')' : ''); }, $traces = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)), array_map (function ($trace) { return (isset ($trace['class']) ? $trace['class'] : '') . (isset ($trace['type']) ? $trace['type'] : '') . (isset ($trace['function']) ? $trace['function'] : '') . (isset ($trace['args']) ? '(' . implode_recursive (', ', $trace['args']) . ')' : ''); }, $traces = debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT)));
+
     if (request_is_cli ()) {
       @system ('clear');
-      
       echo "\n" . cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
       echo cc (' 錯誤', 'r') . cc (' :: ', 'N') . cc ($text, 'W') . "\n";
       echo "\n" . cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
@@ -82,7 +83,7 @@ if (!function_exists ('gg')) {
 
 if (!function_exists ('show404')) {
   function show404 () {
-    gg ('找不到您的網頁耶，你是不是迷路了啊？', 404, !request_is_cli () && class_exists ('URL') ? array ('detail' => array ('建議' => '回首頁', '網址' => "<a href='" . URL::baseUrl () . "' target='_self'>" . URL::baseUrl () . "</a>")) : array ('detail' => array ('建議' => '回首頁')));
+    gg ('找不到您的網頁耶，你是不是迷路了啊？', 404, !request_is_cli () && class_exists ('URL') ? array ('detail' => array ('建議' => '回首頁', '網址' => "<a href='" . URL::base () . "' target='_self'>" . URL::base () . "</a>")) : array ('detail' => array ('建議' => '回首頁')));
   }
 }
 
@@ -101,14 +102,7 @@ if (!function_exists ('implode_recursive')) {
 
 if (!function_exists ('_error_handler')) {
   function _error_handler ($severity, $message, $filepath, $line) {
-    $levels = array (
-    E_ERROR         => 'Error',         E_WARNING         => 'Warning',
-    E_PARSE         => 'Parsing Error', E_NOTICE          => 'Notice',
-    E_CORE_ERROR    => 'Core Error',    E_CORE_WARNING    => 'Core Warning',
-    E_COMPILE_ERROR => 'Compile Error', E_COMPILE_WARNING => 'Compile Warning',
-    E_USER_ERROR    => 'User Error',    E_USER_WARNING    => 'User Warning',
-    E_USER_NOTICE   => 'User Notice',   E_STRICT          => 'Runtime Notice');
-
+    $levels = array (E_ERROR => 'Error', E_WARNING => 'Warning', E_PARSE => 'Parsing Error', E_NOTICE => 'Notice', E_CORE_ERROR => 'Core Error', E_CORE_WARNING => 'Core Warning', E_COMPILE_ERROR => 'Compile Error', E_COMPILE_WARNING => 'Compile Warning', E_USER_ERROR => 'User Error', E_USER_WARNING => 'User Warning', E_USER_NOTICE => 'User Notice', E_STRICT => 'Runtime Notice');
     $isError = (((E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR | E_USER_ERROR) & $severity) === $severity);
 
 //    $isError && setStatusHeader (500);
