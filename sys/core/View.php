@@ -57,12 +57,14 @@ class View {
   }
 
   public static function load ($_x_oa_x_path, $_x_oa_x_params = array (), $_x_oa_x_return = false) {
+    // class_exists ('Controller', false) && ($_x_oa_x_this = array_filter (debug_backtrace (DEBUG_BACKTRACE_PROVIDE_OBJECT), function ($trace) { return isset ($trace['object']) && $trace['object'] instanceof Controller; })) && ($_x_oa_x_this = array_shift ($_x_oa_x_this)) && ($_x_oa_x_tmp = 'this') && $$_x_oa_x_tmp = $_x_oa_x_this;
+
     ($_x_oa_x_path = ltrim ($_x_oa_x_path, DIRECTORY_SEPARATOR)) && file_exists ($_x_oa_x_path = VIEWPATH . $_x_oa_x_path) || gg ('無法載入 View：' . $_x_oa_x_path);
 
     extract ($_x_oa_x_params);
     ob_start ();
 
-    if (!@include $_x_oa_x_path)
+    if (!include $_x_oa_x_path)
       gg ('無法載入 View：' . $_x_oa_x_path);
 
     $buffer = ob_get_contents ();
