@@ -12,9 +12,12 @@ namespace ActiveRecord;
 class ActiveRecordException extends \Exception {
 	public static $stackTrace = false;
 
-	public function __construct($adapter_or_string_or_mystery)
+	public function __construct($adapter_or_string_or_mystery = null)
 	{
+		if ($adapter_or_string_or_mystery)
 			parent::__construct(self::$stackTrace ? $adapter_or_string_or_mystery : $adapter_or_string_or_mystery->getMessage ());
+		else
+			parent::__construct();
 	}
 }
 
