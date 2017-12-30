@@ -9,13 +9,18 @@
 
 class tags extends RestfulController {
   public function index () {
-    
     $total = Tag::count ();
-    $tags = Tag::find ('all', array ('order' => 'id DESC'));
+    $pgn = Pagination::info ($total);
+
+    $tags = Tag::find ('all', array (
+      'order' => 'id DESC',
+      'offset' => $pgn['offset'],
+      'limit' => $pgn['limit']));
 
     $content = View::create ('tags/index.php')
                    ->with ('total', $total)
                    ->with ('tags', $tags)
+                   ->with ('pgn', $pgn['links'])
                    ->get ();
 
     return View::create ('layout.php')

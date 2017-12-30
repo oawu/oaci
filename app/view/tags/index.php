@@ -25,3 +25,5 @@
 <?php }?>
   </tbody>
 </table>
+
+<?php echo implode (' ', $pgn);?>
