@@ -2,7 +2,7 @@
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
- * @copyright   Copyright (c) 2013 - 2017, OACI
+ * @copyright   Copyright (c) 2013 - 2018, OACI
  * @license     http://opensource.org/licenses/MIT  MIT License
  * @link        https://www.ioa.tw/
  */
