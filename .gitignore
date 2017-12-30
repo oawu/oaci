@@ -13,6 +13,7 @@ composer.lock
 /session/*
 /upload/*
 /tmp/*
+/assets/*
 
 app/config/database.php
 
