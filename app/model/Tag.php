@@ -19,6 +19,14 @@ class Tag extends Model {
   static $belongs_to = array (
   );
 
+  const STATUS_1 = 1;
+  const STATUS_2 = 2;
+
+  static $statusNames = array (
+    self::STATUS_1 => '下架',
+    self::STATUS_2 => '上架',
+  );
+
   public function __construct ($attrs = array (), $guardAttrs = true, $instantiatingViafind = false, $newRecord = true) {
     parent::__construct ($attrs, $guardAttrs, $instantiatingViafind, $newRecord);
   }

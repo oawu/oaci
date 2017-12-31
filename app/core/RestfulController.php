@@ -26,7 +26,21 @@ abstract class RestfulController extends Controller implements RestfulController
     
     Router::$router || gg ('請設定正確的 Router Restful.');
 
-    $this->parents = array_map (function ($param) { return class_exists ($class = $param[0]) ? $class::find_by_id ($param[1]) : gg ('Router Restful Model 設置錯誤，Model：' . $class); }, Router::$router['params']);
+    $this->parents = array_map (function ($param) {
+      $where = WhereBuilder::create ();
+      is_numeric ($param[1]) ? $where->and ('id = ?', $param[1]) : gg ('ID 資訊錯誤！');
+
+      if (is_string ($param[0]) && class_exists ($class = $param[0]))
+        return $class::find ('one', array ('where' => $where->toArray ()));
+
+      if (is_array ($param[0]) && isset ($param[0]['model']) && class_exists ($class = $param[0]['model'])) {
+        isset ($param[0]['where']) && $where->and ($param[0]['where']);
+        unset ($param[0]['model'], $param[0]['where']);
+        return $class::find ('one', array_merge ($param[0], array ('where' => $where->toArray ())));
+      }
+
+      gg ('Router Restful Model 設置錯誤，Model：' . $class);
+    }, Router::$router['params']);
     $this->obj = array_pop ($this->parents);
 
     Restful::setUrls (implode('/', Router::$router['group']), $this->parents);

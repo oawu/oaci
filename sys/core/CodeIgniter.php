@@ -13,12 +13,13 @@ Load::sysCore ('Benchmark.php', true, "Benchmark::init ();");
 Load::sysCore ('Log.php', true);
 Load::sysCore ('Utf8.php', true, "Utf8::init ();");
 Load::sysCore ('URL.php', true, "URL::init ();");
+Load::sysCore ('Model.php', true);
+
 Load::sysCore ('Router.php', true, "Router::init ();");
 Load::sysCore ('Output.php', true, "Output::init ();");
 Load::sysCore ('Security.php', true, "Security::init ();");
 Load::sysCore ('Input.php', true, "Input::init ();");
 Load::sysCore ('Controller.php', true);
-Load::sysCore ('Model.php', true);
 Load::sysCore ('View.php', true);
 config ('other', 'composer_autoload') && Load::file (FCPATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php', true);
 

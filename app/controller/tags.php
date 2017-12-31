@@ -14,7 +14,9 @@ class tags extends RestfulController {
     $tags = Tag::find ('all', array (
       'order' => 'id DESC',
       'offset' => $pgn['offset'],
-      'limit' => $pgn['limit']));
+      'limit' => $pgn['limit'],
+      'where' => array ('status = ?', Tag::STATUS_1)
+      ));
 
     $content = View::create ('tags/index.php')
                    ->with ('total', $total)

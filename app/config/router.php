@@ -9,7 +9,11 @@
 
 // Router::get ('', 'main');
 
-Router::restful ('tags', 'tags', 'Tag');
+Router::restful ('tags', 'tags', array (
+  array ('model' => 'Tag', 'where' => array ('status = ?', Tag::STATUS_1))));
+
+// Router::restful ('tags', 'tags', 'Tag');
+
 // Router::restful (array ('tag', 'articles'), 'tag_articles', array ('Tag', 'Article'));
 // Router::restful (array ('tag', 'article', 'comments'), 'tag_articles', array ('Tag', 'Tag', 'Tag'));
 // Router::post ('banner', 'banner@index');
