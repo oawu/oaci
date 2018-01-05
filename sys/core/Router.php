@@ -36,7 +36,7 @@ class Router {
       return array ();
   }
   public static function restful ($uris, $controller, $models) {
-    class_exists ('Restful', false) || Load::sysLib ('Restful.php', true);
+    class_exists ('RestfulUrl', false) || Load::sysLib ('RestfulUrl.php', true);
 
     is_array ($uris) || $uris = array ($uris);
     is_array ($models) || $models = array ($models);
@@ -46,13 +46,13 @@ class Router {
     $t2 = $c > 1 ? ', ' . implode (', ', array_map (function ($a) { return '$' . $a; }, range (2, $c))) : '';
 
     $prefixs = implode ('/', array_merge (self::getDirs (), array ($controller)));
-    Restful::addGroup ($prefixs, 'index', self::method ('get', explode ('/', implode ('/(:id)/', $uris)), $controller . '@index(' . $t1 . ')', $models));
-    Restful::addGroup ($prefixs, 'show', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@show($1' . $t2 . ')', $models));
-    Restful::addGroup ($prefixs, 'add', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/add'), $controller . '@add(' . $t1 . ')', $models));
-    Restful::addGroup ($prefixs, 'create', self::method ('post', explode ('/', implode ('/(:id)/', $uris)), $controller . '@create(' . $t1 . ')', $models));
-    Restful::addGroup ($prefixs, 'edit', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/(:id)/edit'), $controller . '@edit($1' . $t2 . ')', $models));
-    Restful::addGroup ($prefixs, 'update', self::method ('put', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@update($1' . $t2 . ')', $models));
-    Restful::addGroup ($prefixs, 'destroy', self::method ('delete', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@destroy($1' . $t2 . ')', $models));
+    RestfulUrl::addGroup ($prefixs, 'index', self::method ('get', explode ('/', implode ('/(:id)/', $uris)), $controller . '@index(' . $t1 . ')', $models));
+    RestfulUrl::addGroup ($prefixs, 'show', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@show($1' . $t2 . ')', $models));
+    RestfulUrl::addGroup ($prefixs, 'add', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/add'), $controller . '@add(' . $t1 . ')', $models));
+    RestfulUrl::addGroup ($prefixs, 'create', self::method ('post', explode ('/', implode ('/(:id)/', $uris)), $controller . '@create(' . $t1 . ')', $models));
+    RestfulUrl::addGroup ($prefixs, 'edit', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/(:id)/edit'), $controller . '@edit($1' . $t2 . ')', $models));
+    RestfulUrl::addGroup ($prefixs, 'update', self::method ('put', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@update($1' . $t2 . ')', $models));
+    RestfulUrl::addGroup ($prefixs, 'destroy', self::method ('delete', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@destroy($1' . $t2 . ')', $models));
   }
   private static function method ($m, $formats, $uri, $models = array ()) {
     $prefixs = self::getDirs ();
@@ -97,7 +97,7 @@ class Router {
         self::$router['params'] = array ();
 
         foreach (self::$routers as $i => $id)
-          isset (self::$router['models'][$i]) ? array_push (self::$router['params'], array (self::$router['models'][$i], $id)) : gg ('請確認 Router 的 Restful Model 數量設定是否正確。');
+          isset (self::$router['models'][$i]) ? array_push (self::$router['params'], array (self::$router['models'][$i], $id)) : gg ('請確認 Router 的 RestfulUrl Model 數量設定是否正確。');
 
         unset (self::$router['models']);
 

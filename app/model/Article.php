@@ -25,6 +25,14 @@ class Article extends Model {
     // 設定圖片上傳器
     Uploader::bind ('cover', 'ArticleCoverImageUploader');
   }
+  public function destroy () {
+    if (!isset ($this->id))
+      return false;
+    
+    isset ($this->cover) && $this->cover->cleanAllFiles ();
+
+    return $this->delete ();
+  }
 }
 
 /* -- 圖片上傳器物件 ------------------------------------------------------------------ */

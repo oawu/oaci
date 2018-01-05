@@ -14,6 +14,8 @@ class Tag extends Model {
   );
 
   static $has_many = array (
+        // array('product', 'class_name' => 'Product', 'foreign_key' => 'productId', 'primary_key' => 'parameter', 'condition' => array ('type = ?', self::TYPE_PRODUCT)),
+    array ('articles')
   );
 
   static $belongs_to = array (

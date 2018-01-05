@@ -20,35 +20,44 @@ interface RestfulControllerInterface {
 abstract class RestfulController extends Controller implements RestfulControllerInterface {
   public $obj = null;
   public $parents = array ();
+  public $parent = null;
 
-  public function __construct () {
-    parent::__construct ();
-    
-    Router::$router || gg ('請設定正確的 Router Restful.');
+  // public function __construct () {
+  //   parent::__construct ();
+  // }
+  
+  public function _remap ($name, $params) {
+    Router::$router || gg ('請設定正確的 Router RestfulUrl.');
 
-    $this->parents = array_map (function ($param) {
+    $this->parents = array_filter (array_map (function ($param) {
       $where = WhereBuilder::create ();
       is_numeric ($param[1]) ? $where->and ('id = ?', $param[1]) : gg ('ID 資訊錯誤！');
 
       if (is_string ($param[0]) && class_exists ($class = $param[0]))
-        return $class::find ('one', array ('where' => $where->toArray ()));
+        return ($obj = $class::find ('one', array ('where' => $where->toArray ()))) ? $obj : gg ('錯誤！找不到指定物件。物件：' . $class);
 
       if (is_array ($param[0]) && isset ($param[0]['model']) && class_exists ($class = $param[0]['model'])) {
         isset ($param[0]['where']) && $where->and ($param[0]['where']);
         unset ($param[0]['model'], $param[0]['where']);
-        return $class::find ('one', array_merge ($param[0], array ('where' => $where->toArray ())));
+        return ($obj = $class::find ('one', array_merge ($param[0], array ('where' => $where->toArray ())))) ? $obj : gg ('錯誤！找不到指定物件。物件：' . $class);
       }
 
-      gg ('Router Restful Model 設置錯誤，Model：' . $class);
-    }, Router::$router['params']);
-    $this->obj = array_pop ($this->parents);
+      gg ('Router RestfulUrl Model 設置錯誤，Model：' . $class);
+      // return null;
+    }, Router::$router['params']), function ($t) { return $t !== null; });
 
-    Restful::setUrls (implode('/', Router::$router['group']), $this->parents);
+    count (Router::$router['params']) == count ($this->parents) || gg ('不明原因錯誤！');
+
+    if (!in_array ($name, array ('index', 'add', 'create')))
+      $this->obj = array_pop ($this->parents);
+
+    RestfulUrl::setUrls (implode('/', Router::$router['group']), $this->parents);
 
     Load::sysLib ('Pagination.php', true);
-  }
-  
-  public function _remap ($name, $params) {
+    Load::sysLib ('Session.php', true);
+    
+    $this->parent = $this->parents ? $this->parents[count ($this->parents) - 1] : null;
+
     if (!in_array ($name, array ('edit', 'update', 'destroy', 'show')))
       return call_user_func_array (array ($this, $name), $this->parents);
     

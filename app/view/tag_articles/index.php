@@ -1,3 +1,6 @@
+<a href="<?php echo RestfulUrl::other ('tags@index');?>">回 Tags</a>
+<hr>
+
 <div>總筆數：<?php echo $total;?></div>
 <a href="<?php echo RestfulUrl::add ();?>">新增</a>
 
@@ -20,8 +23,9 @@ if ($failure = Session::getFlashData ('result.failure')) { ?>
   <thead>
     <tr>
       <th>ID</th>
-      <th>名稱</th>
-      <th>文章</th>
+      <th>封面</th>
+      <th>標題</th>
+      <th>內容</th>
       <th>編輯</th>
     </tr>
   </thead>
@@ -29,17 +33,16 @@ if ($failure = Session::getFlashData ('result.failure')) { ?>
 <?php
     if (!$tags) { ?>
       <tr>
-        <td colspan='4'>沒有資料</td>
+        <td colspan='5'>沒有資料</td>
       </tr>
 <?php
     }
     foreach ($tags as $tag) { ?>
       <tr>
         <td><?php echo $tag->id;?></td>
-        <td><?php echo $tag->name;?></td>
-        <td>
-          <a href="<?php echo RestfulUrl::other ('tag_articles@index', array ($tag));?>">檢視(<?php echo count ($tag->articles);?>)</a>
-        </td>
+        <td><?php echo $tag->cover->toImageTag ('w100');?></td>
+        <td><?php echo $tag->title;?></td>
+        <td><?php echo $tag->content;?></td>
         <td>
           <a href="<?php echo RestfulUrl::show ($tag);?>">檢視</a>
           <a href="<?php echo RestfulUrl::edit ($tag);?>">修改</a>

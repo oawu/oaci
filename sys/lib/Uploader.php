@@ -103,6 +103,9 @@ class Uploader {
     return isset ($this->driverConfigs['d4_url']) ? $this->driverConfigs['d4_url'] : '';
   }
 
+  public function toImageTag ($key = '', $attrs = array ()) { // $attrs = array ('class' => 'i')
+    return ($url = ($url = $this->url ($key)) ? $url : $this->d4Url ()) ? '<img src="' . $url . '"' . ($attrs ? ' ' . implode (' ', array_map (function ($key, $value) { return $key . '="' . $value . '"'; }, array_keys ($attrs), $attrs)) : '') . '>' : '';
+  }
   public function url ($key = '') {
     switch ($this->getDriver ()) {
       case 'local':
@@ -153,6 +156,7 @@ class Uploader {
   }
   
   public function put ($fileInfo) {
+    
     if (!($fileInfo && (is_array ($fileInfo) || (is_string ($fileInfo) && file_exists ($fileInfo)))) && !Uploader::error ('[Uploader] put 格式有誤。'))
       return false;
 

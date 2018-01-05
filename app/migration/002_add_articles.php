@@ -10,6 +10,7 @@
 return array (
     'up' => "CREATE TABLE `articles` (
         `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+        `tag_id` int(11) unsigned NOT NULL COMMENT 'Tag ID',
         `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT '標題',
         `cover` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT '封面',
         `content` text NOT NULL COMMENT '內容',

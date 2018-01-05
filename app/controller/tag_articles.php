@@ -8,54 +8,106 @@
  */
 
 class tag_articles extends RestfulController {
-  public $self_model = 'Tag';
-  public $parent_models = array ('Tag', 'Article');
-  // public function __construct () {
-  //   parent::__construct ();
-  // }
-  // list
   public function index () {
-    
-print (json_encode(Router::$routers));
-exit ();
     $total = Article::count ();
-    $articles = Article::find ('all');
+    
+    $pgn = Pagination::info ($total);
+    
+    $tags = Article::find ('all', array (
+      'order' => 'id DESC',
+      'offset' => $pgn['offset'],
+      'limit' => $pgn['limit'],
+      'where' => array ('tag_id = ?', $this->parent->id)
+      ));
 
+    $content = View::create ('tag_articles/index.php')
+                   ->with ('total', $total)
+                   ->with ('tags', $tags)
+                   ->with ('pgn', $pgn['links'])
+                   ->get ();
 
-echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-var_dump (Restful::add ());
-var_dump (Restful::create ());
-var_dump (Restful::show (1));
-var_dump (Restful::edit (2));
-var_dump (Restful::edit (2));
-var_dump (Restful::destroy (3));
-var_dump ($this->parents);
-    // return View::create ('articles/index.php')
-    //            ->with ('total', $total)
-    //            ->with ('articles', $articles)
-    //            ->output ();
+    return View::create ('layout.php')
+               ->with ('content', $content)
+               ->output ();
   }
-  // add
   public function add () {
-  }
-  // create
-  public function create () {
-  }
-  public function edit ($id) {
-    echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    var_dump (Restful::index ());
-    var_dump (Restful::add ());
-    var_dump (Restful::create ());
-    var_dump (Restful::show (1));
-    var_dump (Restful::edit (Tag::first ()));
-    var_dump (Restful::update (2));
-    var_dump (Restful::destroy (3));
+    $content = View::create ('tag_articles/add.php')
+                   ->get ();
 
+    return View::create ('layout.php')
+               ->with ('content', $content)
+               ->output ();
   }
-  public function update ($id) {
+  public function create () {
+    $posts = Input::post ();
+    $posts['tag_id'] = $this->parent->id;
+    $files = Input::file ();
+
+    $result = Article::transaction (function () use ($posts, $files) {
+      if (!$obj = Article::create ($posts))
+        return false;
+
+      foreach ($files as $key => $file)
+        if (isset ($files[$key]) && $files[$key] && $obj->$key instanceof Uploader)
+          if (!$obj->$key->put ($files[$key]))
+            return false;
+      
+      return true;
+    });
+
+    $result ? Session::setFlashData ('result.success', '成功！') : Session::setFlashData ('result.failure', '失敗！');
+
+    return URL::refresh (RestfulUrl::index ());
   }
-  public function destroy ($id) {
+  public function edit ($obj) {
+    $content = View::create ('tag_articles/edit.php')
+                   ->with ('article', $obj)
+                   ->get ();
+
+    return View::create ('layout.php')
+               ->with ('content', $content)
+               ->output ();
   }
-  public function show ($id) {
+  public function update ($obj) {
+    $posts = Input::post ();
+    $files = Input::file ();
+    
+    if ($columns = array_intersect_key ($posts, $obj->table ()->columns))
+      foreach ($columns as $column => $value)
+        $obj->$column = $value;
+
+
+    $result = Article::transaction (function () use ($obj, $files) {
+      if (!$obj->save ())
+        return false;
+
+      foreach ($files as $key => $file)
+        if (isset ($files[$key]) && $files[$key] && $obj->$key instanceof Uploader)
+          if (!$obj->$key->put ($files[$key]))
+            return false;
+      
+      return true;
+    });
+
+    $result ? Session::setFlashData ('result.success', '成功！') : Session::setFlashData ('result.failure', '失敗！');
+    
+    return URL::refresh (RestfulUrl::index ());
+  }
+  public function destroy ($obj) {
+    $result = Article::transaction (function () use ($obj) {
+      return $obj->destroy ();
+    });
+
+    $result ? Session::setFlashData ('result.success', '成功！') : Session::setFlashData ('result.failure', '失敗！');
+    
+    return URL::refresh (RestfulUrl::index ());
+  }
+  public function show ($obj) {
+    $content = View::create ('tag_articles/show.php')
+                   ->with ('article', $obj)
+                   ->get ();
+    return View::create ('layout.php')
+               ->with ('content', $content)
+               ->output ();
   }
 }

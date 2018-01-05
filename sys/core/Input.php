@@ -303,7 +303,10 @@ class Input {
   }
   public static function transposedAllFilesArray ($files_list) {
     $new_array = array ();
-    if ($files_list) foreach ($files_list as $key => $files) $new_array[$key] = self::transposedFilesArray ($files);
+    if ($files_list)
+      foreach ($files_list as $key => $files)
+        $new_array[$key] = self::transposedFilesArray ($files);
+      
     return $new_array;
   }
 
@@ -316,8 +319,14 @@ class Input {
     else if (count ($list)) return $list; else return array ();
   }
   public static function file ($index = null) {
-    if (!$_FILES) return array ();
-    if ($index === null) return self::transposedAllFilesArray ($_FILES);
+    if (!$_FILES)
+      return array ();
+
+    if ($index === null)
+      return array_map (function ($t) {
+        return is_array ($t) && count ($t) == 1 ? $t[0] : $t;
+      }, self::transposedAllFilesArray ($_FILES));
+
     if (isset ($_FILES[$index]['name']) && count ($_FILES[$index]['name']) > 1) $index = $index . '[]';
     preg_match_all ('/^(?P<var>\w+)(\s?\[\s?\]\s?)$/', $index, $matches);
     return ($matches = $matches['var'] ? $matches['var'][0] : null) ? self::getUploadFile ($matches) : self::getUploadFile ($index, 'one');

@@ -349,3 +349,5 @@ abstract class SessionDriver implements SessionHandlerInterface {
   protected function succ () { return $this->success; }
   protected function fail () { return $this->failure; }
 }
+
+Session::init ();

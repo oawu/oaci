@@ -10,11 +10,14 @@
 class tags extends RestfulController {
   public function index () {
     $total = Tag::count ();
+
     $pgn = Pagination::info ($total);
+
     $tags = Tag::find ('all', array (
       'order' => 'id DESC',
       'offset' => $pgn['offset'],
       'limit' => $pgn['limit'],
+      'include' => array ('articles'),
       'where' => array ('status = ?', Tag::STATUS_1)
       ));
 
@@ -38,12 +41,15 @@ class tags extends RestfulController {
   }
   public function create () {
     $posts = Input::post ();
+    $posts['status'] = Tag::STATUS_1;
 
     $result = Tag::transaction (function () use ($posts) {
       return Tag::create ($posts);
     });
+
+    $result ? Session::setFlashData ('result.success', '成功！') : Session::setFlashData ('result.failure', '失敗！');
     
-    return $result && URL::refresh (Restful::index ());
+    return URL::refresh (RestfulUrl::index ());
   }
   public function edit ($obj) {
     $content = View::create ('tags/edit.php')
@@ -65,14 +71,18 @@ class tags extends RestfulController {
       return $obj->save ();
     });
 
-    return $result && URL::refresh (Restful::index ());
+    $result ? Session::setFlashData ('result.success', '成功！') : Session::setFlashData ('result.failure', '失敗！');
+    
+    return URL::refresh (RestfulUrl::index ());
   }
   public function destroy ($obj) {
     $result = Tag::transaction (function () use ($obj) {
       return $obj->destroy ();
     });
 
-    return $result && URL::refresh (Restful::index ());
+    $result ? Session::setFlashData ('result.success', '成功！') : Session::setFlashData ('result.failure', '失敗！');
+    
+    return URL::refresh (RestfulUrl::index ());
   }
   public function show ($obj) {
     $content = View::create ('tags/show.php')
