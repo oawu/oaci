@@ -368,7 +368,7 @@ class ImageUploader extends Uploader {
         array_push ($news, array ('name' => $new_name, 'path' => $new_path));
       }
     } catch (Exception $e) {
-      Uploader::error ('[ImageUploader] moveFileAndUploadColumn 圖像處理失敗。Message：' . $e->getMessage ());
+      return Uploader::error ('[ImageUploader] moveFileAndUploadColumn 圖像處理失敗。Message：' . $e->getMessage ());
     }
 
     count ($news) == count ($versions) || Uploader::error ('[ImageUploader] moveFileAndUploadColumn 不明原因錯誤。');
