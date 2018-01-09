@@ -1,7 +1,7 @@
 <a href="<?php echo RestfulUrl::other ('tags@index');?>">回 Tags</a>
 <hr>
 
-<div>總筆數：<?php echo $total;?></div>
+<div><?php echo $parent->name;?> 下的文章，總筆數：<?php echo $total;?></div>
 <a href="<?php echo RestfulUrl::add ();?>">新增</a>
 
 <hr>
@@ -31,22 +31,22 @@ if ($failure = Session::getFlashData ('result.failure')) { ?>
   </thead>
   <tbody>
 <?php
-    if (!$tags) { ?>
+    if (!$articles) { ?>
       <tr>
         <td colspan='5'>沒有資料</td>
       </tr>
 <?php
     }
-    foreach ($tags as $tag) { ?>
+    foreach ($articles as $article) { ?>
       <tr>
-        <td><?php echo $tag->id;?></td>
-        <td><?php echo $tag->cover->toImageTag ('w100');?></td>
-        <td><?php echo $tag->title;?></td>
-        <td><?php echo $tag->content;?></td>
+        <td><?php echo $article->id;?></td>
+        <td><?php echo $article->cover->toImageTag ('w100');?></td>
+        <td><?php echo $article->title;?></td>
+        <td><?php echo $article->content;?></td>
         <td>
-          <a href="<?php echo RestfulUrl::show ($tag);?>">檢視</a>
-          <a href="<?php echo RestfulUrl::edit ($tag);?>">修改</a>
-          <a href="<?php echo RestfulUrl::destroy ($tag);?>" data-method='delete'>刪除</a>
+          <a href="<?php echo RestfulUrl::show ($article);?>">檢視</a>
+          <a href="<?php echo RestfulUrl::edit ($article);?>">修改</a>
+          <a href="<?php echo RestfulUrl::destroy ($article);?>" data-method='delete'>刪除</a>
         </td>
       </tr>
 <?php

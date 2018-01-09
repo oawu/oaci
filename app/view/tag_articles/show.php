@@ -3,6 +3,10 @@
 
 ID：<?php echo $article->id;?>
 <br/>
+封面：
+<br/>
+<?php echo $article->cover->toImageTag ('w100');?>
+<br/>
 標題：<?php echo $article->title;?>
 <br/>
 內容：<?php echo $article->content;?>

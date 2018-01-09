@@ -13,7 +13,7 @@ class tag_articles extends RestfulController {
     
     $pgn = Pagination::info ($total);
     
-    $tags = Article::find ('all', array (
+    $articles = Article::find ('all', array (
       'order' => 'id DESC',
       'offset' => $pgn['offset'],
       'limit' => $pgn['limit'],
@@ -22,7 +22,8 @@ class tag_articles extends RestfulController {
 
     $content = View::create ('tag_articles/index.php')
                    ->with ('total', $total)
-                   ->with ('tags', $tags)
+                   ->with ('parent', $this->parent)
+                   ->with ('articles', $articles)
                    ->with ('pgn', $pgn['links'])
                    ->get ();
 
