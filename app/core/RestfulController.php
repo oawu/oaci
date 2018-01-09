@@ -55,6 +55,7 @@ abstract class RestfulController extends Controller implements RestfulController
 
     Load::sysLib ('Pagination.php', true);
     Load::sysLib ('Session.php', true);
+    Load::sysLib ('Validation.php', true);
     
     $this->parent = $this->parents ? $this->parents[count ($this->parents) - 1] : null;
 

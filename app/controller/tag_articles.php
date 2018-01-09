@@ -39,11 +39,33 @@ class tag_articles extends RestfulController {
                ->output ();
   }
   public function create () {
+    $validation = function (&$posts, &$files) {
+      $error = '';
+
+      $error || isset ($posts['title']) || $error = '參數錯誤！';
+      $error || $error = Validation::create ($posts['title'], '標題')->isStringOrNumber ()->length (1, 255)->getError ();
+
+      $error || isset ($posts['tag_id']) || $error = '參數錯誤！';
+      $error || $error = Validation::create ($posts['tag_id'], 'Tag')->isNumber ()->greater (0)->getError ();
+
+      $error || isset ($posts['content']) && $error = Validation::create ($posts['content'], '內容')->isStringOrNumber ()->length (0)->getError ();
+
+      $error || isset ($files['cover']) || $error = '參數錯誤！';
+      $error || $error = Validation::create ($files['cover'], '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024)->getError ();
+
+      return $error;
+    };
+
     $posts = Input::post ();
     $posts['tag_id'] = $this->parent->id;
     $files = Input::file ();
-
-    $result = Article::transaction (function () use ($posts, $files) {
+    
+    if ($error = $validation ($posts, $files)) {
+      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
+      return URL::refresh (RestfulUrl::add ());
+    }
+    
+    if ($error = Article::getTransactionError (function () use ($posts, $files) {
       if (!$obj = Article::create ($posts))
         return false;
 
@@ -53,10 +75,12 @@ class tag_articles extends RestfulController {
             return false;
       
       return true;
-    });
+    })) {
+      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
+      return URL::refresh (RestfulUrl::add ());
+    }
 
-    $result ? Session::setFlashData ('result.success', '成功！') : Session::setFlashData ('result.failure', '失敗！');
-
+    Session::setFlashData ('result.success', '成功！');
     return URL::refresh (RestfulUrl::index ());
   }
   public function edit ($obj) {
@@ -69,15 +93,33 @@ class tag_articles extends RestfulController {
                ->output ();
   }
   public function update ($obj) {
+    $validation = function ($obj, &$posts, &$files) {
+      $error = '';
+
+      $error || isset ($posts['title']) && $error = Validation::create ($posts['title'], '標題')->isStringOrNumber ()->length (1, 255)->getError ();
+      $error || isset ($posts['tag_id']) && $error = Validation::create ($posts['tag_id'], 'Tag')->isNumber ()->greater (0)->getError ();
+      $error || isset ($posts['content']) && $error = Validation::create ($posts['content'], '內容')->isStringOrNumber ()->length (0)->getError ();
+      
+      $obj->cover->getValue () || $error || isset ($files['cover']) || $error = '參數錯誤！';
+      $error || isset ($files['cover']) && $error = Validation::create ($files['cover'], '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024)->getError ();
+
+      return $error;
+    };
+
     $posts = Input::post ();
     $files = Input::file ();
+
+    if ($error = $validation ($obj, $posts, $files)) {
+      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
+      return URL::refresh (RestfulUrl::edit ($obj));
+    }
     
     if ($columns = array_intersect_key ($posts, $obj->table ()->columns))
       foreach ($columns as $column => $value)
         $obj->$column = $value;
 
 
-    $result = Article::transaction (function () use ($obj, $files) {
+    if ($error = Article::getTransactionError (function () use ($obj, $files) {
       if (!$obj->save ())
         return false;
 
@@ -87,19 +129,23 @@ class tag_articles extends RestfulController {
             return false;
       
       return true;
-    });
+    })) {
+      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
+      return URL::refresh (RestfulUrl::edit ($obj));
+    };
 
-    $result ? Session::setFlashData ('result.success', '成功！') : Session::setFlashData ('result.failure', '失敗！');
-    
+    Session::setFlashData ('result.success', '成功！');
     return URL::refresh (RestfulUrl::index ());
   }
   public function destroy ($obj) {
-    $result = Article::transaction (function () use ($obj) {
+    if ($error = Article::getTransactionError (function () use ($obj) {
       return $obj->destroy ();
-    });
+    })) {
+      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
+      return URL::refresh (RestfulUrl::index ());
+    }
 
-    $result ? Session::setFlashData ('result.success', '成功！') : Session::setFlashData ('result.failure', '失敗！');
-    
+    Session::setFlashData ('result.success', '成功！');
     return URL::refresh (RestfulUrl::index ());
   }
   public function show ($obj) {

@@ -323,12 +323,16 @@ class Input {
       return array ();
 
     if ($index === null)
-      return array_map (function ($t) {
+      return array_filter (array_map (function ($t) {
         return is_array ($t) && count ($t) == 1 ? $t[0] : $t;
-      }, self::transposedAllFilesArray ($_FILES));
+      }, self::transposedAllFilesArray ($_FILES)));
+      // return array_filter (self::transposedAllFilesArray ($_FILES));
 
-    if (isset ($_FILES[$index]['name']) && count ($_FILES[$index]['name']) > 1) $index = $index . '[]';
+    // if (isset ($_FILES[$index]['name']) && count ($_FILES[$index]['name']) > 1)
+    //   $index = $index . '[]';
+
     preg_match_all ('/^(?P<var>\w+)(\s?\[\s?\]\s?)$/', $index, $matches);
+
     return ($matches = $matches['var'] ? $matches['var'][0] : null) ? self::getUploadFile ($matches) : self::getUploadFile ($index, 'one');
   }
 }

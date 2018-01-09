@@ -31,7 +31,12 @@ if (!function_exists ('use_model')) {
 
     class_alias ('ActiveRecord\Connection', 'ModelConnection');
     
-    class Model extends ActiveRecord\Model {}
+    class Model extends ActiveRecord\Model {
+      public static function getTransactionError ($callback = null) {
+        $class = get_called_class ();
+        return is_callable ($callback) && $class::transaction ($callback) ? null : '資料庫處理錯誤！';
+      }
+    }
 
 
 
