@@ -14,28 +14,27 @@ class Tag extends Model {
   );
 
   static $has_many = array (
-        // array('product', 'class_name' => 'Product', 'foreign_key' => 'productId', 'primary_key' => 'parameter', 'condition' => array ('type = ?', self::TYPE_PRODUCT)),
     array ('articles')
   );
 
   static $belongs_to = array (
   );
 
-  const STATUS_1 = 1;
-  const STATUS_2 = 2;
+  const STATUS_ON  = 'on';
+  const STATUS_OFF = 'off';
 
   static $statusNames = array (
-    self::STATUS_1 => '下架',
-    self::STATUS_2 => '上架',
+    self::STATUS_ON  => '上架',
+    self::STATUS_OFF => '下架',
   );
-
-  public function __construct ($attrs = array (), $guardAttrs = true, $instantiatingViafind = false, $newRecord = true) {
-    parent::__construct ($attrs, $guardAttrs, $instantiatingViafind, $newRecord);
-  }
 
   public function destroy () {
     if (!isset ($this->id))
       return false;
+
+    foreach ($this->articles as $article)
+      if (!$article->destroy ())
+        return false;
     
     return $this->delete ();
   }

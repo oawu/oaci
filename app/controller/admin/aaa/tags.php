@@ -9,7 +9,7 @@
 
 class tags extends RestfulController {
   public function index () {
-    $where = WhereBuilder::create ('status = ?', Tag::STATUS_1);
+    $where = WhereBuilder::create ('status = ?', Tag::STATUS_ON);
     
     $total = Tag::count ($where);
 
@@ -55,7 +55,7 @@ class tags extends RestfulController {
     };
 
     $posts = Input::post ();
-    $posts['status'] = Tag::STATUS_1;
+    $posts['status'] = Tag::STATUS_ON;
 
     if ($error = $validation ($posts))
       return refresh (RestfulUrl::add (), 'result.failure', '失敗！' . $error . '！');
