@@ -23,7 +23,7 @@ class tags extends RestfulController {
       'where' => $where
       ));
 
-    $content = View::create ('tags/index.php')
+    $content = View::create ('admin/aaa/tags/index.php')
                    ->with ('total', $total)
                    ->with ('tags', $tags)
                    ->with ('pgn', $pgn['links'])
@@ -34,7 +34,7 @@ class tags extends RestfulController {
                ->output ();
   }
   public function add () {
-    $content = View::create ('tags/add.php')
+    $content = View::create ('admin/aaa/tags/add.php')
                    ->get ();
 
     return View::create ('layout.php')
@@ -66,7 +66,7 @@ class tags extends RestfulController {
     return refresh (RestfulUrl::index (), 'result.success', '成功！');
   }
   public function edit ($obj) {
-    $content = View::create ('tags/edit.php')
+    $content = View::create ('admin/aaa/tags/edit.php')
                    ->with ('tag', $obj)
                    ->get ();
 
@@ -105,7 +105,7 @@ class tags extends RestfulController {
     return refresh (RestfulUrl::index (), 'result.success', '成功！');
   }
   public function show ($obj) {
-    $content = View::create ('tags/show.php')
+    $content = View::create ('admin/aaa/tags/show.php')
                    ->with ('tag', $obj)
                    ->get ();
     return View::create ('layout.php')

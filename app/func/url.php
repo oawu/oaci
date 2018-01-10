@@ -7,12 +7,11 @@
  * @link        https://www.ioa.tw/
  */
 
-class main extends Controller {
-
-  public function index () {
-    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
-    // var_dump ($a, $b);
-    // exit ();
-    // echo "1111";
+if (!function_exists ('refresh')) {
+  function refresh ($url, $key, $data) {
+    static $loaded;
+    $loaded || $loaded = Load::sysLib ('Session.php', true);
+    Session::setFlashData ($key, $data);
+    return URL::refresh ($url);
   }
 }

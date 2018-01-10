@@ -34,12 +34,12 @@ abstract class RestfulController extends Controller implements RestfulController
       is_numeric ($param[1]) ? $where->and ('id = ?', $param[1]) : gg ('ID 資訊錯誤！');
 
       if (is_string ($param[0]) && class_exists ($class = $param[0]))
-        return ($obj = $class::find ('one', array ('where' => $where->toArray ()))) ? $obj : gg ('錯誤！找不到指定物件。物件：' . $class);
+        return ($obj = $class::find ('one', array ('where' => $where))) ? $obj : gg ('錯誤！找不到指定物件。物件：' . $class);
 
       if (is_array ($param[0]) && isset ($param[0]['model']) && class_exists ($class = $param[0]['model'])) {
         isset ($param[0]['where']) && $where->and ($param[0]['where']);
         unset ($param[0]['model'], $param[0]['where']);
-        return ($obj = $class::find ('one', array_merge ($param[0], array ('where' => $where->toArray ())))) ? $obj : gg ('錯誤！找不到指定物件。物件：' . $class);
+        return ($obj = $class::find ('one', array_merge ($param[0], array ('where' => $where)))) ? $obj : gg ('錯誤！找不到指定物件。物件：' . $class);
       }
 
       gg ('Router RestfulUrl Model 設置錯誤，Model：' . $class);
@@ -56,6 +56,8 @@ abstract class RestfulController extends Controller implements RestfulController
     Load::sysLib ('Pagination.php', true);
     Load::sysLib ('Session.php', true);
     Load::sysLib ('Validation.php', true);
+    Load::func ('url.php');
+    
     
     $this->parent = $this->parents ? $this->parents[count ($this->parents) - 1] : null;
 

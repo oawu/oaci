@@ -22,6 +22,14 @@ Router::restful (array ('tag', 'articles'), 'tag_articles', array (
 // Router::post ('banner', 'banner@index');
 
 Router::dir ('admin', function () {
+
+  Router::restful ('tags', 'tags', array (
+    array ('model' => 'Tag', 'where' => array ('status = ?', Tag::STATUS_1))));
+
+  Router::restful (array ('tag', 'articles'), 'tag_articles', array (
+    array ('model' => 'Tag', 'where' => array ('status = ?', Tag::STATUS_1))
+    , 'Article'));
+
   // Router::post ('banner', 'banner@index');
   // Router::restful ('tags', 'tags', 'Tag');
   // Router::restful (array ('tag', 'articles'), 'tag_articles', array ('Tag', 'Article'));
@@ -32,5 +40,14 @@ Router::dir ('admin', function () {
 // Router::restful (array ('tag', 'articles'), 'articles');
 });
 
+Router::dir ('admin/aaa', function () {
+
+  Router::restful ('tags', 'tags', array (
+    array ('model' => 'Tag', 'where' => array ('status = ?', Tag::STATUS_1))));
+
+  Router::restful (array ('tag', 'articles'), 'tag_articles', array (
+    array ('model' => 'Tag', 'where' => array ('status = ?', Tag::STATUS_1))
+    , 'Article'));
+});
 // print (json_encode(Router::$routers));
 // exit ();

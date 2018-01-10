@@ -22,7 +22,7 @@ class tag_articles extends RestfulController {
       'where' => $where
       ));
 
-    $content = View::create ('admin/tag_articles/index.php')
+    $content = View::create ('admin/aaa/tag_articles/index.php')
                    ->with ('total', $total)
                    ->with ('parent', $this->parent)
                    ->with ('articles', $articles)
@@ -34,7 +34,7 @@ class tag_articles extends RestfulController {
                ->output ();
   }
   public function add () {
-    $content = View::create ('admin/tag_articles/add.php')
+    $content = View::create ('admin/aaa/tag_articles/add.php')
                    ->get ();
 
     return View::create ('layout.php')
@@ -82,7 +82,7 @@ class tag_articles extends RestfulController {
     return refresh (RestfulUrl::index (), 'result.success', '成功！');
   }
   public function edit ($obj) {
-    $content = View::create ('admin/tag_articles/edit.php')
+    $content = View::create ('admin/aaa/tag_articles/edit.php')
                    ->with ('article', $obj)
                    ->get ();
 
@@ -136,7 +136,7 @@ class tag_articles extends RestfulController {
     return refresh (RestfulUrl::index (), 'result.success', '成功！');
   }
   public function show ($obj) {
-    $content = View::create ('admin/tag_articles/show.php')
+    $content = View::create ('admin/aaa/tag_articles/show.php')
                    ->with ('article', $obj)
                    ->get ();
     return View::create ('layout.php')

@@ -9,7 +9,9 @@
 
 class tag_articles extends RestfulController {
   public function index () {
-    $total = Article::count ();
+    $where = WhereBuilder::create ('tag_id = ?', $this->parent->id);
+
+    $total = Article::count ($where);
     
     $pgn = Pagination::info ($total);
     
@@ -17,7 +19,7 @@ class tag_articles extends RestfulController {
       'order' => 'id DESC',
       'offset' => $pgn['offset'],
       'limit' => $pgn['limit'],
-      'where' => array ('tag_id = ?', $this->parent->id)
+      'where' => $where
       ));
 
     $content = View::create ('tag_articles/index.php')
@@ -61,11 +63,9 @@ class tag_articles extends RestfulController {
     $posts['tag_id'] = $this->parent->id;
     $files = Input::file ();
     
-    if ($error = $validation ($posts, $files)) {
-      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
-      return URL::refresh (RestfulUrl::add ());
-    }
-    
+    if ($error = $validation ($posts, $files))
+      return refresh (RestfulUrl::add (), 'result.failure', '失敗！' . $error . '！');
+
     if ($error = Article::getTransactionError (function () use ($posts, $files) {
       if (!$obj = Article::create ($posts))
         return false;
@@ -76,13 +76,10 @@ class tag_articles extends RestfulController {
             return false;
       
       return true;
-    })) {
-      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
-      return URL::refresh (RestfulUrl::add ());
-    }
+    }))
+      return refresh (RestfulUrl::add (), 'result.failure', '失敗！' . $error . '！');
 
-    Session::setFlashData ('result.success', '成功！');
-    return URL::refresh (RestfulUrl::index ());
+    return refresh (RestfulUrl::index (), 'result.success', '成功！');
   }
   public function edit ($obj) {
     $content = View::create ('tag_articles/edit.php')
@@ -110,15 +107,12 @@ class tag_articles extends RestfulController {
     $posts = Input::post ();
     $files = Input::file ();
 
-    if ($error = $validation ($obj, $posts, $files)) {
-      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
-      return URL::refresh (RestfulUrl::edit ($obj));
-    }
-    
+    if ($error = $validation ($obj, $posts, $files))
+      return refresh (RestfulUrl::edit ($obj), 'result.failure', '失敗！' . $error . '！');
+
     if ($columns = array_intersect_key ($posts, $obj->table ()->columns))
       foreach ($columns as $column => $value)
         $obj->$column = $value;
-
 
     if ($error = Article::getTransactionError (function () use ($obj, $files) {
       if (!$obj->save ())
@@ -130,24 +124,16 @@ class tag_articles extends RestfulController {
             return false;
       
       return true;
-    })) {
-      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
-      return URL::refresh (RestfulUrl::edit ($obj));
-    };
+    }))
+      return refresh (RestfulUrl::edit ($obj), 'result.failure', '失敗！' . $error . '！');
 
-    Session::setFlashData ('result.success', '成功！');
-    return URL::refresh (RestfulUrl::index ());
+    return refresh (RestfulUrl::index (), 'result.success', '成功！');
   }
   public function destroy ($obj) {
-    if ($error = Article::getTransactionError (function () use ($obj) {
-      return $obj->destroy ();
-    })) {
-      Session::setFlashData ('result.failure', '失敗！' . $error . '！');
-      return URL::refresh (RestfulUrl::index ());
-    }
+    if ($error = Article::getTransactionError (function () use ($obj) { return $obj->destroy (); }))
+      return refresh (RestfulUrl::index (), 'result.failure', '失敗！' . $error . '！');
 
-    Session::setFlashData ('result.success', '成功！');
-    return URL::refresh (RestfulUrl::index ());
+    return refresh (RestfulUrl::index (), 'result.success', '成功！');
   }
   public function show ($obj) {
     $content = View::create ('tag_articles/show.php')

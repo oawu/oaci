@@ -47,4 +47,7 @@ class Load {
   public static function lib ($filename, $must = false, $eval = null) {
     return self::file (APPPATH . 'lib' . DIRECTORY_SEPARATOR . $filename, $must, $eval);
   }
+  public static function func ($filename, $must = false, $eval = null) {
+    return self::file (APPPATH . 'func' . DIRECTORY_SEPARATOR . $filename, $must, $eval);
+  }
 }

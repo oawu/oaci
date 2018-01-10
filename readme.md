@@ -1,4 +1,4 @@
-# Welcome to OA's CodeIgniter!
+# Welcome to OA's PHP Framework!
 * 這是一套 [OA Wu](https://www.ioa.tw/) 自家使用的 [PHP](http://php.net/) 框架。
 * 它是以 [CodeIgniter](https://www.codeigniter.com/) [v 3.1.6](https://codeload.github.com/bcit-ci/CodeIgniter/zip/3.1.6) 做基礎修改的。
 

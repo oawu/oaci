@@ -1449,6 +1449,10 @@ class Model
 	public static function count(/* ... */)
 	{
 		$args = func_get_args();
+
+		if ($args && is_object ($args[0]) && class_exists ('\WhereBuilder') && $args[0] instanceof \WhereBuilder)
+			$args[0] = array ('where' => $args[0]->toArray ());
+
 		$options = static::extract_and_validate_options($args);
 		$options['select'] = 'COUNT(*)';
 
