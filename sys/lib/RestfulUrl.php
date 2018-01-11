@@ -18,13 +18,13 @@ class RestfulUrl {
   public static function exception ($err) {
     throw new Exception ($err);
   }
-  public static function other ($key, $params = array ()) {
+  public static function url ($key, $params = array ()) {
     $key = explode ('@', $key);
     $file = array_shift ($key);
     $method = array_shift ($key);
 
     if (!isset (self::$list[$file][$method]))
-      throw new Exception ('RestfulUrl 設定 other 錯誤！');
+      throw new Exception ('RestfulUrl 設定 url 錯誤！');
 
     $params = array_orm_column ($params, 'id');
 
@@ -42,7 +42,7 @@ class RestfulUrl {
     $keys = array_keys (self::$list[$key]);
 
     return self::$urls = array_combine ($keys, array_map (function ($method, $value) use ($key, $parents) {
-      return RestfulUrl::other ($key . '@' . $method, $parents);
+      return RestfulUrl::url ($key . '@' . $method, $parents);
     }, $keys, self::$list[$key]));
   }
 

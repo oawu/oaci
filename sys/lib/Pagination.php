@@ -69,7 +69,7 @@ class Pagination {
       array_push ($links, array ('text' => Pagination::$nextText, 'offset' => $gets[$offsetKey] + 1, 'classes' => array (Pagination::$nextClass)));
 
     if ($end != $cnt)
-      array_push ($links, array ('text' => Pagination::$lastText, 'offset' => $end, 'classes' => array (Pagination::$lastClass)));
+      array_push ($links, array ('text' => Pagination::$lastText, 'offset' => $cnt, 'classes' => array (Pagination::$lastClass)));
 
     return array (
         'offset' => ($gets[$offsetKey] - 1) * $gets[$limitKey],

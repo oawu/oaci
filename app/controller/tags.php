@@ -14,9 +14,12 @@ class tags extends RestfulController {
     parent::__construct ();
 
     $flash = Session::getFlashData ('flash');
+    
+    $layout = View::create ('layout.php')
+                  ->with ('current_url', RestfulUrl::url ('tags@index'));
 
     $this->view = View::create ()
-                      ->appendTo (View::create ('layout.php'), 'content')
+                      ->appendTo ($layout, 'content')
                       ->with ('flash', $flash)
                       ->with ('params', $flash['params']);
   }

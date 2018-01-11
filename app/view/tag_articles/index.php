@@ -1,52 +1,43 @@
-<a href="<?php echo RestfulUrl::other ('tags@index');?>">回 Tags</a>
-<hr>
+<div class='info'>
+  <span>文章列表</span>
+  <span><a href="<?php echo RestfulUrl::url ('tags@index');?>">回 Tags</a></span>
+</div>
 
-<div><?php echo $parent->name;?> 下的文章，總筆數：<?php echo $total;?></div>
-<a href="<?php echo RestfulUrl::add ();?>">新增</a>
+<div class='info'>
+  <span>總筆數：<?php echo $total;?></span>
+  <span><a href="<?php echo RestfulUrl::add ();?>">新增</a></span>
+</div>
 
-<hr>
+<div class='msg <?php echo $flash['type'];?>'><?php echo $flash['msg'];?></div>
 
-<?php
-if ($success = Session::getFlashData ('result.success')) { ?>
-  <div style='border: 1px solid rgba(86, 145, 242, 1.00);background-color: rgba(86, 145, 242, .300);padding: 8px;'><?php echo $success;?></div>
-  <br>
-<?php
-}?>
-<?php
-if ($failure = Session::getFlashData ('result.failure')) { ?>
-  <div style='border: 1px solid rgba(233, 77, 68, 1.00);background-color: rgba(233, 77, 68, .300);padding: 8px;'><?php echo $failure;?></div>
-  <br>
-<?php
-}?>
-
-<table border='1'>
+<table class='table'>
   <thead>
     <tr>
-      <th>ID</th>
-      <th>封面</th>
+      <th width='50'>ID</th>
+      <th width='120'>封面</th>
       <th>標題</th>
-      <th>內容</th>
-      <th>編輯</th>
+      <th width='120'>分類</th>
+      <th width='120'>編輯</th>
     </tr>
   </thead>
   <tbody>
 <?php
-    if (!$articles) { ?>
+    if (!$objs) { ?>
       <tr>
         <td colspan='5'>沒有資料</td>
       </tr>
 <?php
     }
-    foreach ($articles as $article) { ?>
+    foreach ($objs as $obj) { ?>
       <tr>
-        <td><?php echo $article->id;?></td>
-        <td><?php echo $article->cover->toImageTag ('w100');?></td>
-        <td><?php echo $article->title;?></td>
-        <td><?php echo $article->content;?></td>
+        <td><?php echo $obj->id;?></td>
+        <td><?php echo $obj->cover->toDivImageTag ('w100', array ('class' => 'img'));?></td>
+        <td><?php echo $obj->title;?></td>
+        <td><?php echo $obj->tag ? $obj->tag->name : '';?></td>
         <td>
-          <a href="<?php echo RestfulUrl::show ($article);?>">檢視</a>
-          <a href="<?php echo RestfulUrl::edit ($article);?>">修改</a>
-          <a href="<?php echo RestfulUrl::destroy ($article);?>" data-method='delete'>刪除</a>
+          <a href="<?php echo RestfulUrl::show ($obj);?>">檢視</a>
+          <a href="<?php echo RestfulUrl::edit ($obj);?>">修改</a>
+          <a href="<?php echo RestfulUrl::destroy ($obj);?>" data-method='delete'>刪除</a>
         </td>
       </tr>
 <?php
@@ -54,4 +45,6 @@ if ($failure = Session::getFlashData ('result.failure')) { ?>
   </tbody>
 </table>
 
-<?php echo implode (' ', $pgn);?>
+<div class='pagination'>
+  <span><?php echo implode ('', $pagination);?></span>
+</div>

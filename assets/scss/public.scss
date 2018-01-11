@@ -114,6 +114,10 @@ h1 {
   border-bottom: 1px solid rgba(222, 222, 222, 1);
   @include clearfix();
 
+  // + .info {
+  //   border-bottom: 1px solid rgba(222, 222, 222, 0);
+  // }
+
   > * {
     float: left;
     display: inline-block;

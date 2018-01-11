@@ -29,7 +29,7 @@
         <td><?php echo $obj->id;?></td>
         <td><?php echo $obj->name;?></td>
         <td>
-          <a href="<?php echo RestfulUrl::other ('tag_articles@index', array ($obj));?>"><?php echo count ($obj->articles);?> 篇</a>
+          <a href="<?php echo RestfulUrl::url ('tag_articles@index', array ($obj));?>"><?php echo count ($obj->articles);?> 篇</a>
         </td>
         <td>
           <a href="<?php echo RestfulUrl::show ($obj);?>">檢視</a>

@@ -1,4 +1,4 @@
-<a href="<?php echo RestfulUrl::other ('admin/aaa/tags@index');?>">回 Tags</a>
+<a href="<?php echo RestfulUrl::url ('admin/aaa/tags@index');?>">回 Tags</a>
 <hr>
 
 <div><?php echo $parent->name;?> 下的文章，總筆數：<?php echo $total;?></div>

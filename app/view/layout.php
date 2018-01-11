@@ -17,8 +17,8 @@
     
     <div id='container'>
       <aside id='aside'>
-        <a href="<?php echo RestfulUrl::other ('tags@index');?>">標籤</a>
-        <a href="<?php echo RestfulUrl::other ('articles@index');?>">文章</a>
+        <a href="<?php echo $url = RestfulUrl::url ('tags@index');?>"<?php echo $current_url == $url ? ' class="a"' : '';?>>標籤</a>
+        <a href="<?php echo $url = RestfulUrl::url ('articles@index');?>"<?php echo $current_url == $url ? ' class="a"' : '';?>>文章</a>
       </aside>
       <main id='main'>
         <?php echo $content;?>

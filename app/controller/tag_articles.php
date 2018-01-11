@@ -8,137 +8,121 @@
  */
 
 class tag_articles extends RestfulController {
+  private $view = null;
+
+  public function __construct () {
+    parent::__construct ();
+
+    $flash = Session::getFlashData ('flash');
+
+    $layout = View::create ('layout.php')
+                  ->with ('current_url', RestfulUrl::url ('tags@index'));
+
+    $this->view = View::create ()
+                      ->appendTo ($layout, 'content')
+                      ->with ('parent', $this->parent)
+                      ->with ('flash', $flash)
+                      ->with ('params', $flash['params']);
+  }
+
   public function index () {
     $where = Where::create ('tag_id = ?', $this->parent->id);
 
     $total = Article::count ($where);
     
-    $pgn = Pagination::info ($total);
+    $page = Pagination::info ($total);
     
-    $articles = Article::find ('all', array (
-      'order' => 'id DESC',
-      'offset' => $pgn['offset'],
-      'limit' => $pgn['limit'],
-      'where' => $where
-      ));
+    $objs = Article::find ('all', array ('order' => 'id DESC', 'offset' => $page['offset'], 'limit' => $page['limit'], 'where' => $where));
 
-    $content = View::create ('tag_articles/index.php')
-                   ->with ('total', $total)
-                   ->with ('parent', $this->parent)
-                   ->with ('articles', $articles)
-                   ->with ('pgn', $pgn['links'])
-                   ->get ();
-
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+    return $this->view->setPath ('tag_articles/index.php')
+                      ->with ('total', $total)
+                      ->with ('objs', $objs)
+                      ->with ('pagination', $page['links'])
+                      ->output ();
   }
+
   public function add () {
-    $content = View::create ('tag_articles/add.php')
-                   ->get ();
-
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+    return $this->view->setPath ('tag_articles/add.php')
+                      ->output ();
   }
+
   public function create () {
     $validation = function (&$posts, &$files) {
-      $error = '';
+      Validation::need ($posts, 'title', '標題')->isStringOrNumber ()->doTrim ()->length (1, 255);
+      Validation::need ($posts, 'tag_id', '分類')->isNumber ('請選擇')->doTrim ()->greater (0);
+      Validation::maybe ($posts, 'content', '內容', '')->isStringOrNumber ()->doTrim ()->length (0);
+      Validation::need ($files, 'cover', '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024);
+    };
 
-      $error || isset ($posts['title']) || $error = '參數錯誤！';
-      $error || $error = Validation::create ($posts['title'], '標題')->isStringOrNumber ()->length (1, 255)->getError ();
-
-      $error || isset ($posts['tag_id']) || $error = '參數錯誤！';
-      $error || $error = Validation::create ($posts['tag_id'], 'Tag')->isNumber ()->greater (0)->getError ();
-
-      $error || isset ($posts['content']) && $error = Validation::create ($posts['content'], '內容')->isStringOrNumber ()->length (0)->getError ();
-
-      $error || isset ($files['cover']) || $error = '參數錯誤！';
-      $error || $error = Validation::create ($files['cover'], '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024)->getError ();
-
-      return $error;
+    $transaction = function ($posts, $files) {
+      return ($obj = Article::create ($posts))
+          && $obj->putFiles ($files);
     };
 
     $posts = Input::post ();
+    $files = Input::file ();
+
     $posts['tag_id'] = $this->parent->id;
-    $files = Input::file ();
     
-    if ($error = $validation ($posts, $files))
-      return refresh (RestfulUrl::add (), 'result.failure', '失敗！' . $error . '！');
+    if ($error = Validation::form ($validation, $posts, $files))
+      return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    if ($error = Article::getTransactionError (function () use ($posts, $files) {
-      if (!$obj = Article::create ($posts))
-        return false;
+    if ($error = Tag::getTransactionError ($transaction, $posts, $files))
+      return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-      foreach ($files as $key => $file)
-        if (isset ($files[$key]) && $files[$key] && $obj->$key instanceof Uploader)
-          if (!$obj->$key->put ($files[$key]))
-            return false;
-      
-      return true;
-    }))
-      return refresh (RestfulUrl::add (), 'result.failure', '失敗！' . $error . '！');
-
-    return refresh (RestfulUrl::index (), 'result.success', '成功！');
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！', 'params' => array ()));
   }
+
   public function edit ($obj) {
-    $content = View::create ('tag_articles/edit.php')
-                   ->with ('article', $obj)
-                   ->get ();
-
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+    return $this->view->setPath ('tag_articles/edit.php')
+                      ->with ('obj', $obj)
+                      ->output ();
   }
+
   public function update ($obj) {
-    $validation = function ($obj, &$posts, &$files) {
-      $error = '';
+    $validation = function (&$posts, &$files, $obj) {
+      Validation::maybe ($posts, 'title', '標題')->isStringOrNumber ()->doTrim ()->length (1, 255);
+      Validation::maybe ($posts, 'tag_id', '分類')->isNumber ('請選擇')->doTrim ()->greater (0);
+      Validation::maybe ($posts, 'content', '內容', '')->isStringOrNumber ()->doTrim ()->length (0);
 
-      $error || isset ($posts['title']) && $error = Validation::create ($posts['title'], '標題')->isStringOrNumber ()->length (1, 255)->getError ();
-      $error || isset ($posts['tag_id']) && $error = Validation::create ($posts['tag_id'], 'Tag')->isNumber ()->greater (0)->getError ();
-      $error || isset ($posts['content']) && $error = Validation::create ($posts['content'], '內容')->isStringOrNumber ()->length (0)->getError ();
-      
-      $obj->cover->getValue () || $error || isset ($files['cover']) || $error = '參數錯誤！';
-      $error || isset ($files['cover']) && $error = Validation::create ($files['cover'], '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024)->getError ();
+      if (!$obj->cover->getValue ())
+        Validation::need ($files, 'cover', '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024);
+      else
+        Validation::maybe ($files, 'cover', '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024);
 
-      return $error;
+      return '';
+    };
+
+    $transaction = function ($posts, $files, $obj) {
+      return $obj->columnsUpdate ($posts)
+          && $obj->save ()
+          && $obj->putFiles ($files);;
     };
 
     $posts = Input::post ();
     $files = Input::file ();
 
-    if ($error = $validation ($obj, $posts, $files))
-      return refresh (RestfulUrl::edit ($obj), 'result.failure', '失敗！' . $error . '！');
+    if ($error = Validation::form ($validation, $posts, $files, $obj))
+      return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    if ($columns = array_intersect_key ($posts, $obj->table ()->columns))
-      foreach ($columns as $column => $value)
-        $obj->$column = $value;
+    if ($error = Tag::getTransactionError ($transaction, $posts, $files, $obj))
+      return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    if ($error = Article::getTransactionError (function () use ($obj, $files) {
-      if (!$obj->save ())
-        return false;
-
-      foreach ($files as $key => $file)
-        if (isset ($files[$key]) && $files[$key] && $obj->$key instanceof Uploader)
-          if (!$obj->$key->put ($files[$key]))
-            return false;
-      
-      return true;
-    }))
-      return refresh (RestfulUrl::edit ($obj), 'result.failure', '失敗！' . $error . '！');
-
-    return refresh (RestfulUrl::index (), 'result.success', '成功！');
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！', 'params' => array ()));
   }
+
   public function destroy ($obj) {
     if ($error = Article::getTransactionError (function () use ($obj) { return $obj->destroy (); }))
-      return refresh (RestfulUrl::index (), 'result.failure', '失敗！' . $error . '！');
+      return refresh (RestfulUrl::index (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => array ()));
 
-    return refresh (RestfulUrl::index (), 'result.success', '成功！');
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！', 'params' => array ()));
   }
+
   public function show ($obj) {
     $content = View::create ('tag_articles/show.php')
                    ->with ('article', $obj)
                    ->get ();
+
     return View::create ('layout.php')
                ->with ('content', $content)
                ->output ();

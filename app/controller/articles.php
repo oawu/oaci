@@ -15,8 +15,11 @@ class articles extends RestfulController {
 
     $flash = Session::getFlashData ('flash');
 
+    $layout = View::create ('layout.php')
+                  ->with ('current_url', RestfulUrl::url ('articles@index'));
+
     $this->view = View::create ()
-                      ->appendTo (View::create ('layout.php'), 'content')
+                      ->appendTo ($layout, 'content')
                       ->with ('flash', $flash)
                       ->with ('params', $flash['params']);
   }

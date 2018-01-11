@@ -38,7 +38,7 @@ if ($failure = Session::getFlashData ('result.failure')) { ?>
         <td><?php echo $tag->id;?></td>
         <td><?php echo $tag->name;?></td>
         <td>
-          <a href="<?php echo RestfulUrl::other ('admin/aaa/tag_articles@index', array ($tag));?>">檢視(<?php echo count ($tag->articles);?>)</a>
+          <a href="<?php echo RestfulUrl::url ('admin/aaa/tag_articles@index', array ($tag));?>">檢視(<?php echo count ($tag->articles);?>)</a>
         </td>
         <td>
           <a href="<?php echo RestfulUrl::show ($tag);?>">檢視</a>
