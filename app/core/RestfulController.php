@@ -22,9 +22,14 @@ abstract class RestfulController extends Controller implements RestfulController
   public $parents = array ();
   public $parent = null;
 
-  // public function __construct () {
-  //   parent::__construct ();
-  // }
+  public function __construct () {
+    parent::__construct ();
+
+    Load::sysLib ('Pagination.php', true);
+    Load::sysLib ('Session.php', true);
+    Load::sysLib ('Validation.php', true);
+    Load::func ('url.php');
+  }
   
   public function _remap ($name, $params) {
     Router::$router || gg ('請設定正確的 Router RestfulUrl.');
@@ -53,12 +58,6 @@ abstract class RestfulController extends Controller implements RestfulController
 
     RestfulUrl::setUrls (implode('/', Router::$router['group']), $this->parents);
 
-    Load::sysLib ('Pagination.php', true);
-    Load::sysLib ('Session.php', true);
-    Load::sysLib ('Validation.php', true);
-    Load::func ('url.php');
-    
-    
     $this->parent = $this->parents ? $this->parents[count ($this->parents) - 1] : null;
 
     if (!in_array ($name, array ('edit', 'update', 'destroy', 'show')))

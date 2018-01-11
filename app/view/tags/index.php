@@ -43,5 +43,5 @@
 </table>
 
 <div class='pagination'>
-  <span><?php echo implode ('', $pgn);?></span>
+  <span><?php echo implode ('', $pagination);?></span>
 </div>

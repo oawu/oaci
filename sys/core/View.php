@@ -8,12 +8,18 @@
  */
 
 class View {
+  private $parent = null;
   private $path = '';
   private $vals = array ();
 
   public function __construct ($path = null) {
     $this->path = $path;
     $this->vals = array ();
+  }
+
+  public function appendTo (View $parent, $key) {
+    $this->parent = $parent->with ($key, $this);
+    return $this;
   }
 
   public function with ($key, $val = null) {
@@ -27,15 +33,26 @@ class View {
   }
 
   public function output () {
-    return View::load ($this->path, $this->vals);
+    return $this->parent === null ? View::load ($this->path, $this->getVals ()) : $this->parent->output ();
   }
+
   public function get () {
     return View::load ($this->path, $this->vals, true);
   }
 
   public function setPath ($path) {
+    $this->path = $path;
     return $this;
   }
+
+  public function getVals () {
+    return array_map (function ($t) { return $t instanceof View ? $t->get () : $t; }, $this->vals);
+  }
+
+  public function getPath () {
+    return $this->path;
+  }
+
   public function appendVal ($key, $val) {
     return $this->with ($key, $val);
   }

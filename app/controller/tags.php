@@ -8,40 +8,41 @@
  */
 
 class tags extends RestfulController {
+  private $view = null;
+
+  public function __construct () {
+    parent::__construct ();
+
+    $flash = Session::getFlashData ('flash');
+
+    $this->view = View::create ()
+                      ->appendTo (View::create ('layout.php'), 'content')
+                      ->with ('flash', $flash)
+                      ->with ('params', $flash['params'])
+                      ;
+  }
+
   public function index () {
     $where = Where::create ('status = ?', Tag::STATUS_ON);
     
     $total = Tag::count ($where);
 
-    $pgn = Pagination::info ($total);
+    $page = Pagination::info ($total);
 
-    $objs = Tag::find ('all', array ('order' => 'id DESC', 'offset' => $pgn['offset'], 'limit' => $pgn['limit'], 'include' => array ('articles'), 'where' => $where));
+    $objs = Tag::find ('all', array ('order' => 'id DESC', 'offset' => $page['offset'], 'limit' => $page['limit'], 'include' => array ('articles'), 'where' => $where));
 
-    $flash = Session::getFlashData ('flash');
-
-    $content = View::create ('tags/index.php')
-                   ->with ('flash', $flash)
-                   ->with ('total', $total)
-                   ->with ('objs', $objs)
-                   ->with ('pgn', $pgn['links'])
-                   ->get ();
-
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+    return $this->view->setPath ('tags/index.php')
+                      ->with ('total', $total)
+                      ->with ('objs', $objs)
+                      ->with ('pagination', $page['links'])
+                      ->output ();
   }
+
   public function add () {
-    $flash = Session::getFlashData ('flash');
-
-    $content = View::create ('tags/add.php')
-                   ->with ('flash', $flash)
-                   ->with ('params', $flash['params'])
-                   ->get ();
-
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+    return $this->view->setPath ('tags/add.php')
+                      ->output ();
   }
+
   public function create () {
     $validation = function (&$posts) {
       Validation::need ($posts, 'name', '名稱')->isStringOrNumber ()->doTrim ()->length (1, 255);
@@ -61,21 +62,15 @@ class tags extends RestfulController {
     if ($error = Tag::getTransactionError ($transaction, $posts))
       return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！', 'params' => array ()));
   }
+
   public function edit ($obj) {
-    $flash = Session::getFlashData ('flash');
-
-    $content = View::create ('tags/edit.php')
-                   ->with ('obj', $obj)
-                   ->with ('flash', $flash)
-                   ->with ('params', $flash['params'])
-                   ->get ();
-
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+    return $this->view->setPath ('tags/edit.php')
+                      ->with ('obj', $obj)
+                      ->output ();
   }
+
   public function update ($obj) {
     $validation = function (&$posts) {
       Validation::maybe ($posts, 'name', '名稱')->isStringOrNumber ()->doTrim ()->length (1, 255);
@@ -94,21 +89,19 @@ class tags extends RestfulController {
     if ($error = Tag::getTransactionError ($transaction, $posts, $obj))
       return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！', 'params' => array ()));
   }
+
   public function destroy ($obj) {
     if ($error = Tag::getTransactionError (function ($obj) { return $obj->destroy (); }, $obj))
-      return refresh (RestfulUrl::index (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error));
+      return refresh (RestfulUrl::index (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => array ()));
 
-    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！', 'params' => array ()));
   }
-  public function show ($obj) {
-    $content = View::create ('tags/show.php')
-                   ->with ('obj', $obj)
-                   ->get ();
 
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+  public function show ($obj) {
+    return $this->view->setPath ('tags/show.php')
+                      ->with ('obj', $obj)
+                      ->output ();
   }
 }

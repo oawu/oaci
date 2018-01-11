@@ -8,41 +8,41 @@
  */
 
 class articles extends RestfulController {
+  private $view = null;
+
+  public function __construct () {
+    parent::__construct ();
+
+    $flash = Session::getFlashData ('flash');
+
+    $this->view = View::create ()
+                      ->appendTo (View::create ('layout.php'), 'content')
+                      ->with ('flash', $flash)
+                      ->with ('pagination', $flash['params']);
+  }
+
   public function index () {
     $where = Where::create ();
 
     $total = Article::count ($where);
     
-    $pgn = Pagination::info ($total);
+    $page = Pagination::info ($total);
     
-    $objs = Article::find ('all', array ('order' => 'id DESC', 'offset' => $pgn['offset'], 'limit' => $pgn['limit'], 'where' => $where));
+    $objs = Article::find ('all', array ('order' => 'id DESC', 'offset' => $page['offset'], 'limit' => $page['limit'], 'where' => $where));
 
-    $flash = Session::getFlashData ('flash');
-
-    $content = View::create ('articles/index.php')
-                   ->with ('flash', $flash)
-                   ->with ('total', $total)
-                   ->with ('parent', $this->parent)
-                   ->with ('objs', $objs)
-                   ->with ('pgn', $pgn['links'])
-                   ->get ();
-
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+    return $this->view->setPath ('articles/index.php')
+                      ->with ('total', $total)
+                      ->with ('objs', $objs)
+                      ->with ('pgn', $page['links'])
+                      ->output ();
   }
+
   public function add () {
-    $flash = Session::getFlashData ('flash');
-    
-    $content = View::create ('articles/add.php')
-                   ->with ('flash', $flash)
-                   ->with ('params', $flash['params'])
-                   ->get ();
 
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+    return $this->view->setPath ('articles/add.php')
+                      ->output ();
   }
+
   public function create () {
     $validation = function (&$posts, &$files) {
       Validation::need ($posts, 'title', '標題')->isStringOrNumber ()->doTrim ()->length (1, 255);
@@ -72,21 +72,15 @@ class articles extends RestfulController {
     if ($error = Tag::getTransactionError ($transaction, $posts, $files))
       return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！', 'params' => array ()));
   }
+
   public function edit ($obj) {
-    $flash = Session::getFlashData ('flash');
-
-    $content = View::create ('articles/edit.php')
-                   ->with ('obj', $obj)
-                   ->with ('flash', $flash)
-                   ->with ('params', $flash['params'])
-                   ->get ();
-
-    return View::create ('layout.php')
-               ->with ('content', $content)
-               ->output ();
+    return $this->view->setPath ('articles/edit.php')
+                      ->with ('obj', $obj)
+                      ->output ();
   }
+
   public function update ($obj) {
     $validation = function (&$posts, &$files, $obj) {
       Validation::maybe ($posts, 'title', '標題')->isStringOrNumber ()->doTrim ()->length (1, 255);
@@ -124,14 +118,16 @@ class articles extends RestfulController {
     if ($error = Tag::getTransactionError ($transaction, $posts, $files, $obj))
       return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！', 'params' => array ()));
   }
+
   public function destroy ($obj) {
     if ($error = Article::getTransactionError (function () use ($obj) { return $obj->destroy (); }))
-      return refresh (RestfulUrl::index (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error));
+      return refresh (RestfulUrl::index (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => array ()));
 
-    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！', 'params' => array ()));
   }
+
   public function show ($obj) {
     $content = View::create ('articles/show.php')
                    ->with ('article', $obj)
