@@ -1,5 +1,5 @@
 <div class='info'>
-  <span>文章列表</span>
+  <span><?php echo $parent->name;?> 的文章列表</span>
   <span><a href="<?php echo RestfulUrl::url ('tags@index');?>">回 Tags</a></span>
 </div>
 

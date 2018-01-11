@@ -18,9 +18,10 @@ interface RestfulControllerInterface {
 }
 
 abstract class RestfulController extends Controller implements RestfulControllerInterface {
-  public $obj = null;
-  public $parents = array ();
-  public $parent = null;
+  protected $view = null;
+  protected $obj = null;
+  protected $parents = array ();
+  protected $parent = null;
 
   public function __construct () {
     parent::__construct ();
@@ -29,6 +30,8 @@ abstract class RestfulController extends Controller implements RestfulController
     Load::sysLib ('Session.php', true);
     Load::sysLib ('Validation.php', true);
     Load::func ('url.php');
+
+    $this->view = View::create ();
   }
   
   public function _remap ($name, $params) {
@@ -59,6 +62,9 @@ abstract class RestfulController extends Controller implements RestfulController
     RestfulUrl::setUrls (implode('/', Router::$router['group']), $this->parents);
 
     $this->parent = $this->parents ? $this->parents[count ($this->parents) - 1] : null;
+    
+    $this->view->with ('parent', $this->parent)
+               ->with ('parents', $this->parents);
 
     if (!in_array ($name, array ('edit', 'update', 'destroy', 'show')))
       return call_user_func_array (array ($this, $name), $this->parents);

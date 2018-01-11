@@ -8,7 +8,6 @@
  */
 
 class articles extends RestfulController {
-  private $view = null;
 
   public function __construct () {
     parent::__construct ();
@@ -18,10 +17,9 @@ class articles extends RestfulController {
     $layout = View::create ('layout.php')
                   ->with ('current_url', RestfulUrl::url ('articles@index'));
 
-    $this->view = View::create ()
-                      ->appendTo ($layout, 'content')
-                      ->with ('flash', $flash)
-                      ->with ('params', $flash['params']);
+    $this->view->appendTo ($layout, 'content')
+               ->with ('flash', $flash)
+               ->with ('params', $flash['params']);
   }
 
   public function index () {

@@ -9,5 +9,28 @@
 
 class main extends Controller {
   public function index () {
+    // // Output::json (array (
+    // //     'a' => [123],
+    // //   ));
+    
+    // // 讀取檔案
+    // $file = file_get_contents (FCPATH . 'tmp/log.log');
+    
+    // // 每行切割成陣列
+    // $lines = explode ("\n", $file);
+    
+    // // 每行處理
+    // $data = array ();
+    // foreach ($lines as $line) {
+    //   $line = explode ('|', $line);
+    //   $data[$line[0]] = $line[1];
+    // }
+
+    // $search = 'b';
+
+
+    // echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+    // var_dump ($data[$search]);
+    // exit ();
   }
 }
