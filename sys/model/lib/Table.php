@@ -181,7 +181,7 @@ class Table
 				if (is_string($options['where']))
 					$options['where'] = array($options['where']);
 
-				if (is_object ($options['where']) && class_exists ('\WhereBuilder') && $options['where'] instanceof \WhereBuilder)
+				if (is_object ($options['where']) && class_exists ('\Where') && $options['where'] instanceof \Where)
 					$options['where'] = $options['where']->toArray ();
 
 				call_user_func_array(array($sql,'where'),$options['where']);

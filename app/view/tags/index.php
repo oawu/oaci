@@ -1,28 +1,19 @@
-<div>總筆數：<?php echo $total;?></div>
-<a href="<?php echo RestfulUrl::add ();?>">新增</a>
+<h1>標籤列表</h1>
 
-<hr>
+<div class='info'>
+  <span>總筆數：<?php echo $total;?></span>
+  <span><a href="<?php echo RestfulUrl::add ();?>">新增</a></span>
+</div>
 
-<?php
-if ($success = Session::getFlashData ('result.success')) { ?>
-  <div style='border: 1px solid rgba(86, 145, 242, 1.00);background-color: rgba(86, 145, 242, .300);padding: 8px;'><?php echo $success;?></div>
-  <br>
-<?php
-}?>
-<?php
-if ($failure = Session::getFlashData ('result.failure')) { ?>
-  <div style='border: 1px solid rgba(233, 77, 68, 1.00);background-color: rgba(233, 77, 68, .300);padding: 8px;'><?php echo $failure;?></div>
-  <br>
-<?php
-}?>
+<div class='msg <?php echo $flash['type'];?>'><?php echo $flash['msg'];?></div>
 
-<table border='1'>
+<table class='table'>
   <thead>
     <tr>
-      <th>ID</th>
+      <th width='50'>ID</th>
       <th>名稱</th>
-      <th>文章</th>
-      <th>編輯</th>
+      <th width='100'>文章數</th>
+      <th width='120'>編輯</th>
     </tr>
   </thead>
   <tbody>
@@ -38,7 +29,7 @@ if ($failure = Session::getFlashData ('result.failure')) { ?>
         <td><?php echo $tag->id;?></td>
         <td><?php echo $tag->name;?></td>
         <td>
-          <a href="<?php echo RestfulUrl::other ('tag_articles@index', array ($tag));?>">檢視(<?php echo count ($tag->articles);?>)</a>
+          <a href="<?php echo RestfulUrl::other ('tag_articles@index', array ($tag));?>"><?php echo count ($tag->articles);?> 篇</a>
         </td>
         <td>
           <a href="<?php echo RestfulUrl::show ($tag);?>">檢視</a>
@@ -51,4 +42,6 @@ if ($failure = Session::getFlashData ('result.failure')) { ?>
   </tbody>
 </table>
 
-<?php echo implode (' ', $pgn);?>
+<div class='pagination'>
+  <span><?php echo implode ('', $pgn);?></span>
+</div>

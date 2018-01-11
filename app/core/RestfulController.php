@@ -30,7 +30,7 @@ abstract class RestfulController extends Controller implements RestfulController
     Router::$router || gg ('請設定正確的 Router RestfulUrl.');
 
     $this->parents = array_filter (array_map (function ($param) {
-      $where = WhereBuilder::create ();
+      $where = Where::create ();
       is_numeric ($param[1]) ? $where->and ('id = ?', $param[1]) : gg ('ID 資訊錯誤！');
 
       if (is_string ($param[0]) && class_exists ($class = $param[0]))

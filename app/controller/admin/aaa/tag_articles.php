@@ -9,7 +9,7 @@
 
 class tag_articles extends RestfulController {
   public function index () {
-    $where = WhereBuilder::create ('tag_id = ?', $this->parent->id);
+    $where = Where::create ('tag_id = ?', $this->parent->id);
 
     $total = Article::count ($where);
     

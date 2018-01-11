@@ -15,11 +15,17 @@ class Pagination {
   public static $lastClass = 'l';
   public static $pageClass = '';
 
+  public static $firstText = '第一頁';
+  public static $lastText = '最後頁';
+  public static $prevText = '上一頁';
+  public static $nextText = '下一頁';
+
+
   public static $limitD4 = 10;
   public static $offsetKey = 'offset';
   public static $limitKey = 'limit';
   
-  public static function info ($total, $limit = null, $max = 5) {
+  public static function info ($total, $limit = null, $max = 3) {
     $gets = Input::get ();
 
     $offsetKey = Pagination::$offsetKey;
@@ -51,19 +57,19 @@ class Pagination {
     $links = array ();
     
     if ($start != 1)
-      array_push ($links, array ('text' => '第一頁', 'offset' => 1, 'classes' => array (Pagination::$firstClass)));
+      array_push ($links, array ('text' => Pagination::$firstText, 'offset' => 1, 'classes' => array (Pagination::$firstClass)));
 
     if ($start != $gets[$offsetKey])
-      array_push ($links, array ('text' => '上一頁', 'offset' => $gets[$offsetKey] - 1, 'classes' => array (Pagination::$prevClass)));
+      array_push ($links, array ('text' => Pagination::$prevText, 'offset' => $gets[$offsetKey] - 1, 'classes' => array (Pagination::$prevClass)));
 
     for ($i = $start; $i <= $end; $i++)
       array_push ($links, array ('text' => $i, 'offset' => $i, 'classes' => array (Pagination::$pageClass, $i == $gets[$offsetKey] ? Pagination::$activeClass : '')));
 
     if ($end != $gets[$offsetKey])
-      array_push ($links, array ('text' => '下一頁', 'offset' => $gets[$offsetKey] + 1, 'classes' => array (Pagination::$nextClass)));
+      array_push ($links, array ('text' => Pagination::$nextText, 'offset' => $gets[$offsetKey] + 1, 'classes' => array (Pagination::$nextClass)));
 
     if ($end != $cnt)
-      array_push ($links, array ('text' => '最後頁', 'offset' => $end, 'classes' => array (Pagination::$lastClass)));
+      array_push ($links, array ('text' => Pagination::$lastText, 'offset' => $end, 'classes' => array (Pagination::$lastClass)));
 
     return array (
         'offset' => ($gets[$offsetKey] - 1) * $gets[$limitKey],

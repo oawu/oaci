@@ -9,7 +9,7 @@
 
 class tags extends RestfulController {
   public function index () {
-    $where = WhereBuilder::create ('status = ?', Tag::STATUS_ON);
+    $where = Where::create ('status = ?', Tag::STATUS_ON);
     
     $total = Tag::count ($where);
 

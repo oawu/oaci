@@ -15,3 +15,11 @@ if (!function_exists ('refresh')) {
     return URL::refresh ($url);
   }
 }
+if (!function_exists ('asset')) {
+  function asset () {
+    $args = func_get_args ();
+    $args = ltrim (preg_replace ('/\/+/', '/', implode ('/', array_2d_to_1d ($args))), '/');
+    
+    return URL::base ($args);
+  }
+}

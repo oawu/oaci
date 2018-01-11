@@ -7,7 +7,7 @@
  * @link        https://www.ioa.tw/
  */
 
-class WhereBuilder {
+class Where {
   private $where = array ();
 
   public function __construct ($where = array ()) {
@@ -23,14 +23,14 @@ class WhereBuilder {
 
   public static function create () {
     if (!$args = func_get_args ())
-      return new WhereBuilder (array ());
+      return new Where (array ());
 
     $where = array_shift ($args);
 
     if (is_string ($where))
       $where = call_user_func_array (array ('self', 'and'), array_merge (array (array ()), array ($where), $args));
 
-    return new WhereBuilder ($where);
+    return new Where ($where);
   }
 
   public function __call ($name, $arguments) {

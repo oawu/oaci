@@ -19,7 +19,7 @@ gulp.task ('default', function () {
     var path = __dirname.replace (/\\/g,'/').split (/\//);
     if (path.length < 3) return console.log (colors.red ('\n\n !!! 錯誤 !!! 資料夾位置有誤！\n\n'));
     path.pop ();
-    var content = buffer.replace (/http_path\s*=\s*"([\/A-Za-z0-9_-]*)"/g, 'http_path = "/' + path.pop () + '"');
+    var content = buffer.replace (/http_path\s*=\s*"([\/A-Za-z0-9_-]*)"/g, 'http_path = "/assets"');
     
     writeFile ('config.rb', content, function(err) {
       if (err) return console.log ('\n ' + colors.red ('•') + colors.red (' [錯誤] ') + '寫入檔案失敗！');
@@ -86,7 +86,7 @@ gulp.task ('watch', function () {
     var path = __dirname.replace (/\\/g,'/').split (/\//);
     if (path.length < 3) return console.log (colors.red ('\n\n !!! 錯誤 !!! 資料夾位置有誤！\n\n'));
     path.pop ();
-    var content = buffer.replace (/http_path\s*=\s*"([\/A-Za-z0-9_-]*)"/g, 'http_path = "/' + path.pop () + '"');
+    var content = buffer.replace (/http_path\s*=\s*"([\/A-Za-z0-9_-]*)"/g, 'http_path = "/assets"');
     
     writeFile ('config.rb', content, function(err) {
       if (err) return console.log ('\n ' + colors.red ('•') + colors.red (' [錯誤] ') + '寫入檔案失敗！');

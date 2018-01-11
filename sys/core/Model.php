@@ -32,13 +32,14 @@ if (!function_exists ('use_model')) {
     class_alias ('ActiveRecord\Connection', 'ModelConnection');
     
     class Model extends ActiveRecord\Model {
-      public static function getTransactionError ($callback = null) {
+      public static function getTransactionError ($closure) {
+        if (!(($args = func_get_args ()) && is_callable ($args[0])))
+          return false;
+
         $class = get_called_class ();
-        return is_callable ($callback) && $class::transaction ($callback) ? null : '資料庫處理錯誤！';
+        return  call_user_func_array (array ($class, 'transaction'), $args) ? null : '資料庫處理錯誤！';
       }
     }
-
-
 
     spl_autoload_register (function ($class) {
       if (class_exists ($class, false))
@@ -47,12 +48,13 @@ if (!function_exists ('use_model')) {
       if (preg_match ("/Uploader$/", $class))
         Load::sysLib ('Uploader' . EXT) || gg ('找不到 Model 相關工具：' . $class);
 
-      if ($class === 'WhereBuilder')
-        Load::sysLib ('WhereBuilder' . EXT) || gg ('找不到 Model 相關工具：' . $class);
+      if ($class === 'Where')
+        Load::sysLib ('Where' . EXT) || gg ('找不到 Model 相關工具：' . $class);
     });
 
     // Load::sysLib ('Uploader.php');
-    // Load::sysLib ('WhereBuilder.php');
+    // Load::sysLib ('Where.php');
+
     if (!function_exists ('array_orm_column')) {
       function array_orm_column ($arr, $key) {
         return array_map (function ($t) use ($key) {

@@ -7,12 +7,23 @@
 
     <title></title>
 
-    <!-- <link href="css/icon.css" rel="stylesheet" type="text/css" /> -->
-    <script src="/assets/js/jquery_v1.10.2/jquery-1.10.2.min.js" language="javascript" type="text/javascript" ></script>
-    <script src="/assets/js/jquery-rails_d2015_03_09/jquery_ujs.js" language="javascript" type="text/javascript" ></script>
+    <link href="<?php echo asset ('/assets/css/public.css');?>" rel="stylesheet" type="text/css" />
+
+    <script src="<?php echo asset ('/assets/js/jquery_v1.10.2/jquery-1.10.2.min.js');?>" language="javascript" type="text/javascript" ></script>
+    <script src="<?php echo asset ('/assets/js/jquery-rails_d2015_03_09/jquery_ujs.js');?>" language="javascript" type="text/javascript" ></script>
 
   </head>
   <body lang="zh-tw">
-    <?php echo $content;?>
+    
+    <div id='container'>
+      <aside id='aside'>
+        <a href="<?php echo RestfulUrl::other ('tags@index');?>">標籤</a>
+        <a href="<?php echo RestfulUrl::other ('articles@index');?>">文章</a>
+      </aside>
+      <main id='main'>
+        <?php echo $content;?>
+      </main>
+    </div>
+
   </body>
 </html>

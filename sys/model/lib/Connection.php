@@ -398,6 +398,7 @@ abstract class Connection
 	{
 		if (!$this->connection->commit())
 			throw new DatabaseException($this);
+		return true;
 	}
 
 	/**
@@ -407,6 +408,7 @@ abstract class Connection
 	{
 		if (!$this->connection->rollback())
 			throw new DatabaseException($this);
+		return true;
 	}
 
 	/**

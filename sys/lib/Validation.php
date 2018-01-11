@@ -219,62 +219,69 @@ class Validation {
 
     return $this;
   }
-  public function isUploadFile () {
+
+
+
+
+  public function isUploadFile ($error = null) {
     if ($this->error)
       return $this;
     
-    is_array ($this->val) && count ($this->val) == 5 && isset ($this->val['name'], $this->val['type'], $this->val['tmp_name'], $this->val['error'], $this->val['size']) || $this->error = $this->title . '格式必須是上傳檔案';
+    is_array ($this->val) && count ($this->val) == 5 && isset ($this->val['name'], $this->val['type'], $this->val['tmp_name'], $this->val['error'], $this->val['size']) || $this->error = $this->title . ($error ? $error : '格式必須是上傳檔案');
 
     return $this;
   }
 
-  public function isString () {
+  public function isString ($error = null) {
     if ($this->error)
       return $this;
 
-    is_string ($this->val) || $this->error = $this->title . '格式必須是字串';
+    is_string ($this->val) || $this->error = $this->title . ($error ? $error : '格式必須是字串');
     return $this;
   }
 
-  public function isNumber () {
+  public function isNumber ($error = null) {
     if ($this->error)
       return $this;
 
-    is_numeric ($this->val) || $this->error = $this->title . '格式必須是數字';
+    is_numeric ($this->val) || $this->error = $this->title . ($error ? $error : '格式必須是數字');
     return $this;
   }
 
-  public function isStringOrNumber () {
+  public function isStringOrNumber ($error = null) {
     if ($this->error)
       return $this;
 
-    is_string ($this->val) || is_numeric ($this->val) || $this->error = $this->title . '需要是字串或數字';
+    is_string ($this->val) || is_numeric ($this->val) || $this->error = $this->title . ($error ? $error : '需要是字串或數字');
     return $this;
   }
 
-  public function isArray () {
+  public function isArray ($error = null) {
     if ($this->error)
       return $this;
 
-    is_array ($this->val) || $this->error = $this->title . '格式必須是陣列';
+    is_array ($this->val) || $this->error = $this->title . ($error ? $error : '格式必須是陣列');
     return $this;
   }
 
-  public function isNull () {
+  public function isNull ($error = null) {
     if ($this->error)
       return $this;
 
-    $this->val === null || $this->error = $this->title . '格式必須是 NULL';
+    $this->val === null || $this->error = $this->title . ($error ? $error : '格式必須是 NULL');
     return $this;
   }
 
-  public function isNotNull () {
+  public function isNotNull ($error = null) {
     if ($this->error)
       return $this;
 
-    $this->val !== null || $this->error = $this->title . '格式必須是非 NULL';
+    $this->val !== null || $this->error = $this->title . ($error ? $error : '格式必須是非 NULL');
     return $this;
   }
+
+
+  
 
   public static function create (&$val, $title = '') {
     return new Validation ($val, $title);

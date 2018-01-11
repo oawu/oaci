@@ -9,7 +9,7 @@
 
 class tags extends RestfulController {
   public function index () {
-    $where = WhereBuilder::create ('status = ?', Tag::STATUS_ON);
+    $where = Where::create ('status = ?', Tag::STATUS_ON);
     
     $total = Tag::count ($where);
 
@@ -23,7 +23,10 @@ class tags extends RestfulController {
       'where' => $where
       ));
 
+    $flash = Session::getFlashData ('flash');
+
     $content = View::create ('tags/index.php')
+                   ->with ('flash', $flash)
                    ->with ('total', $total)
                    ->with ('tags', $tags)
                    ->with ('pgn', $pgn['links'])
@@ -34,7 +37,11 @@ class tags extends RestfulController {
                ->output ();
   }
   public function add () {
+    $flash = Session::getFlashData ('flash');
+
     $content = View::create ('tags/add.php')
+                   ->with ('flash', $flash)
+                   ->with ('params', $flash['params'])
                    ->get ();
 
     return View::create ('layout.php')
@@ -43,31 +50,43 @@ class tags extends RestfulController {
   }
   public function create () {
     $validation = function (&$posts) {
-      $error = '';
+      if (!isset ($posts['name']))
+        return '請填寫 名稱';
 
-      $error || isset ($posts['name']) || $error = '參數錯誤！';
-      $error || $error = Validation::create ($posts['name'], '名稱')->isStringOrNumber ()->length (1, 255)->getError ();
+      if ($error = Validation::create ($posts['name'], '名稱')->isStringOrNumber ()->length (1, 255)->getError ())
+        return $error;
 
-      $error || isset ($posts['status']) || $error = '參數錯誤！';
-      $error || $error = Validation::create ($posts['status'], '狀態')->isNumber ()->inArray (array_keys (Tag::$statusNames))->getError ();
+      if (!isset ($posts['status']))
+        return '請填寫 狀態';
 
-      return $error;
+      if ($error = Validation::create ($posts['status'], '狀態')->isStringOrNumber ()->inArray (array_keys (Tag::$statusNames))->getError ())
+        return $error;
+
+      return '';
+    };
+
+    $transaction = function ($posts) {
+      return Tag::create ($posts);
     };
 
     $posts = Input::post ();
     $posts['status'] = Tag::STATUS_ON;
 
     if ($error = $validation ($posts))
-      return refresh (RestfulUrl::add (), 'result.failure', '失敗！' . $error . '！');
+      return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    if ($error = Tag::getTransactionError (function () use ($posts) { return Tag::create ($posts); }))
-      return refresh (RestfulUrl::add (), 'result.failure', '失敗！' . $error . '！');
+    if ($error = Tag::getTransactionError ($transaction, $posts))
+      return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    return refresh (RestfulUrl::index (), 'result.success', '成功！');
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
   }
   public function edit ($obj) {
+    $flash = Session::getFlashData ('flash');
+
     $content = View::create ('tags/edit.php')
                    ->with ('tag', $obj)
+                   ->with ('flash', $flash)
+                   ->with ('params', $flash['params'])
                    ->get ();
 
     return View::create ('layout.php')
@@ -76,38 +95,44 @@ class tags extends RestfulController {
   }
   public function update ($obj) {
     $validation = function ($obj, &$posts) {
-      $error = '';
+      if (isset ($posts['name']) && ($error = Validation::create ($posts['name'], '名稱')->isStringOrNumber ()->length (1, 255)->getError ()))
+        return $error;
 
-      $error || isset ($posts['name']) && $error = Validation::create ($posts['name'], '名稱')->isStringOrNumber ()->length (1, 255)->getError ();
-      $error || isset ($posts['status']) && $error = Validation::create ($posts['status'], '狀態')->isNumber ()->inArray (array_keys (Tag::$statusNames))->getError ();
+      if (isset ($posts['status']) && ($error = Validation::create ($posts['status'], '狀態')->isStringOrNumber ()->inArray (array_keys (Tag::$statusNames))->getError ()))
+        return $error;
 
-      return $error;
+      return '';
+    };
+
+    $transaction = function ($obj) {
+      return $obj->save ();
     };
 
     $posts = Input::post ();
 
     if ($error = $validation ($obj, $posts))
-      return refresh (RestfulUrl::edit ($obj), 'result.failure', '失敗！' . $error . '！');
+      return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
     if ($columns = array_intersect_key ($posts, $obj->table ()->columns))
       foreach ($columns as $column => $value)
         $obj->$column = $value;
 
-    if ($error = Tag::getTransactionError (function () use ($obj) { return $obj->save (); }))
-      return refresh (RestfulUrl::edit ($obj), 'result.failure', '失敗！' . $error . '！');
+    if ($error = Tag::getTransactionError ($transaction, $obj))
+      return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    return refresh (RestfulUrl::index (), 'result.success', '成功！');
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
   }
   public function destroy ($obj) {
-    if ($error = Tag::getTransactionError (function () use ($obj) { return $obj->destroy (); }))
-      return refresh (RestfulUrl::index (), 'result.failure', '失敗！' . $error . '！');
+    if ($error = Tag::getTransactionError (function ($obj) { return $obj->destroy (); }, $obj))
+      return refresh (RestfulUrl::index (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error));
 
-    return refresh (RestfulUrl::index (), 'result.success', '成功！');
+    return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
   }
   public function show ($obj) {
     $content = View::create ('tags/show.php')
                    ->with ('tag', $obj)
                    ->get ();
+
     return View::create ('layout.php')
                ->with ('content', $content)
                ->output ();

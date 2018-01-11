@@ -17,6 +17,7 @@ class Article extends Model {
   );
 
   static $belongs_to = array (
+    array ('tag')
   );
 
   public function __construct ($attrs = array (), $guardAttrs = true, $instantiatingViafind = false, $newRecord = true) {

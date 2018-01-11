@@ -106,6 +106,9 @@ class Uploader {
   public function toImageTag ($key = '', $attrs = array ()) { // $attrs = array ('class' => 'i')
     return ($url = ($url = $this->url ($key)) ? $url : $this->d4Url ()) ? '<img src="' . $url . '"' . ($attrs ? ' ' . implode (' ', array_map (function ($key, $value) { return $key . '="' . $value . '"'; }, array_keys ($attrs), $attrs)) : '') . '>' : '';
   }
+  public function toDivImageTag ($key = '', $attrs = array ()) { // $attrs = array ('class' => 'i')
+    return ($str = $this->toImageTag ($key)) ? '<div' . ($attrs ? ' ' . implode (' ', array_map (function ($key, $value) { return $key . '="' . $value . '"'; }, array_keys ($attrs), $attrs)) : '') . '>' . $str . '</div>' : '';
+  }
   public function url ($key = '') {
     switch ($this->getDriver ()) {
       case 'local':

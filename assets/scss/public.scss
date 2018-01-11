@@ -30,12 +30,322 @@ html {
 
     color: rgba(90, 90, 90, 1.00);
     text-align: center;
-    font-size: medium;
+    font-size: 14px;
     font-family: Roboto, RobotoDraft, Helvetica, Arial, sans-serif, "微軟正黑體", "Microsoft JhengHei";
 
-    background: $mainBackgroundColor;
-    background-image: $mainBackgroundImage;
+    background: rgba(250, 250, 250, 1);
 
     @include font-smoothing(antialiased);
+  }
+}
+
+a {
+  @include a(1px);
+}
+
+#container {
+  display: inline-block;
+  width: 960px;
+  // @include box-shadow(0 0 2px rgba(0, 0, 0, .3));
+
+  @include clearfix();
+  > * {
+    float: left;
+    display: inline-block;
+    width: 200px - 10px;
+    + * {
+      width: calc(100% - 200px);
+      margin-left: 10px;
+    }
+  }
+}
+
+#aside {
+  border: 1px solid rgba(222, 222, 222, 1);
+  background-color: white;
+  margin-top: 8px;
+  @include border-radius(3px);
+  
+  > * {
+    display: block;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    color: rgba(100, 100, 100, 1);
+    text-align: left;
+    @include transition(color .3s);
+
+    + * {
+      border-top: 1px solid rgba(222, 222, 222, 1);
+    }
+    &:hover {
+      color: rgba(75, 75, 75, 1);
+    }
+    &.a {
+      color: rgba(76, 140, 241, 1.00);
+      font-weight: bold;
+    }
+
+    &:hover {
+      border-bottom-color: transparent;
+    }
+  }
+}
+#main {
+  // border: 1px solid rgba(255, 0, 0, .3);
+  // border: 1px solid rgba(222, 222, 222, 1);
+  // background-color: white;
+  // @include border-radius(3px);
+}
+
+
+h1 {
+  display: block;
+  font-size: 20px;
+  margin: 0;
+  text-align: left;
+  padding: 0 8px;
+}
+.info {
+  display: block;
+  height: 45px;
+  line-height: 45px;
+  padding: 0 8px;
+  border-bottom: 1px solid rgba(222, 222, 222, 1);
+  @include clearfix();
+
+  > * {
+    float: left;
+    display: inline-block;
+    width: 50%;
+    text-align: left;
+    + * {
+      text-align: right;
+    }
+  }
+}
+.msg {
+  margin-top: 16px;
+  border: 1px solid rgba(255, 0, 0, .3);
+  display: block;
+  padding: 4px 8px;
+  text-align: left;
+  @include border-radius(2px);
+  
+  &.success {
+    color: rgba(62, 117, 63, 1.00);
+    background-color: rgba(224, 240, 217, 1.00);
+    border: 1px solid rgba(215, 233, 199, 1.00);
+  }
+  &.info {
+    color: rgba(52, 112, 141, 1.00);
+    background-color: rgba(218, 237, 247, 1.00);
+    border: 1px solid rgba(190, 232, 240, 1.00);
+  }
+  &.danger, &.failure {
+    color: rgba(167, 69, 68, 1.00);
+    background-color: rgba(242, 222, 222, 1.00);
+    border: 1px solid rgba(234, 204, 209, 1.00);
+  }
+  &:empty {
+    display: none;
+  }
+}
+
+.table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: separate;
+  margin-top: 16px;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 1.00);
+  padding: 8px 10px;
+  border: 1px solid rgba(222, 222, 222, 1);
+  @include border-radius(2px);
+
+  thead {
+    tr {
+      th {
+        padding: 5px;
+        border-bottom: 1px solid rgba(200, 200, 200, 1);
+      }
+    }
+  }
+  tbody {
+    tr {
+      td {
+        padding: 5px;
+        &[colspan] {
+          text-align: center;
+          padding: 10px;
+          font-weight: bold;
+          @include opacity(.4);
+        }
+        &:empty {
+          &:before {
+            content: '-';
+            @include opacity(.4);
+          }
+        }
+      }
+      + tr {
+        td {
+          border-top: 1px solid rgba(200, 200, 200, 1);
+        }
+      }
+    }
+  }
+}
+.pagination {
+  display: inline-block;
+  width: 100%;
+  margin-top: 16px;
+  text-align: right;
+  
+  > span {
+    display: inline-block;
+    text-align: center;
+
+    @include clearfix();
+    border: 1px solid rgba(222, 222, 222, 1);
+    @include border-radius(2px);
+
+    > * {
+      float: left;
+      display: inline-block;
+      height: 30px;
+      min-width: 30px;
+      line-height: 30px;
+      padding: 0 4px;
+      background-color: white;
+      color: rgba(145, 145, 145, 1);
+      
+      + * {
+        border-left: 1px solid rgba(222, 222, 222, 1);
+      }
+      @include transition(color .3s, font-weight .3s);
+      
+      &.a {
+        // border-bottom: 1px solid rgba(66, 133, 244, 1.00);
+        color: rgba(100, 100, 100, 1);
+        font-weight: bold;
+      }
+      &:hover {
+        font-weight: bold;
+        border-bottom: 0;
+      }
+    }
+  }
+}
+
+.img {
+  height: 50px;
+  width: 70px;
+  overflow: hidden;
+  position: relative;
+  margin: 4px 0;
+
+  &:after {
+    content: '';
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, .3);
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  img {
+    width: 100%;
+  }
+  &:empty {
+    display: none;
+  }
+}
+.form {
+  display: inline-block;
+  width: 100%;
+  margin-top: 16px;
+  text-align: left;
+  padding: 4px 8px;
+  > *:not([type='hidden']) {
+    + * {
+      margin-top: 12px;
+    }
+  }
+  > label {
+    display: inline-block;
+    width: 100%;
+    @include clearfix();
+    
+    b {
+      display: inline-block;
+      width: 100%;
+      height: 26px;
+      line-height: 26px;
+    }
+    textarea {
+      @include textarea;
+      width: 100% !important;
+      height: 22px * 3;
+      line-height: 22px;
+    }
+    select {
+      height: 30px;
+      line-height: 30px;
+      width: 100%;
+      
+      &:focus {
+        outline: 0;
+        border: 1px solid rgba(100, 175, 235, 1);
+        @include box-shadow(0 0 8px rgba(red(rgba(100, 175, 235, 1)), green(rgba(100, 175, 235, 1)), blue(rgba(100, 175, 235, 1)), .6));
+      }
+    }
+    input {
+      &:not([type='checkbox']):not([type='radio']) {
+        @include input;
+        width: 100% !important;
+      }
+    }
+    &.required {
+      b {
+        &:before {
+          color: red;
+          content: '＊';
+          display: inline-block;
+          width: 16px;
+          text-align: center;
+        }
+      }
+    }
+  }
+  .btns {
+    display: inline-block;
+    width: 100%;
+    @include clearfix();
+    button {
+      &[type='reset'] {
+        @include button(rgba(52, 168, 83, 1.00));
+      }
+      &[type='submit'] {
+        @include button;
+      }
+      padding: 0 14px;
+    }
+    > * {
+      float: right;
+      
+      + * {
+        margin-right: 8px;
+      }
+    }
+    
+    // > * {
+    //   float: left;
+    //   display: inline-block;
+    //   width: 50%;
+    //   text-align: left;
+    // }
   }
 }

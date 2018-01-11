@@ -1433,7 +1433,10 @@ class Model
 	 */
 	public static function all(/* ... */)
 	{
-		return call_user_func_array('static::find',array_merge(array('all'),func_get_args()));
+		if (($args = func_get_args ()) && is_object ($args[0]) && class_exists ('\Where') && $args[0] instanceof \Where)
+			$args[0] = array ('where' => $args[0]->toArray ());
+
+		return call_user_func_array('static::find',array_merge(array('all'),$args));
 	}
 
 	/**
@@ -1450,7 +1453,7 @@ class Model
 	{
 		$args = func_get_args();
 
-		if ($args && is_object ($args[0]) && class_exists ('\WhereBuilder') && $args[0] instanceof \WhereBuilder)
+		if ($args && is_object ($args[0]) && class_exists ('\Where') && $args[0] instanceof \Where)
 			$args[0] = array ('where' => $args[0]->toArray ());
 
 		$options = static::extract_and_validate_options($args);
@@ -1920,27 +1923,27 @@ class Model
 	 * @param callable $closure The closure to execute. To cause a rollback have your closure return false or throw an exception.
 	 * @return boolean True if the transaction was committed, False if rolled back.
 	 */
-	public static function transaction($closure)
-	{
-		$connection = static::connection();
+	public static function transaction ($closure) {
+		$args = func_get_args ();
 
-		try
-		{
+    if (!is_callable ($closure = array_shift ($args)))
+      return false;
+
+		$connection = static::connection ();
+
+		try {
 			$connection->transaction();
 
-			if ($closure() === false)
-			{
-				$connection->rollback();
-				return false;
-			}
-			else
-				$connection->commit();
-		}
-		catch (\Exception $e)
-		{
-			$connection->rollback();
+			if (call_user_func_array ($closure, $args))
+				return $connection->commit ();
+
+			$connection->rollback ();
+			return false;
+		} catch (\Exception $e) {
+			$connection->rollback ();
 			throw $e;
 		}
+
 		return true;
 	}
 }
