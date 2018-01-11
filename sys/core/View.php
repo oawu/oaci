@@ -37,7 +37,7 @@ class View {
   }
 
   public function get () {
-    return View::load ($this->path, $this->vals, true);
+    return View::load ($this->path, $this->getVals (), true);
   }
 
   public function setPath ($path) {

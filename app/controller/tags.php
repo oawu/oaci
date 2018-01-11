@@ -18,8 +18,7 @@ class tags extends RestfulController {
     $this->view = View::create ()
                       ->appendTo (View::create ('layout.php'), 'content')
                       ->with ('flash', $flash)
-                      ->with ('params', $flash['params'])
-                      ;
+                      ->with ('params', $flash['params']);
   }
 
   public function index () {

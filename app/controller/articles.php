@@ -18,7 +18,7 @@ class articles extends RestfulController {
     $this->view = View::create ()
                       ->appendTo (View::create ('layout.php'), 'content')
                       ->with ('flash', $flash)
-                      ->with ('pagination', $flash['params']);
+                      ->with ('params', $flash['params']);
   }
 
   public function index () {
@@ -33,12 +33,11 @@ class articles extends RestfulController {
     return $this->view->setPath ('articles/index.php')
                       ->with ('total', $total)
                       ->with ('objs', $objs)
-                      ->with ('pgn', $page['links'])
+                      ->with ('pagination', $page['links'])
                       ->output ();
   }
 
   public function add () {
-
     return $this->view->setPath ('articles/add.php')
                       ->output ();
   }
@@ -52,15 +51,8 @@ class articles extends RestfulController {
     };
 
     $transaction = function ($posts, $files) {
-      if (!$obj = Article::create ($posts))
-        return false;
-
-      foreach ($files as $key => $file)
-        if (isset ($files[$key]) && $files[$key] && $obj->$key instanceof Uploader)
-          if (!$obj->$key->put ($files[$key]))
-            return false;
-      
-      return true;
+      return ($obj = Article::create ($posts))
+          && $obj->putFiles ($files);
     };
 
     $posts = Input::post ();
@@ -96,17 +88,9 @@ class articles extends RestfulController {
     };
 
     $transaction = function ($posts, $files, $obj) {
-      $obj->columnsUpdate ($posts);
-
-      if (!$obj->save ())
-        return false;
-
-      foreach ($files as $key => $file)
-        if (isset ($files[$key]) && $files[$key] && $obj->$key instanceof Uploader)
-          if (!$obj->$key->put ($files[$key]))
-            return false;
-      
-      return true;
+      return $obj->columnsUpdate ($posts)
+          && $obj->save ()
+          && $obj->putFiles ($files);;
     };
 
     $posts = Input::post ();
