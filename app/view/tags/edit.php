@@ -7,12 +7,12 @@
 
 <div class='msg <?php echo $flash['type'];?>'><?php echo $flash['msg'];?></div>
 
-<form class='form' action='<?php echo RestfulUrl::update ($tag);?>' method='post'>
+<form class='form' action='<?php echo RestfulUrl::update ($obj);?>' method='post'>
   <input type='hidden' name='_method' value='put' />
 
   <label class='required'>
     <b>名稱</b>
-    <input type='text' name='name' value='<?php echo $params['name'] !== null ? $params['name'] : $tag->name;?>' autofocus />
+    <input type='text' name='name' value='<?php echo $params['name'] !== null ? $params['name'] : $obj->name;?>' autofocus />
   </label>
 
   <div class='btns'>

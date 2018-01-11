@@ -15,20 +15,14 @@ class tags extends RestfulController {
 
     $pgn = Pagination::info ($total);
 
-    $tags = Tag::find ('all', array (
-      'order' => 'id DESC',
-      'offset' => $pgn['offset'],
-      'limit' => $pgn['limit'],
-      'include' => array ('articles'),
-      'where' => $where
-      ));
+    $objs = Tag::find ('all', array ('order' => 'id DESC', 'offset' => $pgn['offset'], 'limit' => $pgn['limit'], 'include' => array ('articles'), 'where' => $where));
 
     $flash = Session::getFlashData ('flash');
 
     $content = View::create ('tags/index.php')
                    ->with ('flash', $flash)
                    ->with ('total', $total)
-                   ->with ('tags', $tags)
+                   ->with ('objs', $objs)
                    ->with ('pgn', $pgn['links'])
                    ->get ();
 
@@ -50,19 +44,8 @@ class tags extends RestfulController {
   }
   public function create () {
     $validation = function (&$posts) {
-      if (!isset ($posts['name']))
-        return '請填寫 名稱';
-
-      if ($error = Validation::create ($posts['name'], '名稱')->isStringOrNumber ()->length (1, 255)->getError ())
-        return $error;
-
-      if (!isset ($posts['status']))
-        return '請填寫 狀態';
-
-      if ($error = Validation::create ($posts['status'], '狀態')->isStringOrNumber ()->inArray (array_keys (Tag::$statusNames))->getError ())
-        return $error;
-
-      return '';
+      Validation::need ($posts, 'name', '名稱')->isStringOrNumber ()->doTrim ()->length (1, 255);
+      Validation::need ($posts, 'status', '狀態')->isStringOrNumber ()->doTrim ()->inArray (array_keys (Tag::$statusNames));
     };
 
     $transaction = function ($posts) {
@@ -72,7 +55,7 @@ class tags extends RestfulController {
     $posts = Input::post ();
     $posts['status'] = Tag::STATUS_ON;
 
-    if ($error = $validation ($posts))
+    if ($error = Validation::form ($validation, $posts))
       return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
     if ($error = Tag::getTransactionError ($transaction, $posts))
@@ -84,7 +67,7 @@ class tags extends RestfulController {
     $flash = Session::getFlashData ('flash');
 
     $content = View::create ('tags/edit.php')
-                   ->with ('tag', $obj)
+                   ->with ('obj', $obj)
                    ->with ('flash', $flash)
                    ->with ('params', $flash['params'])
                    ->get ();
@@ -94,30 +77,21 @@ class tags extends RestfulController {
                ->output ();
   }
   public function update ($obj) {
-    $validation = function ($obj, &$posts) {
-      if (isset ($posts['name']) && ($error = Validation::create ($posts['name'], '名稱')->isStringOrNumber ()->length (1, 255)->getError ()))
-        return $error;
-
-      if (isset ($posts['status']) && ($error = Validation::create ($posts['status'], '狀態')->isStringOrNumber ()->inArray (array_keys (Tag::$statusNames))->getError ()))
-        return $error;
-
-      return '';
+    $validation = function (&$posts) {
+      Validation::maybe ($posts, 'name', '名稱')->isStringOrNumber ()->doTrim ()->length (1, 255);
+      Validation::maybe ($posts, 'status', '狀態')->isStringOrNumber ()->doTrim ()->inArray (array_keys (Tag::$statusNames));
     };
 
-    $transaction = function ($obj) {
-      return $obj->save ();
+    $transaction = function ($posts, $obj) {
+      return $obj->columnsUpdate ($posts) && $obj->save ();
     };
 
     $posts = Input::post ();
 
-    if ($error = $validation ($obj, $posts))
+    if ($error = Validation::form ($validation, $posts))
       return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    if ($columns = array_intersect_key ($posts, $obj->table ()->columns))
-      foreach ($columns as $column => $value)
-        $obj->$column = $value;
-
-    if ($error = Tag::getTransactionError ($transaction, $obj))
+    if ($error = Tag::getTransactionError ($transaction, $posts, $obj))
       return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
     return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
@@ -130,7 +104,7 @@ class tags extends RestfulController {
   }
   public function show ($obj) {
     $content = View::create ('tags/show.php')
-                   ->with ('tag', $obj)
+                   ->with ('obj', $obj)
                    ->get ();
 
     return View::create ('layout.php')

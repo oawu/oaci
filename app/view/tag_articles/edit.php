@@ -7,10 +7,10 @@ if ($failure = Session::getFlashData ('result.failure')) { ?>
 <?php
 }?>
 
-<form action='<?php echo RestfulUrl::update ($article);?>' method='post' enctype='multipart/form-data'>
+<form action='<?php echo RestfulUrl::update ($obj);?>' method='post' enctype='multipart/form-data'>
   <input type='hidden' name='_method' value='put' />
 
-  * <input type='text' name='title' value='<?php echo $article->title;?>' autofocus />
+  * <input type='text' name='title' value='<?php echo $obj->title;?>' autofocus />
   <br/>
 
   <br/>
@@ -18,7 +18,7 @@ if ($failure = Session::getFlashData ('result.failure')) { ?>
   <br/>
 
   <br/>
-  <textarea name='content'><?php echo $article->content;?></textarea>
+  <textarea name='content'><?php echo $obj->content;?></textarea>
   <br/>
 
   <button type='reset'>重填</button>

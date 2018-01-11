@@ -15,12 +15,7 @@ class articles extends RestfulController {
     
     $pgn = Pagination::info ($total);
     
-    $articles = Article::find ('all', array (
-      'order' => 'id DESC',
-      'offset' => $pgn['offset'],
-      'limit' => $pgn['limit'],
-      'where' => $where
-      ));
+    $objs = Article::find ('all', array ('order' => 'id DESC', 'offset' => $pgn['offset'], 'limit' => $pgn['limit'], 'where' => $where));
 
     $flash = Session::getFlashData ('flash');
 
@@ -28,7 +23,7 @@ class articles extends RestfulController {
                    ->with ('flash', $flash)
                    ->with ('total', $total)
                    ->with ('parent', $this->parent)
-                   ->with ('articles', $articles)
+                   ->with ('objs', $objs)
                    ->with ('pgn', $pgn['links'])
                    ->get ();
 
@@ -50,28 +45,10 @@ class articles extends RestfulController {
   }
   public function create () {
     $validation = function (&$posts, &$files) {
-      if (!isset ($posts['title']))
-        return '請填寫 標題';
-      
-      if ($error = Validation::create ($posts['title'], '標題')->isStringOrNumber ()->length (1, 255)->getError ())
-        return $error;
-
-      if (!isset ($posts['tag_id']))
-        return '請選擇 分類';
-
-      if ($error = Validation::create ($posts['tag_id'], '分類')->isNumber ('請選擇')->greater (0)->getError ())
-        return $error;
-
-      if (isset ($posts['content']) && ($error = Validation::create ($posts['content'], '內容')->isStringOrNumber ()->length (0)->getError ()))
-        return $error;
-
-      if (!isset ($files['cover']))
-        return '請選擇 封面';
-
-      if ($error = Validation::create ($files['cover'], '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024)->getError ())
-        return $error;
-
-      return '';
+      Validation::need ($posts, 'title', '標題')->isStringOrNumber ()->doTrim ()->length (1, 255);
+      Validation::need ($posts, 'tag_id', '分類')->isNumber ('請選擇')->doTrim ()->greater (0);
+      Validation::maybe ($posts, 'content', '內容', '')->isStringOrNumber ()->doTrim ()->length (0);
+      Validation::need ($files, 'cover', '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024);
     };
 
     $transaction = function ($posts, $files) {
@@ -89,10 +66,10 @@ class articles extends RestfulController {
     $posts = Input::post ();
     $files = Input::file ();
     
-    if ($error = $validation ($posts, $files))
+    if ($error = Validation::form ($validation, $posts, $files))
       return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    if ($error = Article::getTransactionError ($transaction, $posts, $files))
+    if ($error = Tag::getTransactionError ($transaction, $posts, $files))
       return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
     return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));
@@ -101,7 +78,7 @@ class articles extends RestfulController {
     $flash = Session::getFlashData ('flash');
 
     $content = View::create ('articles/edit.php')
-                   ->with ('article', $obj)
+                   ->with ('obj', $obj)
                    ->with ('flash', $flash)
                    ->with ('params', $flash['params'])
                    ->get ();
@@ -111,26 +88,22 @@ class articles extends RestfulController {
                ->output ();
   }
   public function update ($obj) {
-    $validation = function ($obj, &$posts, &$files) {
-      if (isset ($posts['title']) && ($error = Validation::create ($posts['title'], '標題')->isStringOrNumber ()->length (1, 255)->getError ()))
-        return $error;
+    $validation = function (&$posts, &$files, $obj) {
+      Validation::maybe ($posts, 'title', '標題')->isStringOrNumber ()->doTrim ()->length (1, 255);
+      Validation::maybe ($posts, 'tag_id', '分類')->isNumber ('請選擇')->doTrim ()->greater (0);
+      Validation::maybe ($posts, 'content', '內容', '')->isStringOrNumber ()->doTrim ()->length (0);
 
-      if (isset ($posts['tag_id']) && ($error = Validation::create ($posts['tag_id'], '分類')->isNumber ('請選擇')->greater (0)->getError ()))
-        return $error;
-
-      if (isset ($posts['content']) && ($error = Validation::create ($posts['content'], '內容')->isStringOrNumber ()->length (0)->getError ()))
-        return $error;
-
-      if (!($obj->cover->getValue () || isset ($files['cover'])))
-        return '請選擇 封面';
-
-      if (isset ($files['cover']) && ($error = Validation::create ($files['cover'], '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024)->getError ()))
-        return $error;
+      if (!$obj->cover->getValue ())
+        Validation::need ($files, 'cover', '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024);
+      else
+        Validation::maybe ($files, 'cover', '封面')->isUploadFile ()->formats ('jpg', 'gif', 'png')->size (1, 10 * 1024 * 1024);
 
       return '';
     };
 
-    $transaction = function ($obj, $files) {
+    $transaction = function ($posts, $files, $obj) {
+      $obj->columnsUpdate ($posts);
+
       if (!$obj->save ())
         return false;
 
@@ -145,14 +118,10 @@ class articles extends RestfulController {
     $posts = Input::post ();
     $files = Input::file ();
 
-    if ($error = $validation ($obj, $posts, $files))
+    if ($error = Validation::form ($validation, $posts, $files, $obj))
       return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
-    if ($columns = array_intersect_key ($posts, $obj->table ()->columns))
-      foreach ($columns as $column => $value)
-        $obj->$column = $value;
-
-    if ($error = Article::getTransactionError ($transaction, $obj, $files))
+    if ($error = Tag::getTransactionError ($transaction, $posts, $files, $obj))
       return refresh (RestfulUrl::edit ($obj), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . $error, 'params' => $posts));
 
     return refresh (RestfulUrl::index (), 'flash', array ('type' => 'success', 'msg' => '成功！'));

@@ -18,23 +18,23 @@
   </thead>
   <tbody>
 <?php
-    if (!$tags) { ?>
+    if (!$objs) { ?>
       <tr>
         <td colspan='4'>沒有資料</td>
       </tr>
 <?php
     }
-    foreach ($tags as $tag) { ?>
+    foreach ($objs as $obj) { ?>
       <tr>
-        <td><?php echo $tag->id;?></td>
-        <td><?php echo $tag->name;?></td>
+        <td><?php echo $obj->id;?></td>
+        <td><?php echo $obj->name;?></td>
         <td>
-          <a href="<?php echo RestfulUrl::other ('tag_articles@index', array ($tag));?>"><?php echo count ($tag->articles);?> 篇</a>
+          <a href="<?php echo RestfulUrl::other ('tag_articles@index', array ($obj));?>"><?php echo count ($obj->articles);?> 篇</a>
         </td>
         <td>
-          <a href="<?php echo RestfulUrl::show ($tag);?>">檢視</a>
-          <a href="<?php echo RestfulUrl::edit ($tag);?>">修改</a>
-          <a href="<?php echo RestfulUrl::destroy ($tag);?>" data-method='delete'>刪除</a>
+          <a href="<?php echo RestfulUrl::show ($obj);?>">檢視</a>
+          <a href="<?php echo RestfulUrl::edit ($obj);?>">修改</a>
+          <a href="<?php echo RestfulUrl::destroy ($obj);?>" data-method='delete'>刪除</a>
         </td>
       </tr>
 <?php

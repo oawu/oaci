@@ -32,6 +32,12 @@ if (!function_exists ('use_model')) {
     class_alias ('ActiveRecord\Connection', 'ModelConnection');
     
     class Model extends ActiveRecord\Model {
+      public function columnsUpdate ($arr = array ()) {
+        if ($columns = array_intersect_key ($arr, $this->table ()->columns))
+          foreach ($columns as $column => $value)
+            $this->$column = $value;
+        return true;
+      }
       public static function getTransactionError ($closure) {
         if (!(($args = func_get_args ()) && is_callable ($args[0])))
           return false;

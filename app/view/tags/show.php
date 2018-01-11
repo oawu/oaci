@@ -1,10 +1,10 @@
 <a href="<?php echo RestfulUrl::index ();?>">回列表</a>
 <hr>
 
-ID：<?php echo $tag->id;?>
+ID：<?php echo $obj->id;?>
 <br/>
-名稱：<?php echo $tag->name;?>
+名稱：<?php echo $obj->name;?>
 <hr/>
-最後修改：<?php echo $tag->updated_at;?>
+最後修改：<?php echo $obj->updated_at;?>
 <br/>
-產生時間：<?php echo $tag->created_at;?>
+產生時間：<?php echo $obj->created_at;?>
