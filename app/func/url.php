@@ -8,10 +8,13 @@
  */
 
 if (!function_exists ('refresh')) {
-  function refresh ($url, $key, $data) {
+  function refresh ($url, $key = null, $data = null) {
     static $loaded;
     $loaded || $loaded = Load::sysLib ('Session.php', true);
-    Session::setFlashData ($key, $data);
+
+    if ($key !== null && $data !== null)
+      Session::setFlashData ($key, $data);
+    
     return URL::refresh ($url);
   }
 }
