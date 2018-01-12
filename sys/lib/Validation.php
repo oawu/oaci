@@ -187,9 +187,12 @@ class Validation {
     return new Validation ($val, $title, $exist);
   }
 
-  public static function form ($closure, &$posts, &$files = null, $obj = null) {
+  public static function form ($closure, &...$args) {
+    if (!is_callable ($closure))
+      return '';
+    
     try {
-      $closure ($posts, $files, $obj);
+      call_user_func_array ($closure, $args);
       return '';
     } catch (Exception $e) {
       return $e->getMessage ();

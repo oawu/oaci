@@ -1923,10 +1923,8 @@ class Model
 	 * @param callable $closure The closure to execute. To cause a rollback have your closure return false or throw an exception.
 	 * @return boolean True if the transaction was committed, False if rolled back.
 	 */
-	public static function transaction ($closure) {
-		$args = func_get_args ();
-
-    if (!is_callable ($closure = array_shift ($args)))
+	public static function transaction ($closure, &...$args) {
+    if (!is_callable ($closure))
       return false;
 
 		$connection = static::connection ();
