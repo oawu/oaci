@@ -31,7 +31,7 @@ gulp.task ('default', function () {
         silent: true
       });
 
-      var watcherReload = chokidar.watch (['./root/*.html', './root/css/**/*.css', './root/js/**/*.js'], {
+      var watcherReload = chokidar.watch (['./root/app/**/*.php', './root/assets/css/**/*.css', './root/assets/js/**/*.js'], {
         ignored: /(^|[\/\\])\../,
         persistent: true
       });
@@ -50,7 +50,7 @@ gulp.task ('default', function () {
         console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
       });
 
-      var watcherStyle = chokidar.watch ('./root/font/icomoon/style.css', {
+      var watcherStyle = chokidar.watch ('./root/assets/font/icomoon/style.css', {
         ignored: /(^|[\/\\])\../,
         persistent: true
       });
@@ -59,7 +59,7 @@ gulp.task ('default', function () {
                   .on ('change', function (path) { gulp.start ('update_icomoon_font_icon'); });
       // watcherStyle.on ('unlink', function (path) { gulp.start ('update_icomoon_font_icon'); });
 
-      var watcherScss = chokidar.watch ('./root/scss/**/*.scss', {
+      var watcherScss = chokidar.watch ('./root/assets/scss/**/*.scss', {
         ignored: /(^|[\/\\])\../,
         persistent: true
       });
@@ -98,7 +98,7 @@ gulp.task ('watch', function () {
         silent: true
       });
 
-      var watcherReload = chokidar.watch (['./root/*.html', './root/css/**/*.css', './root/js/**/*.js'], {
+      var watcherReload = chokidar.watch (['./root/app/**/*.php', './root/assets/css/**/*.css', './root/assets/js/**/*.js'], {
         ignored: /(^|[\/\\])\../,
         persistent: true
       });
@@ -117,7 +117,7 @@ gulp.task ('watch', function () {
         console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
       });
 
-      var watcherStyle = chokidar.watch ('./root/font/icomoon/style.css', {
+      var watcherStyle = chokidar.watch ('./root/assets/font/icomoon/style.css', {
         ignored: /(^|[\/\\])\../,
         persistent: true
       });
@@ -132,11 +132,11 @@ gulp.task ('watch', function () {
 // // ===================================================
 
 gulp.task ('update_icomoon_font_icon', function () {
-  read ('./root/font/icomoon/style.css', 'utf8', function (err, buffer) {
+  read ('./root/assets/font/icomoon/style.css', 'utf8', function (err, buffer) {
     var t = buffer.match (/\.icon-[a-zA-Z_\-0-9]*:before\s?\{\s*content:\s*"[\\A-Za-z0-9]*";\s*}/g);
       if (!(t && t.length)) return;
 
-      writeFile ('./root/scss/icon.scss', '@import "_oa";\n\n@include font-face("icomoon", font-files("icomoon/fonts/icomoon.eot", "icomoon/fonts/icomoon.woff", "icomoon/fonts/icomoon.ttf", "icomoon/fonts/icomoon.svg"));\n[class^="icon-"], [class*=" icon-"] {\n  font-family: "icomoon"; speak: none; font-style: normal; font-weight: normal; font-variant: normal;\n  @include font-smoothing(antialiased);\n}\n\n' + t.join ('\n'), function(err) {
+      writeFile ('./root/assets/scss/icon.scss', '@import "_oa";\n\n@include font-face("icomoon", font-files("icomoon/fonts/icomoon.eot", "icomoon/fonts/icomoon.woff", "icomoon/fonts/icomoon.ttf", "icomoon/fonts/icomoon.svg"));\n[class^="icon-"], [class*=" icon-"] {\n  font-family: "icomoon"; speak: none; font-style: normal; font-weight: normal; font-variant: normal;\n  @include font-smoothing(antialiased);\n}\n\n' + t.join ('\n'), function(err) {
         if (err) console.log ('\n ' + colors.red ('•') + colors.red (' [錯誤] ') + '寫入檔案失敗！');
         else console.log ('\n ' + colors.red ('•') + colors.yellow (' [icon] ') + '更新 icon 惹，目前有 ' + colors.magenta (t.length) + ' 個！');
       });
@@ -160,18 +160,18 @@ gulp.task ('minify', function () {
   gulp.start ('minify-html');
 });
 gulp.task ('js-uglify', function () {
-  gulp.src ('./root/js/**/*.js')
+  gulp.src ('./root/assets/js/**/*.js')
       .pipe (uglifyJS ())
-      .pipe (gulp.dest ('./root/js/'));
+      .pipe (gulp.dest ('./root/assets/js/'));
 });
 gulp.task ('minify-html', function () {
-  gulp.src ('./root/*.html')
+  gulp.src ('./root/app/**/*.php')
       .pipe (htmlmin ({collapseWhitespace: true}))
-      .pipe (gulp.dest ('./root/'));
+      .pipe (gulp.dest ('./root/assets/'));
 });
 
 // // ===================================================
 
 gulp.task ('gh-pages', function () {
-  del (['./root']);
+  del (['./root/assets']);
 });
