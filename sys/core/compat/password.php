@@ -22,6 +22,7 @@ if (!function_exists ('password_get_info')) {
 }
 
 if (!function_exists ('password_hash')) {
+  // $algo = PASSWORD_DEFAULT
   function password_hash ($password, $algo, array $options = array ()) {
     static $func_overload;
   
