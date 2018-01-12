@@ -8,11 +8,10 @@
  */
 
 return array (
-  'auto_load' => true,
-  'cache' => array (
-      'enable' => ENVIRONMENT == 'production',
-      'driver' => 'file', //  | file   | redis   | memcached
-      'prefix' => 'query-', // | query- | query:  | query:
-      'expire' => 30 //sec
-    ),
+  'appId' => '113321005932280',
+  'secret' => 'b4f89ded30dc153b3908badebd377a7f',
+  'version' => 'v2.9',
+  'scope' => array ('email'),
+  'get_fields' => array ('name', 'email'),
+  'admins' => array ('100000100541088')
 );

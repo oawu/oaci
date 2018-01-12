@@ -7,7 +7,15 @@
  * @link        https://www.ioa.tw/
  */
 
-Router::get ('', 'main');
+Router::get ('login', 'main@login');
+Router::get ('logout', 'main@logout');
 
-// // print (json_encode(Router::$routers));
-// // exit ();
+Router::get ('fb_sign_in', 'main@fb_sign_in');
+Router::post ('login', 'main@ac_signin');
+
+Router::dir ('admin', function () {
+  Router::get ('', 'main');
+});
+
+// print (json_encode(Router::$routers));
+// exit ();

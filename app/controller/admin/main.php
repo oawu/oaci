@@ -7,12 +7,8 @@
  * @link        https://www.ioa.tw/
  */
 
-return array (
-  'auto_load' => true,
-  'cache' => array (
-      'enable' => ENVIRONMENT == 'production',
-      'driver' => 'file', //  | file   | redis   | memcached
-      'prefix' => 'query-', // | query- | query:  | query:
-      'expire' => 30 //sec
-    ),
-);
+class main extends Controller {
+  public function index () {
+    echo "1";
+  }
+}

@@ -11,7 +11,7 @@ return array (
   'base_url' => '',
   'encryption_key' => '',
 
-  'composer_autoload' => false,
+  'composer_autoload' => true,
   'charset' => 'UTF-8',
   'proxy_ips' => '',
   'time_reference' => 'local',

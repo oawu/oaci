@@ -9,7 +9,7 @@
 
 return array (
   'func' => array ('url.php'),
-  'lib' => array (),
+  'lib' => array ('Facebook.php'),
   'sysFunc' => array (),
   'sysLib' => array ('Session.php', 'Validation.php'),
 );
