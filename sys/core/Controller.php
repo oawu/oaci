@@ -9,6 +9,9 @@
 
 class Controller {
   public function __construct () {
+    foreach (config ('autoload') as $key => $files)
+      foreach ($files as $file)
+        call_user_func_array (array ('Load', $key), array ($file, true));
   }
 }
 
