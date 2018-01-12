@@ -8,7 +8,7 @@
  */
 
 return array (
-  'auto_load' => true,
+  'auto_load' => false,
   'cache' => array (
       'enable' => ENVIRONMENT == 'production',
       'driver' => 'file', //  | file   | redis   | memcached
