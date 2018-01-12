@@ -56,6 +56,7 @@ class Router {
   }
   private static function method ($m, $formats, $uri, $models = array ()) {
     $prefixs = self::getDirs ();
+    $formats = array_filter ($formats, function ($format) { return $format !== ''; });
 
     $uri = preg_split ('/[@,\(\)\s]+/', $uri);
 
