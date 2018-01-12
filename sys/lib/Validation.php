@@ -26,8 +26,8 @@ class Validation {
     function_exists ('byte_format') || Load::sysFunc ('number.php');
 
     $s = (int)$this->val['size'];
-    $s >= $min || Validation::exception ($this->title . '檔案要大於等於 ' . byte_format ($min));
-    $max === null || $s <= $max || Validation::exception ($this->title . '檔案要小於等於 ' . byte_format ($max));
+    $s >= $min || Validation::error ($this->title . '檔案要大於等於 ' . byte_format ($min));
+    $max === null || $s <= $max || Validation::error ($this->title . '檔案要小於等於 ' . byte_format ($max));
   }
 
   private function _formats () {
@@ -40,8 +40,8 @@ class Validation {
       $extension = get_extension_by_mime ($this->val['type']);
     }
     
-    $extension || Validation::exception ($this->title . '格式錯誤或不明');
-    in_array ($extension, $extensions) || Validation::exception ($this->title . '格式不符合');
+    $extension || Validation::error ($this->title . '格式錯誤或不明');
+    in_array ($extension, $extensions) || Validation::error ($this->title . '格式不符合');
   }
 
   // ===================================================
@@ -63,62 +63,62 @@ class Validation {
 
   private function _inArray (array $array) {
     $this->isStringOrNumber ();
-    in_array ($this->val, $array) || Validation::exception ($this->title . '需在指定的項目內');
+    in_array ($this->val, $array) || Validation::error ($this->title . '需在指定的項目內');
   }
 
   private function _count ($min, $max = null) {
     $c = count ($this->val);
-    $c >= $min || Validation::exception ($this->title . '數量需要大於等於 ' . $min);
-    $max === null || $c <= $max || Validation::exception ($this->title . '數量需要小於等於 ' . $max);
+    $c >= $min || Validation::error ($this->title . '數量需要大於等於 ' . $min);
+    $max === null || $c <= $max || Validation::error ($this->title . '數量需要小於等於 ' . $max);
   }
 
   // ===================================================
   // ==
   private function _equal ($num) {
     $this->isNumber ();
-    $this->val == $num || Validation::exception ($this->title . '需等於 ' . $num);
+    $this->val == $num || Validation::error ($this->title . '需等於 ' . $num);
   }
   
   // ===
   private function _identical ($num) {
     $this->isNumber ();
-    $this->val === $num || Validation::exception ($this->title . '需完全等於 ' . $num);
+    $this->val === $num || Validation::error ($this->title . '需完全等於 ' . $num);
   }
   
   // >
   private function _greater ($num) {
     $this->isNumber ();
-    $this->val > $num || Validation::exception ($this->title . '需大於 ' . $num);
+    $this->val > $num || Validation::error ($this->title . '需大於 ' . $num);
   }
   
   // <
   private function _less ($num) {
     $this->isNumber ();
-    $this->val < $num || Validation::exception ($this->title . '需小於 ' . $num);
+    $this->val < $num || Validation::error ($this->title . '需小於 ' . $num);
   }
   
   // >=
   private function _greaterEqual ($num) {
     $this->isNumber ();
-    $this->val < $num || Validation::exception ($this->title . '需大於以及等於 ' . $num);
+    $this->val < $num || Validation::error ($this->title . '需大於以及等於 ' . $num);
   }
   
   // <=
   private function _lessEqual ($num) {
     $this->isNumber ();
-    $this->val < $num || Validation::exception ($this->title . '需小於以及等於 ' . $num);
+    $this->val < $num || Validation::error ($this->title . '需小於以及等於 ' . $num);
   }
   
   // !=
   private function _notEqual ($num) {
     $this->isNumber ();
-    $this->val < $num || Validation::exception ($this->title . '需不等於 ' . $num);
+    $this->val < $num || Validation::error ($this->title . '需不等於 ' . $num);
   }
   
   // !==
   private function _notIdentical ($num) {
     $this->isNumber ();
-    $this->val < $num || Validation::exception ($this->title . '需完全不等於 ' . $num);
+    $this->val < $num || Validation::error ($this->title . '需完全不等於 ' . $num);
   }
 
   // ===================================================
@@ -132,51 +132,51 @@ class Validation {
     $this->isStringOrNumber ();
 
     $l = mb_strlen ($this->val);
-    $l >= $min || Validation::exception ($this->title . '長度需要大於等於 ' . $min);
-    $max === null || $l <= $max || Validation::exception ($this->title . '長度需要小於等於 ' . $max);
+    $l >= $min || Validation::error ($this->title . '長度需要大於等於 ' . $min);
+    $max === null || $l <= $max || Validation::error ($this->title . '長度需要小於等於 ' . $max);
   }
 
   private function _length ($min, $max = null) {
     $this->isStringOrNumber ();
     
     $l = strlen ($this->val);
-    $l >= $min || Validation::exception ($this->title . '長度需要大於等於 ' . $min);
-    $max === null || $l <= $max || Validation::exception ($this->title . '長度需要小於等於 ' . $max);
+    $l >= $min || Validation::error ($this->title . '長度需要大於等於 ' . $min);
+    $max === null || $l <= $max || Validation::error ($this->title . '長度需要小於等於 ' . $max);
   }
 
   // ===================================================
 
   private function _isString ($msg = null) {
-    is_string ($this->val) || Validation::exception ($this->title . ($msg ? $msg : '格式必須是字串'));
+    is_string ($this->val) || Validation::error ($this->title . ($msg ? $msg : '格式必須是字串'));
   }
 
   private function _isNumber ($msg = null) {
-    is_numeric ($this->val) || Validation::exception ($this->title . ($msg ? $msg : '格式必須是數字'));
+    is_numeric ($this->val) || Validation::error ($this->title . ($msg ? $msg : '格式必須是數字'));
   }
 
   private function _isStringOrNumber ($msg = '') {
-    is_string ($this->val) || is_numeric ($this->val) || Validation::exception ($this->title . ($msg ? $msg : '需要是字串或數字'));
+    is_string ($this->val) || is_numeric ($this->val) || Validation::error ($this->title . ($msg ? $msg : '需要是字串或數字'));
   }
 
   private function _isUploadFile ($msg = null) {
-    is_array ($this->val) && count ($this->val) == 5 && isset ($this->val['name'], $this->val['type'], $this->val['tmp_name'], $this->val['error'], $this->val['size']) || Validation::exception ($this->title . ($msg ? $msg : '格式必須是上傳檔案'));
+    is_array ($this->val) && count ($this->val) == 5 && isset ($this->val['name'], $this->val['type'], $this->val['tmp_name'], $this->val['error'], $this->val['size']) || Validation::error ($this->title . ($msg ? $msg : '格式必須是上傳檔案'));
   }
 
   private function _isArray ($msg = null) {
-    is_array ($this->val) || Validation::exception ($this->title . ($msg ? $msg : '格式必須是陣列'));
+    is_array ($this->val) || Validation::error ($this->title . ($msg ? $msg : '格式必須是陣列'));
   }
 
   private function _isNull ($msg = null) {
-    $this->val === null || Validation::exception ($this->title . ($msg ? $msg : '格式必須是 NULL'));
+    $this->val === null || Validation::error ($this->title . ($msg ? $msg : '格式必須是 NULL'));
   }
 
   private function _isNotNull ($msg = null) {
-    $this->val !== null || Validation::exception ($this->title . ($msg ? $msg : '格式必須是非 NULL'));
+    $this->val !== null || Validation::error ($this->title . ($msg ? $msg : '格式必須是非 NULL'));
   }
 
   // ===================================================
   public function __call ($name, $args) {
-    method_exists ($this, '_' . $name) || Validation::exception ('Validation 錯誤的使用');
+    method_exists ($this, '_' . $name) || Validation::error ('Validation 錯誤的使用');
     $this->exist && call_user_func_array (array ($this, '_' . $name), $args);
 
     return $this;
@@ -187,21 +187,24 @@ class Validation {
     return new Validation ($val, $title, $exist);
   }
 
-  public static function form ($closure, &$posts, &$files = null, $obj = null) {
+  public static function form ($closure, &...$args) {
+    if (!is_callable ($closure))
+      return '';
+    
     try {
-      $closure ($posts, $files, $obj);
+      call_user_func_array ($closure, $args);
       return '';
     } catch (Exception $e) {
       return $e->getMessage ();
     }
   }
 
-  public static function exception ($msg) {
+  public static function error ($msg) {
     throw new Exception ($msg);
   }
 
   public static function need (&$arr, $key, $title = '') {
-    isset ($arr[$key]) || self::exception ($title . '錯誤！');
+    isset ($arr[$key]) || self::error ($title . '錯誤！');
     return self::create ($arr[$key], $title);
   }
   public static function maybe (&$arr, $key, $title = '', $d4 = null) {

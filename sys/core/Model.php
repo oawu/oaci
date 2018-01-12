@@ -38,12 +38,12 @@ if (!function_exists ('use_model')) {
             $this->$column = $value;
         return true;
       }
-      public static function getTransactionError ($closure) {
-        if (!(($args = func_get_args ()) && is_callable ($args[0])))
+      public static function getTransactionError ($closure, &...$args) {
+        if (!is_callable ($closure))
           return false;
 
         $class = get_called_class ();
-        return  call_user_func_array (array ($class, 'transaction'), $args) ? null : '資料庫處理錯誤！';
+        return  call_user_func_array (array ($class, 'transaction'), array_merge (array ($closure), $args)) ? null : '資料庫處理錯誤！';
       }
     }
 
