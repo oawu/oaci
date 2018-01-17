@@ -15,7 +15,10 @@ if (!function_exists ('refresh')) {
     if ($key !== null && $data !== null)
       Session::setFlashData ($key, $data);
     
-    return URL::refresh ($url);
+    URL::refresh ($url);
+
+    exit;
+    return;
   }
 }
 if (!function_exists ('asset')) {

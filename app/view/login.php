@@ -10,7 +10,7 @@
     <link href="<?php echo asset ('/assets/css/icon-login.css');?>" rel="stylesheet" type="text/css" />
     <link href="<?php echo asset ('/assets/css/login.css');?>" rel="stylesheet" type="text/css" />
 
-    <script src="<?php echo asset ('/assets/js/jquery-1.10.2.min.js');?>" language="javascript" type="text/javascript" ></script>
+    <script src="<?php echo asset ('/assets/js/res/jquery-1.10.2.min.js');?>" language="javascript" type="text/javascript" ></script>
     <script src="<?php echo asset ('/assets/js/login.js');?>" language="javascript" type="text/javascript" ></script>
 
   </head>

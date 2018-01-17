@@ -39,7 +39,7 @@ gulp.task ('watch', function () {
     console.log ('    ' + colors.green ('reload') + ' 重新整理頁面成功！');
   });
 
-  var forders = ['icomoon', 'login'];
+  var forders = ['admin', 'login'];
   forders.forEach (function (t) {
     var watcherStyle = chokidar.watch ('./root/assets/font/' + t + '/style.css', {
       ignored: /(^|[\/\\])\../,

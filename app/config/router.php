@@ -10,7 +10,7 @@
 Router::get ('login', 'main@login');
 Router::get ('logout', 'main@logout');
 
-Router::get ('fb_sign_in', 'main@fb_sign_in');
+Router::get ('fb_signin', 'main@fb_signin');
 Router::post ('login', 'main@ac_signin');
 
 Router::dir ('admin', function () {

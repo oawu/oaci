@@ -9,7 +9,7 @@
 //   <input type='radio'>
 //   <span></span>
 // </label>
-@mixin radio($color: rgba(69, 139, 244, 1.00), $d: 20px, $s: 6px){
+@mixin radio($color: rgba(69, 139, 244, 1.00), $d: 16px, $s: 6px){
   position: relative;
   display: inline-block;
   height: $d;

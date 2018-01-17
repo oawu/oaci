@@ -15,9 +15,9 @@
   display: inline-block;
   cursor: pointer;
   font-size: 13px;
-  height: 20px;
-  line-height: 20px;
-  padding-left: 24px;
+  height: 16px;
+  line-height: 16px;
+  padding-left: 20px;
   $x: '_checkbox_r_'+random(1000);
 
   > * {
@@ -49,8 +49,8 @@
     }
   }
   span {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     background-color: rgba(255, 255, 255, 1.00);
     z-index: 1;
 
@@ -71,14 +71,17 @@
     }
     &:after {
       content: "✔";
+      content: "\f00c";
+      font-family: "icomoon"; speak: none; font-style: normal; font-weight: normal; font-variant: normal;
       @content;
 
-      left: 2px;
-      top: 2px;
+      left: 1px;
+      top: 1px;
 
-      width: calc(100% - #{2px} * 2);
-      height: calc(100% - #{2px} * 2);
-      line-height: 15px;
+      width: calc(100% - #{1px} * 2);
+      height: calc(100% - #{1px} * 2);
+      line-height: 14px;
+      font-size: 11px;
       background-color: rgba(255, 255, 255, 1.00);
       color: rgba(255, 255, 255, 1.00);
       background-image: none;
@@ -93,7 +96,7 @@
     &:not([disabled]) {
       &:checked {
         ~ span {
-          &:after {
+          &:before, &:after {
             background-color: $color;
           }
         }
@@ -103,6 +106,8 @@
   span {
     &:before {
       background-color: $color;
+      background-color: rgba(0, 0, 0, 0.2);
+      // background-color: rgba(0, 0, 255, 0.2);
     }
   }
 

@@ -11,5 +11,5 @@ return array (
   'func' => array ('url.php'),
   'lib' => array ('Facebook.php'),
   'sysFunc' => array (),
-  'sysLib' => array ('Session.php', 'Validation.php'),
+  'sysLib' => array ('Session.php', 'Validation.php', 'Asset.php'),
 );
