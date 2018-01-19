@@ -7,7 +7,7 @@
  * @link        https://www.ioa.tw/
  */
 
-class AdminSort {
+class AdminOrder {
   const KEY = '_o';
   const SPLIT_KEY = ':';
 
@@ -17,7 +17,7 @@ class AdminSort {
     if ($sort && count ($sort = array_values (array_filter (array_map ('trim', explode (' ', $sort))))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')))
       $this->sort = $sort[0] . ' ' . strtoupper ($sort[1]);
 
-    if (($sort = Input::get (AdminSort::KEY)) && count ($sort = array_values (array_filter (array_map ('trim', explode (AdminSort::SPLIT_KEY, $sort))))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')))
+    if (($sort = Input::get (AdminOrder::KEY)) && count ($sort = array_values (array_filter (array_map ('trim', explode (AdminOrder::SPLIT_KEY, $sort))))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')))
       $this->sort = $sort[0] . ' ' . strtoupper ($sort[1]);
   }
   
@@ -26,15 +26,15 @@ class AdminSort {
 
     $gets = Input::get ();
     
-    if (!(isset ($gets[AdminSort::KEY]) && count ($sort = array_values (array_filter (explode (AdminSort::SPLIT_KEY, $gets[AdminSort::KEY])))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')) && ($sort[0] == $column))) {
-      $gets[AdminSort::KEY] = $column . AdminSort::SPLIT_KEY . 'desc';
+    if (!(isset ($gets[AdminOrder::KEY]) && count ($sort = array_values (array_filter (explode (AdminOrder::SPLIT_KEY, $gets[AdminOrder::KEY])))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')) && ($sort[0] == $column))) {
+      $gets[AdminOrder::KEY] = $column . AdminOrder::SPLIT_KEY . 'desc';
       return $title . ' <a href="' . URL::current () . '?' . http_build_query ($gets) . '" class="sort"></a>';
     }
     $class = strtolower ($sort[1]);
     if ($class != 'asc')
-      $gets[AdminSort::KEY] = $column . AdminSort::SPLIT_KEY . 'asc';
+      $gets[AdminOrder::KEY] = $column . AdminOrder::SPLIT_KEY . 'asc';
     else
-      unset ($gets[AdminSort::KEY]);
+      unset ($gets[AdminOrder::KEY]);
 
     return $title . ' <a href="' . URL::current () . '?' . http_build_query ($gets) . '" class="sort ' . $class . '"></a>';
   }
@@ -58,7 +58,7 @@ class AdminSort {
         break;
 
       default:
-        gg ('AdminSort 沒有「' . $name . '」方法。');
+        gg ('AdminOrder 沒有「' . $name . '」方法。');
         break;
     }
     return $this;
@@ -67,15 +67,15 @@ class AdminSort {
   public static function __callStatic ($name, $arguments) {
     switch (strtolower (trim ($name))) {
       case 'asc':
-        return AdminSort::create (call_user_func_array (array ('self', '_asc'), $arguments));
+        return AdminOrder::create (call_user_func_array (array ('self', '_asc'), $arguments));
         break;
 
       case 'desc':
-        return AdminSort::create (call_user_func_array (array ('self', '_desc'), $arguments));
+        return AdminOrder::create (call_user_func_array (array ('self', '_desc'), $arguments));
         break;
 
       default:
-        gg ('AdminSort 沒有「' . $name . '」方法。');
+        gg ('AdminOrder 沒有「' . $name . '」方法。');
         break;
     }
   }
@@ -89,6 +89,6 @@ class AdminSort {
   }
 
   public static function create ($sort = '') {
-    return new AdminSort ($sort);
+    return new AdminOrder ($sort);
   }
 }

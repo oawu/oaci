@@ -469,6 +469,7 @@ input[type='date']::-webkit-datetime-edit {
   padding-left: $menuWidth;
   z-index: 200;
   text-align: left;
+  overflow: hidden;
 }
 
 #main-header {

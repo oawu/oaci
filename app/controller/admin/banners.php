@@ -27,7 +27,7 @@ class banners extends AdminRestfulController {
 
     $page = Pagination::info ($total);
 
-    $objs = Banner::find ('all', array ('order' => AdminSort::desc ('sort'),'offset' => $page['offset'],'limit' => $page['limit'],'where' => $where));
+    $objs = Banner::find ('all', array ('order' => AdminOrder::desc ('sort'),'offset' => $page['offset'],'limit' => $page['limit'],'where' => $where));
 
     $table = AdminTableList::create ($objs,
               AdminTableListColumn::create ('啟用')->setWidth (60)->setClass ('center')->setTd (function ($obj, $column) { return $column->setSwitch ($obj->status == Banner::STATUS_ON, array ('class' => 'switch ajax', 'data-column' => 'status', 'data-url' => RestfulUrl::url ('admin/banners@status', $obj), 'data-true' => Banner::STATUS_ON, 'data-false' => Banner::STATUS_OFF, 'data-cntlabel' => 'aaa')); }),

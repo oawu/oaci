@@ -9,7 +9,7 @@
 
 return array (
   'func' => array ('common.php', 'form.php'),
-  'lib' => array ('Facebook.php', 'AdminSearch.php', 'AdminSort.php', 'AdminTableList.php'),
+  'lib' => array ('Facebook.php', 'AdminSearch.php', 'AdminOrder.php', 'AdminTableList.php'),
   'sysFunc' => array (),
   'sysLib' => array ('Session.php', 'Validation.php', 'Asset.php', 'Pagination.php'),
 );

@@ -45,7 +45,7 @@ class AdminTableListColumn {
   }
 
   public function thString ($sortUrl = '') {
-    return '<th' . ($this->width ? ' width="' . $this->width . '"' : '') . '' . ($this->class ? ' class="' . $this->class . '"' : '') . '>' . AdminSort::set ($this->title, $sortUrl ? '' : $this->sort) . '</th>';
+    return '<th' . ($this->width ? ' width="' . $this->width . '"' : '') . '' . ($this->class ? ' class="' . $this->class . '"' : '') . '>' . AdminOrder::set ($this->title, $sortUrl ? '' : $this->sort) . '</th>';
   }
 
   public function tdString ($obj) {

@@ -8,16 +8,16 @@
  */
 
 class AdminSearch {
+  const KEY = '_q';
+
   private $titles = array ();
   private $counter = 0;
-  private $prefix = '_q';
   private $where = array ();
   private $searches = array ();
 
-  public function __construct (&$where = null, $prefix = '_q') {
+  public function __construct (&$where = null) {
     $where !== null || $where = Where::create ();
 
-    $this->prefix = $prefix;
     $this->where = $where;
     $this->counter = 0;
     $this->titles = array ();
@@ -40,22 +40,22 @@ class AdminSearch {
     return $this;
   }
   public function input ($title, $sql, $type = 'text') {
-    $this->searches[$key = $this->prefix . ($this->counter++)] = array ('el' => 'input', 'title' => $title, 'sql' => $sql, 'type' => $type);
+    $this->searches[$key = AdminSearch::KEY . ($this->counter++)] = array ('el' => 'input', 'title' => $title, 'sql' => $sql, 'type' => $type);
     return $this->add ($key);
   }
 
   public function select ($title, $sql, $options) {
-    $this->searches[$key = $this->prefix . ($this->counter++)] = array ('el' => 'select', 'title' => $title, 'sql' => $sql, 'options' => $options);
+    $this->searches[$key = AdminSearch::KEY . ($this->counter++)] = array ('el' => 'select', 'title' => $title, 'sql' => $sql, 'options' => $options);
     return $this->add ($key);
   }
   
   public function checkboxs ($title, $sql, $items) {
-    $this->searches[$key = $this->prefix . ($this->counter++)] = array ('el' => 'checkboxs', 'title' => $title, 'sql' => $sql, 'items' => $items);
+    $this->searches[$key = AdminSearch::KEY . ($this->counter++)] = array ('el' => 'checkboxs', 'title' => $title, 'sql' => $sql, 'items' => $items);
     return $this->add ($key);
   }
   
   public function radios ($title, $sql, $items) {
-    $this->searches[$key = $this->prefix . ($this->counter++)] = array ('el' => 'radios', 'title' => $title, 'sql' => $sql, 'items' => $items);
+    $this->searches[$key = AdminSearch::KEY . ($this->counter++)] = array ('el' => 'radios', 'title' => $title, 'sql' => $sql, 'items' => $items);
     return $this->add ($key);
   }
   
@@ -141,15 +141,22 @@ class AdminSearch {
 
   public function renderForm ($total, $add = '', AdminTableList $sortKey) {
     if ($sortKey->isUseSort ()) {
-
       $gets = Input::get ();
-      if (!empty ($gets[AdminSort::KEY]))
-        unset ($gets[AdminSort::KEY]);
+
+      if (isset ($gets[AdminOrder::KEY]))
+        unset ($gets[AdminOrder::KEY]);
+
+      foreach (array_keys ($this->searches) as $key)
+        if (isset ($gets[$key]))
+          unset ($gets[$key]);
   
-      if (isset ($gets[AdminTableList::KEY]) && $gets[AdminTableList::KEY] === 'true')
+      if (isset ($gets[AdminTableList::KEY]) && $gets[AdminTableList::KEY] === 'true') {
+        $ing = false;
         unset ($gets[AdminTableList::KEY]);
-      else
+      } else {
+        $ing = true;
         $gets[AdminTableList::KEY] = 'true';
+      }
 
       $gets = http_build_query ($gets);
       $gets && $gets = '?' . $gets;
@@ -162,7 +169,7 @@ class AdminSearch {
       $return .= '<div class="info' . ($this->titles ? ' show' : '') . '">';
         $return .= '<a class="icon-13 conditions-btn"></a>';
 
-        $return .= '<span>' . ($add ? '<a href="' . $add . '" class="icon-07">新增</a>' : '') . ($sortKey ? '<a href="' . $sortKey . '" class="icon-41">排序</a>' : '') . '</span>';
+        $return .= '<span>' . ($add ? '<a href="' . $add . '" class="icon-07">新增</a>' : '') . ($sortKey ? '<a href="' . $sortKey . '" class="icon-' . ($ing ? '41' : '18') . '">' . ($ing ? '排序' : '完成') . '</a>' : '') . '</span>';
         $return .= '<span>' . ($this->titles ? '您針對' . implode ('、', array_map (function ($title) { return '「' . $title . '」'; }, $this->titles)) . '搜尋，結果' : '目前全部') . '共有 <b>' . number_format ($total) . '</b> 筆。' . '</span>';
       $return .= '</div>';
       $return .= $this->conditions ();
@@ -170,7 +177,7 @@ class AdminSearch {
     return $return;
   }
 
-  public static function create (&$where = null, $prefix = '_q') {
-    return new AdminSearch ($where, $prefix);
+  public static function create (&$where = null) {
+    return new AdminSearch ($where);
   }
 }
