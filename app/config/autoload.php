@@ -8,8 +8,8 @@
  */
 
 return array (
-  'func' => array ('url.php'),
-  'lib' => array ('Facebook.php'),
+  'func' => array ('common.php', 'form.php'),
+  'lib' => array ('Facebook.php', 'AdminSearch.php', 'AdminSort.php', 'AdminTableList.php'),
   'sysFunc' => array (),
-  'sysLib' => array ('Session.php', 'Validation.php', 'Asset.php'),
+  'sysLib' => array ('Session.php', 'Validation.php', 'Asset.php', 'Pagination.php'),
 );

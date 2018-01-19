@@ -222,10 +222,19 @@ class Output {
     return @unlink ($path);
   }
 
-  public static function json (array $arr = array ()) {
+  public static function json ($arr = array (), $code = 200) {
+    setStatusHeader ($code);
+    
+    if ($code != 200) {
+      $str = statuses ($code);
+      $str || $str = statuses (400);
+      $arr = is_array ($arr) ? array_merge (array ('message' => $str), $arr) : array ('message' => is_string ($arr) ? $arr : $str);
+    }
+
     Output::setContentType ('application/json');
-    return Output::setOutput (json_encode ($arr));
+    return Output::setOutput (is_array ($arr) ? json_encode ($arr) : $arr);
   }
+
   public static function html ($html = '') {
     Output::setContentType ('text/html');
     return Output::setOutput ($html);

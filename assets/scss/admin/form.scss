@@ -61,7 +61,7 @@ form.form {
       }
     }
 
-    > input[type='text'], > input[type='file'], > input[type='number'], > input[type='date'], > input[type='color'] {
+    > input[type='text'], > input[type='file'], > input[type='number'], > input[type='date'], > input[type='color'], > input[type='email'] {
       @include input;
     }
     > select {

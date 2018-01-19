@@ -19,6 +19,10 @@ class Uploader {
 
   public function __construct ($orm, $column) {
     $attrs = array_keys ($orm->attributes ());
+
+    if (!in_array ($column, $attrs))
+      return;
+
     in_array ($column, $attrs) || Uploader::mustError ('[Uploader] Class 「' . get_class ($orm) . '」 無 「' . $column . '」 欄位。');
     in_array ($this->uniqueColumn (), $attrs) || Uploader::mustError ('[Uploader] Class 「' . get_class ($orm) . '」 無 「' . $this->uniqueColumn () . '」 欄位。');
 

@@ -7,7 +7,7 @@
  * @link        https://www.ioa.tw/
  */
 
-interface RestfulControllerInterface {
+interface AdminRestfulControllerInterface {
   public function index ();
   public function add ();
   public function create ();
@@ -17,24 +17,19 @@ interface RestfulControllerInterface {
   public function show ($obj);
 }
 
-abstract class RestfulController extends Controller implements RestfulControllerInterface {
-  protected $view = null;
+abstract class AdminRestfulController extends AdminController implements AdminRestfulControllerInterface {
   protected $obj = null;
   protected $parents = array ();
   protected $parent = null;
 
   public function __construct () {
     parent::__construct ();
-
-    Load::sysLib ('Pagination.php', true);
-    Load::sysLib ('Session.php', true);
-    Load::sysLib ('Validation.php', true);
-    Load::func ('common.php');
-
-    $this->view = View::create ();
   }
-  
+
   public function _remap ($name, $params) {
+    // if (!in_array ($name, array ('index', 'add', 'create', 'edit', 'update', 'destroy', 'show')))
+    //   return call_user_func_array (array ($this, $name), $params);
+
     Router::$router || gg ('請設定正確的 Router RestfulUrl.');
 
     $this->parents = array_filter (array_map (function ($param) {
@@ -56,7 +51,19 @@ abstract class RestfulController extends Controller implements RestfulController
 
     count (Router::$router['params']) == count ($this->parents) || gg ('不明原因錯誤！');
 
-    if (!in_array ($name, array ('index', 'add', 'create')))
+    if (in_array ($name, array ('index')))
+      $this->asset->addCSS ('/assets/css/admin/list.css')
+                  ->addJS ('/assets/js/admin/list.js');
+    
+    if (in_array ($name, array ('add', 'edit')))
+      $this->asset->addCSS ('/assets/css/admin/form.css')
+                  ->addJS ('/assets/js/admin/form.js');
+    
+    if (in_array ($name, array ('show')))
+      $this->asset->addCSS ('/assets/css/admin/show.css')
+                  ->addJS ('/assets/js/admin/show.js');
+
+    if (!in_array ($name, array ('index', 'add', 'create', 'sorts')))
       $this->obj = array_pop ($this->parents);
 
     RestfulUrl::setUrls (implode('/', Router::$router['group']), $this->parents);
@@ -64,9 +71,10 @@ abstract class RestfulController extends Controller implements RestfulController
     $this->parent = $this->parents ? $this->parents[count ($this->parents) - 1] : null;
     
     $this->view->with ('parent', $this->parent)
-               ->with ('parents', $this->parents);
+               ->with ('parents', $this->parents)
+               ->with ('obj', $this->obj);
 
-    if (!in_array ($name, array ('edit', 'update', 'destroy', 'show')))
+    if (in_array ($name, array ('index', 'add', 'create', 'sorts')))
       return call_user_func_array (array ($this, $name), $this->parents);
     
     return $this->obj ? call_user_func_array (array ($this, $name), array ($this->obj)) : gg ('找不到該物件！');

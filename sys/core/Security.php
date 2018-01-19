@@ -200,7 +200,7 @@ class Security {
     $str = preg_replace_callback ("/[^a-z0-9>]+[a-z0-9]+=([\'\"]).*?\\1/si", array ('Security', 'convertAttribute'), $str);
     $str = preg_replace_callback ('/<\w+.*/si', array ('Security', 'decodeEntity'), $str);
 
-    $str = remove_invisible_characters($str);
+    $str = remove_invisible_characters ($str);
 
     $str = str_replace ("\t", ' ', $str);
 

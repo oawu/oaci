@@ -12,20 +12,27 @@ class RestfulUrl {
   private static $urls = null;
 
   public static function addGroup ($controller, $action, $format) {
+    if (!$action) return;
     isset (self::$list[$controller]) || self::$list[$controller] = array ();
     self::$list[$controller][$action] = $format;
   }
   public static function exception ($err) {
     throw new Exception ($err);
   }
-  public static function url ($key, $params = array ()) {
+  public static function url () {
+    $params = func_get_args ();
+
+    $key = array_shift ($params);
     $key = explode ('@', $key);
     $file = array_shift ($key);
     $method = array_shift ($key);
 
-    if (!isset (self::$list[$file][$method]))
+    if (!isset (self::$list[$file]))
       throw new Exception ('RestfulUrl 設定 url 錯誤！');
 
+    if (!isset (self::$list[$file][$method]))
+      self::$list[$file][$method] = self::$list[$file]['show'] . '/' . $method;
+    
     $params = array_orm_column ($params, 'id');
 
     $i = -1;
@@ -42,7 +49,7 @@ class RestfulUrl {
     $keys = array_keys (self::$list[$key]);
 
     return self::$urls = array_combine ($keys, array_map (function ($method, $value) use ($key, $parents) {
-      return RestfulUrl::url ($key . '@' . $method, $parents);
+      return call_user_func_array (array ('RestfulUrl', 'url'), array_merge (array ($key . '@' . $method), $parents));
     }, $keys, self::$list[$key]));
   }
 

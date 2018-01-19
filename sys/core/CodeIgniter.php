@@ -50,7 +50,7 @@ Benchmark::markEnd ('Controller ( ' . $class . ' / ' . $method . ' )');
 /*  結束 Controller
  * ====================================================== */
 
-Output::display ($output);
+Output::display ($output instanceof View ? $output->output () : $output);
 
 Log::closeAll ();
 Benchmark::markEnd ('整體');

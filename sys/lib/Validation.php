@@ -123,6 +123,11 @@ class Validation {
 
   // ===================================================
 
+  private function _doRemoveHtmloTags ($allowable_tags = null) {
+    $this->isStringOrNumber ();
+    $this->val = $allowable_tags === null ? strip_tags ($this->val) : strip_tags ($this->val, $allowable_tags);
+  }
+
   private function _doTrim ($character_mask = " \t\n\r\0\x0B") {
     $this->isStringOrNumber ();
     $this->val = trim ($this->val, $character_mask);

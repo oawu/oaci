@@ -958,7 +958,7 @@ class Model
 			$sql->limit($options['limit']);
 
 		if (isset($options['order']))
-			$sql->order($options['order']);
+			$sql->order((string)$options['order']);
 
 		$values = $sql->bind_values();
 		$ret = $conn->query(($table->last_sql = $sql->to_s()), $values);
@@ -1014,7 +1014,7 @@ class Model
 			$sql->limit($options['limit']);
 
 		if (isset($options['order']))
-			$sql->order($options['order']);
+			$sql->order((string)$options['order']);
 
 		$values = $sql->bind_values();
 		$ret = $conn->query(($table->last_sql = $sql->to_s()), $values);
@@ -1574,6 +1574,9 @@ class Model
 			throw new RecordNotFound("Couldn't find $class without an ID");
 
 		$args = func_get_args();
+		if (isset ($args[1]) && $args[1] instanceof \Where)
+			$args[1] = array ('where' => $args[1]);
+
 		$options = static::extract_and_validate_options($args);
 		$num_args = count($args);
 		$single = true;
@@ -1587,10 +1590,10 @@ class Model
 					break;
 
 			 	case 'last':
-					if (!array_key_exists('order',$options))
-						$options['order'] = join(' DESC, ',static::table()->pk) . ' DESC';
+					if (!isset ($options['order']))
+						$options['order'] = join(' DESC, ', static::table()->pk) . ' DESC';
 					else
-						$options['order'] = SQLBuilder::reverse_order($options['order']);
+						$options['order'] = SQLBuilder::reverse_order ((string)$options['order']);
 
 					// fall thru
 

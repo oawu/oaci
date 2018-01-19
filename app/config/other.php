@@ -15,7 +15,7 @@ return array (
   'charset' => 'UTF-8',
   'proxy_ips' => '',
   'time_reference' => 'local',
-  'global_xss_filtering' => false,
+  'global_xss_filtering' => true,
   
   'language'  => 'english',
   'subclass_prefix' => 'MY_',

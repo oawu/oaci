@@ -53,6 +53,12 @@ class Router {
     RestfulUrl::addGroup ($prefixs, 'edit', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/(:id)/edit'), $controller . '@edit($1' . $t2 . ')', $models));
     RestfulUrl::addGroup ($prefixs, 'update', self::method ('put', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@update($1' . $t2 . ')', $models));
     RestfulUrl::addGroup ($prefixs, 'destroy', self::method ('delete', explode ('/', implode ('/(:id)/', $uris) . '/(:id)'), $controller . '@destroy($1' . $t2 . ')', $models));
+
+    RestfulUrl::addGroup ($prefixs, '', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/(:id)/(:any)'), $controller . '@$' . ($c + 1) . '($1' . $t2 . ')', $models));
+    RestfulUrl::addGroup ($prefixs, '', self::method ('post', explode ('/', implode ('/(:id)/', $uris) . '/(:id)/(:any)'), $controller . '@$' . ($c + 1) . '($1' . $t2 . ')', $models));
+    
+    // RestfulUrl::addGroup ($prefixs, 'sorts', self::method ('get', explode ('/', implode ('/(:id)/', $uris) . '/sorts'), $controller . '@sorts(' . $t1 . ')', $models));
+    RestfulUrl::addGroup ($prefixs, 'sorts', self::method ('post', explode ('/', implode ('/(:id)/', $uris) . '/sorts'), $controller . '@sorts(' . $t1 . ')', $models));
   }
   private static function method ($m, $formats, $uri, $models = array ()) {
     $prefixs = self::getDirs ();

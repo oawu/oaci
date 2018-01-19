@@ -15,7 +15,7 @@ class ActiveRecordException extends \Exception {
 	public function __construct($adapter_or_string_or_mystery = null)
 	{
 		if ($adapter_or_string_or_mystery)
-			parent::__construct(self::$stackTrace ? $adapter_or_string_or_mystery : $adapter_or_string_or_mystery->getMessage ());
+			parent::__construct(!self::$stackTrace && method_exists ($adapter_or_string_or_mystery, 'getMessage') ? $adapter_or_string_or_mystery->getMessage () : $adapter_or_string_or_mystery);
 		else
 			parent::__construct();
 	}

@@ -195,19 +195,19 @@ class Table
 			}
 		}
 
-		if (array_key_exists('order',$options))
-			$sql->order($options['order']);
+		if (isset ($options['order']))
+			$sql->order((string)$options['order']);
 
-		if (array_key_exists('limit',$options))
+		if (isset ($options['limit']))
 			$sql->limit($options['limit']);
 
-		if (array_key_exists('offset',$options))
+		if (isset ($options['offset']))
 			$sql->offset($options['offset']);
 
-		if (array_key_exists('group',$options))
+		if (isset ($options['group']))
 			$sql->group($options['group']);
 
-		if (array_key_exists('having',$options))
+		if (isset ($options['having']))
 			$sql->having($options['having']);
 
 		return $sql;

@@ -175,18 +175,17 @@ $(function () {
   }
 
   function ajaxFail (result) {
-    if ((t = isJsonString (result.responseText)) !== null && t.message)
-      window.notification.add ({icon: 'icon-38', color: 'rgba(234, 84, 75, 1.00)', title: '設定錯誤！', message: t.message});
-    else
-      window.notification.add ({icon: 'icon-38', color: 'rgba(234, 84, 75, 1.00)', title: '設定錯誤！', message: '※ 不明原因錯誤，請重新整理網頁確認。請點擊此訊息顯示詳細錯誤。'}, null, function () {
-        window.ajaxError.show (result.responseText);
-      });
+    
   }
+
   function updateCounter (key, result) {
     if (typeof key === 'undefined')
       return;
 
-    $('*[data-cntlabel*="' + key + '"][data-cnt]').each (function () { $(this).attr ('data-cnt', (result ? 1 : -1) + parseInt ($(this).attr ('data-cnt'), 10)); });
+    if (typeof this.$el === 'undefined')
+      this.$el = $('*[data-cntlabel*="' + key + '"][data-cnt]');
+
+    this.$el.each (function () { $(this).attr ('data-cnt', (result ? -1 : 1) + parseInt ($(this).attr ('data-cnt'), 10)); });
   }
 
   $('.switch.ajax[data-column][data-url][data-true][data-false]').each (function () {
@@ -223,7 +222,8 @@ $(function () {
       .fail (function (result) {
         $(this).prop ('checked', !data[column]);
         $that.removeClass ('loading');
-        ajaxFail (result);
+
+        window.notification.add ({icon: 'icon-38', color: 'rgba(234, 84, 75, 1.00)', title: '設定錯誤！', message: '※ 不明原因錯誤，請重新整理網頁確認。請點擊此訊息顯示詳細錯誤。'}, null, function () { window.ajaxError.show ((t = isJsonString (result.responseText)) !== null && t.message ? JSON.stringify (t) : result.responseText); });
       }.bind ($(this)));
     });
   });

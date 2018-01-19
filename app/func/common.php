@@ -7,25 +7,17 @@
  * @link        https://www.ioa.tw/
  */
 
-if (!function_exists ('refresh')) {
-  function refresh ($url, $key = null, $data = null) {
-    static $loaded;
-    $loaded || $loaded = Load::sysLib ('Session.php', true);
-
-    if ($key !== null && $data !== null)
-      Session::setFlashData ($key, $data);
-    
-    URL::refresh ($url);
-
-    exit;
-    return;
-  }
-}
 if (!function_exists ('asset')) {
   function asset () {
     $args = func_get_args ();
     $args = ltrim (preg_replace ('/\/+/', '/', implode ('/', array_2d_to_1d ($args))), '/');
     
     return URL::base ($args);
+  }
+}
+
+if (!function_exists ('remove_ckedit_tag')) {
+  function remove_ckedit_tag ($text) {
+    return preg_replace ("/\s+/", "", preg_replace ("/&#?[a-z0-9]+;/i", "", str_replace ('▼', '', str_replace ('▲', '', trim (strip_tags ($text))))));
   }
 }

@@ -50,8 +50,8 @@
         <div>
           <span class='icon-14' data-cnt='199' data-cntlabel='aaa'>管理區</span>
           <div>
-            <a href="" class='icon-21 active' data-cnt='199'>後台首頁</a>
-            <a href="" class='icon-20 cnt-info' data-cnt='20'>Banner 上稿</a>
+            <a href="" class='icon-21' data-cnt='199'>後台首頁</a>
+            <a href="<?php echo $url = RestfulUrl::url ('admin/banners@index');?>" class='icon-20<?php echo isset ($current_url) && $url === $current_url ? ' active' : '';?>' data-cnt='20'>Banner 上稿</a>
             <a href="" class='icon-22'>文章 上稿</a>
           </div>
         </div>

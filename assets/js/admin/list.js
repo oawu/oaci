@@ -6,6 +6,7 @@
  */
 
 // need res/oaips-20180115.js
+// need res/jquery_ui_v1.12.0.js
 
 $(function () {
   var $body = $('body');
@@ -87,11 +88,6 @@ $(function () {
   $('form.search .conditions-btn').click (function () {
     $(this).parent ().toggleClass ('show');
   });
-
-  $('table.list').each (function () {
-    if ($(this).find ('tbody > tr').length) return;
-    $(this).find ('tbody').append ($('<tr />').append ($('<td />').attr ('colspan', $(this).find ('thead > tr > th').length)));
-  });
   
   $('.oaips').each (function () {
     var $oaips = $('<div />').addClass ('oaips');
@@ -109,5 +105,61 @@ $(function () {
     window.oaips.set ($oaips, '.oaip');
   });
 
+  if (typeof $.fn.sortable !== 'undefined') {
+    $('table.list.dragable[data-sorturl]').each (function () {
+      var $that = $(this);
+      var ori = [];
+
+      $that.sortable ({
+        items: $that.find ('tr[data-sort][data-id]'),
+        handle: $that.find ('span.drag'),
+        connectWith: $that.find ('tbody'),
+        placeholder: 'placeholder',
+        start: function(e, ui){
+          ui.placeholder.height (ui.item.height ());
+          ori = $that.find ('tr[data-sort][data-id]:visible').map (function (i) {
+            return {id: $(this).data ('id'), sort: $(this).data ('sort')};
+          }).toArray ();
+        },
+        helper: function (e, $tr) {
+          var $originals = $tr.children ();
+          $tr.children ().each (function (index) { $(this).width ($originals.eq (index).outerWidth ()); });
+          return $tr;
+        },
+        update: function (e, ui) {
+          var now = $that.find ('tr[data-sort][data-id]:visible').map (function (i) {
+            return {id: $(this).data ('id'), sort: $(this).data ('sort')};
+          }).toArray ();
+
+          if (ori.length != now.length)
+            window.notification.add ({icon: 'icon-38', color: 'rgba(234, 84, 75, 1.00)', title: '設定錯誤！', message: '※ 不明原因錯誤，請重新整理網頁確認。請點擊此訊息顯示詳細錯誤。'}, null, function () {
+              window.ajaxError.show (
+                  'ori: ' + JSON.stringify (ori) +
+                  'now: ' + JSON.stringify (now)
+                );
+            });
+
+          var chg = [];
+          for (var i = 0; i < ori.length; i++)
+            if (ori[i].sort != now[i].sort)
+              chg.push ({'id': now[i].id, 'ori': now[i].sort, 'now': ori[i].sort});
+      
+          $.ajax ({
+            url: $that.data ('sorturl'),
+            data: { changes: chg },
+            async: true, cache: false, dataType: 'json', type: 'POST'
+          })
+          .done (function (result) {
+            result.forEach (function (t) {
+              $that.find ('tr[data-id="' + t.id + '"]').data ('sort', t.sort);
+            });
+          }.bind ($(this)))
+          .fail (function (result) {
+            window.notification.add ({icon: 'icon-38', color: 'rgba(234, 84, 75, 1.00)', title: '設定錯誤！', message: '※ 不明原因錯誤，請重新整理網頁確認。請點擊此訊息顯示詳細錯誤。'}, null, function () { window.ajaxError.show ((t = isJsonString (result.responseText)) !== null && t.message ? JSON.stringify (t) : result.responseText); });
+          }.bind ($(this)));
+        }
+      });
+    });
+  }
   window.oaips.listenUrl ();
 });

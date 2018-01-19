@@ -137,3 +137,18 @@ class URL {
     exit;
   }
 }
+
+if (!function_exists ('refresh')) {
+  function refresh ($url, $key = null, $data = null) {
+    static $loaded;
+    $loaded || $loaded = Load::sysLib ('Session.php', true);
+
+    if ($key !== null && $data !== null)
+      Session::setFlashData ($key, $data);
+    
+    URL::refresh ($url);
+
+    exit;
+    return;
+  }
+}

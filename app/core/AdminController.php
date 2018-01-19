@@ -25,6 +25,8 @@ abstract class AdminController extends Controller {
 
                         ->addJS ('/assets/js/res/jquery-1.10.2.min.js')
                         
+                        ->addJS ('/assets/js/res/jquery_ui_v1.12.0.js')
+                        ->addJS ('/assets/js/res/jquery_ujs.js')
                         ->addJS ('/assets/js/res/imgLiquid-min.js')
                         ->addJS ('/assets/js/res/timeago.js')
                         ->addJS ('/assets/js/res/jqui-datepick-20180116.js')
@@ -41,13 +43,23 @@ abstract class AdminController extends Controller {
 
     $this->layout = View::create ('admin.php')
                         ->with ('flash', $flash)
-                        ->with ('params', $flash['params'])
-                        ->with ('asset', $this->asset)
-                        ;
+                        ->with ('asset', $this->asset);
+
+    get_flash_params ($flash['params']);
 
     $this->view = View::create ()
                       ->appendTo ($this->layout, 'content')
-                        ->with ('asset', $this->asset)
-                      ;
+                      ->with ('asset', $this->asset);
+
+    Pagination::$firstClass = 'icon-30';
+    Pagination::$prevClass = 'icon-05';
+    Pagination::$activeClass = 'active';
+    Pagination::$nextClass = 'icon-06';
+    Pagination::$lastClass = 'icon-31';
+
+    Pagination::$firstText = '';
+    Pagination::$lastText = '';
+    Pagination::$prevText = '';
+    Pagination::$nextText = '';
   }
 }
