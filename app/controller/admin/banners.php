@@ -17,7 +17,7 @@ class banners extends AdminRestfulController {
   public function index () {
     $where = Where::create ();
 
-    $search = AdminSearch::create ($where)
+    $search = AdminLib\Search::create ($where)
                          ->input ('標題', function ($val) { return Where::create ('title LIKE ?', '%' . $val . '%'); }, 'text')
                          ->select ('狀態', 'status = ?', array_map (function ($key) { return array ('text' => Banner::$statusTexts[$key], 'value' => $key); }, array_keys (Banner::$statusTexts)))
                          ->checkboxs ('狀態', 'status IN (?)', array_map (function ($key) { return array ('text' => Banner::$statusTexts[$key], 'value' => $key); }, array_keys (Banner::$statusTexts)))
@@ -27,17 +27,17 @@ class banners extends AdminRestfulController {
 
     $page = Pagination::info ($total);
 
-    $objs = Banner::find ('all', array ('order' => AdminOrder::desc ('sort'),'offset' => $page['offset'],'limit' => $page['limit'],'where' => $where));
+    $objs = Banner::find ('all', array ('order' => AdminLib\Order::desc ('sort'),'offset' => $page['offset'],'limit' => $page['limit'],'where' => $where));
 
-    $table = AdminTableListColumn::create ($objs,
-              AdminTableListColumn::create ('啟用')->setWidth (60)->setClass ('center')->setTd (function ($obj, $column) { return $column->setSwitch ($obj->status == Banner::STATUS_ON, array ('class' => 'switch ajax', 'data-column' => 'status', 'data-url' => RestfulUrl::url ('admin/banners@status', $obj), 'data-true' => Banner::STATUS_ON, 'data-false' => Banner::STATUS_OFF, 'data-cntlabel' => 'aaa')); }),
-              AdminTableListColumn::create ('ID')->setWidth (50)->setSort ('id')->setTd (function ($obj) { return $obj->id; }),
-              AdminTableListColumn::create ('封面')->setWidth (50)->setClass ('oaips')->setTd (function ($obj) { return $obj->cover->toImageTag ('w100'); }),
-              AdminTableListColumn::create ('標題')->setWidth (150)->setSort ('title')->setTd (function ($obj) { return $obj->title; }),
-              AdminTableListColumn::create ('內容')->setTd (function ($obj) { return $obj->min_column ('content', 100); }),
-              AdminTableListColumn::create ('鏈結')->setWidth (150)->setTd (function ($obj) { return $obj->link; }),
-              AdminTableListColumn::create ('開啟方式')->setWidth (70)->setTd (function ($obj) { return $obj->link ? Banner::$linkActionTexts[$obj->link_action] : ''; }),
-              AdminTableListEditColumn::create ('編輯')->setTd (function ($obj, $column) { return $column->addDeleteLink (RestfulUrl::destroy ($obj))->addEditLink (RestfulUrl::edit ($obj))->addShowLink (RestfulUrl::show ($obj)); }))
+    $table = AdminLib\Table::create ($objs,
+              AdminLib\Column::create ('啟用')->setWidth (60)->setClass ('center')->setTd (function ($obj, $column) { return $column->setSwitch ($obj->status == Banner::STATUS_ON, array ('class' => 'switch ajax', 'data-column' => 'status', 'data-url' => RestfulUrl::url ('admin/banners@status', $obj), 'data-true' => Banner::STATUS_ON, 'data-false' => Banner::STATUS_OFF, 'data-cntlabel' => 'aaa')); }),
+              AdminLib\Column::create ('ID')->setWidth (50)->setSort ('id')->setTd (function ($obj) { return $obj->id; }),
+              AdminLib\Column::create ('封面')->setWidth (50)->setClass ('oaips')->setTd (function ($obj) { return $obj->cover->toImageTag ('w100'); }),
+              AdminLib\Column::create ('標題')->setWidth (150)->setSort ('title')->setTd (function ($obj) { return $obj->title; }),
+              AdminLib\Column::create ('內容')->setTd (function ($obj) { return $obj->min_column ('content', 100); }),
+              AdminLib\Column::create ('鏈結')->setWidth (150)->setTd (function ($obj) { return $obj->link; }),
+              AdminLib\Column::create ('開啟方式')->setWidth (70)->setTd (function ($obj) { return $obj->link ? Banner::$linkActionTexts[$obj->link_action] : ''; }),
+              AdminLib\EditColumn::create ('編輯')->setTd (function ($obj, $column) { return $column->addDeleteLink (RestfulUrl::destroy ($obj))->addEditLink (RestfulUrl::edit ($obj))->addShowLink (RestfulUrl::show ($obj)); }))
             ->setSortUrl (RestfulUrl::url ('admin/banners@sorts'));
 
     $search = $search->renderForm ($total, RestfulUrl::add (), $table);

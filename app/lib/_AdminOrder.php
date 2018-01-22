@@ -1,4 +1,8 @@
-<?php defined ('OACI') || exit ('此檔案不允許讀取。');
+<?php
+
+namespace AdminLib;
+
+defined ('OACI') || exit ('此檔案不允許讀取。');
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
@@ -7,7 +11,7 @@
  * @link        https://www.ioa.tw/
  */
 
-class AdminOrder {
+class Order {
   const KEY = '_o';
   const SPLIT_KEY = ':';
 
@@ -17,26 +21,26 @@ class AdminOrder {
     if ($sort && count ($sort = array_values (array_filter (array_map ('trim', explode (' ', $sort))))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')))
       $this->sort = $sort[0] . ' ' . strtoupper ($sort[1]);
 
-    if (($sort = Input::get (AdminOrder::KEY)) && count ($sort = array_values (array_filter (array_map ('trim', explode (AdminOrder::SPLIT_KEY, $sort))))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')))
+    if (($sort = \Input::get (Order::KEY)) && count ($sort = array_values (array_filter (array_map ('trim', explode (Order::SPLIT_KEY, $sort))))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')))
       $this->sort = $sort[0] . ' ' . strtoupper ($sort[1]);
   }
   
   public static function set ($title, $column = '') {
     if (!$column) return $title;
 
-    $gets = Input::get ();
+    $gets = \Input::get ();
     
-    if (!(isset ($gets[AdminOrder::KEY]) && count ($sort = array_values (array_filter (explode (AdminOrder::SPLIT_KEY, $gets[AdminOrder::KEY])))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')) && ($sort[0] == $column))) {
-      $gets[AdminOrder::KEY] = $column . AdminOrder::SPLIT_KEY . 'desc';
-      return $title . ' <a href="' . URL::current () . '?' . http_build_query ($gets) . '" class="sort"></a>';
+    if (!(isset ($gets[Order::KEY]) && count ($sort = array_values (array_filter (explode (Order::SPLIT_KEY, $gets[Order::KEY])))) == 2 && in_array (strtolower ($sort[1]), array ('desc', 'asc')) && ($sort[0] == $column))) {
+      $gets[Order::KEY] = $column . Order::SPLIT_KEY . 'desc';
+      return $title . ' <a href="' . \URL::current () . '?' . http_build_query ($gets) . '" class="sort"></a>';
     }
     $class = strtolower ($sort[1]);
     if ($class != 'asc')
-      $gets[AdminOrder::KEY] = $column . AdminOrder::SPLIT_KEY . 'asc';
+      $gets[Order::KEY] = $column . Order::SPLIT_KEY . 'asc';
     else
-      unset ($gets[AdminOrder::KEY]);
+      unset ($gets[Order::KEY]);
 
-    return $title . ' <a href="' . URL::current () . '?' . http_build_query ($gets) . '" class="sort ' . $class . '"></a>';
+    return $title . ' <a href="' . \URL::current () . '?' . http_build_query ($gets) . '" class="sort ' . $class . '"></a>';
   }
 
   private static function _desc ($column = '') {
@@ -58,7 +62,7 @@ class AdminOrder {
         break;
 
       default:
-        gg ('AdminOrder 沒有「' . $name . '」方法。');
+        gg ('AdminLib\Order 沒有「' . $name . '」方法。');
         break;
     }
     return $this;
@@ -67,15 +71,15 @@ class AdminOrder {
   public static function __callStatic ($name, $arguments) {
     switch (strtolower (trim ($name))) {
       case 'asc':
-        return AdminOrder::create (call_user_func_array (array ('self', '_asc'), $arguments));
+        return Order::create (call_user_func_array (array ('self', '_asc'), $arguments));
         break;
 
       case 'desc':
-        return AdminOrder::create (call_user_func_array (array ('self', '_desc'), $arguments));
+        return Order::create (call_user_func_array (array ('self', '_desc'), $arguments));
         break;
 
       default:
-        gg ('AdminOrder 沒有「' . $name . '」方法。');
+        gg ('AdminLib\Order 沒有「' . $name . '」方法。');
         break;
     }
   }
@@ -89,6 +93,6 @@ class AdminOrder {
   }
 
   public static function create ($sort = '') {
-    return new AdminOrder ($sort);
+    return new Order ($sort);
   }
 }

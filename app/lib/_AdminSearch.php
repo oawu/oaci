@@ -1,4 +1,8 @@
-<?php defined ('OACI') || exit ('此檔案不允許讀取。');
+<?php
+
+namespace AdminLib;
+
+defined ('OACI') || exit ('此檔案不允許讀取。');
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
@@ -7,7 +11,7 @@
  * @link        https://www.ioa.tw/
  */
 
-class AdminSearch {
+class Search {
   const KEY = '_q';
 
   private $titles = array ();
@@ -25,7 +29,7 @@ class AdminSearch {
   }
 
   private function add ($key) {
-    $value = Input::get ($key, true);
+    $value = \Input::get ($key, true);
 
     if ($value === null || $value === '' || (is_array ($value) && !count ($value)) || empty ($this->searches[$key]['sql']))
       return $this;
@@ -40,27 +44,27 @@ class AdminSearch {
     return $this;
   }
   public function input ($title, $sql, $type = 'text') {
-    $this->searches[$key = AdminSearch::KEY . ($this->counter++)] = array ('el' => 'input', 'title' => $title, 'sql' => $sql, 'type' => $type);
+    $this->searches[$key = Search::KEY . ($this->counter++)] = array ('el' => 'input', 'title' => $title, 'sql' => $sql, 'type' => $type);
     return $this->add ($key);
   }
 
   public function select ($title, $sql, $options) {
-    $this->searches[$key = AdminSearch::KEY . ($this->counter++)] = array ('el' => 'select', 'title' => $title, 'sql' => $sql, 'options' => $options);
+    $this->searches[$key = Search::KEY . ($this->counter++)] = array ('el' => 'select', 'title' => $title, 'sql' => $sql, 'options' => $options);
     return $this->add ($key);
   }
   
   public function checkboxs ($title, $sql, $items) {
-    $this->searches[$key = AdminSearch::KEY . ($this->counter++)] = array ('el' => 'checkboxs', 'title' => $title, 'sql' => $sql, 'items' => $items);
+    $this->searches[$key = Search::KEY . ($this->counter++)] = array ('el' => 'checkboxs', 'title' => $title, 'sql' => $sql, 'items' => $items);
     return $this->add ($key);
   }
   
   public function radios ($title, $sql, $items) {
-    $this->searches[$key = AdminSearch::KEY . ($this->counter++)] = array ('el' => 'radios', 'title' => $title, 'sql' => $sql, 'items' => $items);
+    $this->searches[$key = Search::KEY . ($this->counter++)] = array ('el' => 'radios', 'title' => $title, 'sql' => $sql, 'items' => $items);
     return $this->add ($key);
   }
   
   private function conditions () {
-    $gets = Input::get ();
+    $gets = \Input::get ();
 
     $return = '<div class="conditions">';
       
@@ -132,40 +136,40 @@ class AdminSearch {
 
       $return .= '<div class="btns">';
         $return .= '<button type="submit">搜尋</button>';
-        $return .= '<a href="' . URL::current () . $gets . '">取消</a>';
+        $return .= '<a href="' . \URL::current () . $gets . '">取消</a>';
       $return .= '</div>';
     $return .= '</div>';
 
     return $return;
   }
 
-  public function renderForm ($total, $add = '', AdminTableList $sortKey) {
+  public function renderForm ($total, $add = '', Table $sortKey) {
     if ($sortKey->isUseSort ()) {
-      $gets = Input::get ();
+      $gets = \Input::get ();
 
-      if (isset ($gets[AdminOrder::KEY]))
-        unset ($gets[AdminOrder::KEY]);
+      if (isset ($gets[Order::KEY]))
+        unset ($gets[Order::KEY]);
 
       foreach (array_keys ($this->searches) as $key)
         if (isset ($gets[$key]))
           unset ($gets[$key]);
   
-      if (isset ($gets[AdminTableList::KEY]) && $gets[AdminTableList::KEY] === 'true') {
+      if (isset ($gets[Table::KEY]) && $gets[Table::KEY] === 'true') {
         $ing = false;
-        unset ($gets[AdminTableList::KEY]);
+        unset ($gets[Table::KEY]);
       } else {
         $ing = true;
-        $gets[AdminTableList::KEY] = 'true';
+        $gets[Table::KEY] = 'true';
       }
 
       $gets = http_build_query ($gets);
       $gets && $gets = '?' . $gets;
-      $sortKey = URL::current () . $gets;
+      $sortKey = \URL::current () . $gets;
     } else {
       $sortKey = '';
     }
 
-    $return = '<form class="search" action="' . RestfulUrl::index () . '" method="get">';
+    $return = '<form class="search" action="' . \RestfulUrl::index () . '" method="get">';
       $return .= '<div class="info' . ($this->titles ? ' show' : '') . '">';
         $return .= '<a class="icon-13 conditions-btn"></a>';
 
@@ -178,6 +182,6 @@ class AdminSearch {
   }
 
   public static function create (&$where = null) {
-    return new AdminSearch ($where);
+    return new Search ($where);
   }
 }
