@@ -51,14 +51,18 @@ abstract class AdminRestfulController extends AdminController implements AdminRe
 
     count (Router::$router['params']) == count ($this->parents) || gg ('不明原因錯誤！');
 
-    if (in_array ($name, array ('index')))
+    if (in_array ($name, array ('index'))) {
+      Load::lib ('AdminLib/Index.php');
       $this->asset->addCSS ('/assets/css/admin/list.css')
                   ->addJS ('/assets/js/admin/list.js');
-    
-    if (in_array ($name, array ('add', 'edit')))
+    }
+      
+    if (in_array ($name, array ('add', 'edit'))) {
+      Load::lib ('AdminLib/Form.php');
       $this->asset->addCSS ('/assets/css/admin/form.css')
                   ->addJS ('/assets/js/admin/form.js');
-    
+    }
+      
     if (in_array ($name, array ('show')))
       $this->asset->addCSS ('/assets/css/admin/show.css')
                   ->addJS ('/assets/js/admin/show.js');

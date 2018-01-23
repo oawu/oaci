@@ -22,6 +22,26 @@ if (!function_exists ('get_flash_params')) {
   }
 }
 
+// if (!function_exists ('form_select')) {
+//   function form_select ($name, $value, $text, $selected, $items = array ()) {
+//     return '<select>' .
+//              implode ('', array_map (function ($item) {
+//               return '<option></option>';
+//              }, $items))
+//            '</select>';
+//     // $input_attrs = array_filter (array ('type' => 'radio', 'name' => $name, 'value' => $value));
+//     // $input_attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($input_attrs), array_values ($input_attrs)));
+
+//     // $attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($attrs), array_values ($attrs)));
+//     // $attrs && $attrs = ' ' . $attrs;
+
+//     // return '<label' . $attrs . '>' .
+//     //          '<input ' . $input_attrs . ($selected ? ' selected' : '') . '/>' .
+//     //          '<span></span>' .
+//     //          $text .
+//     //        '</label>';
+//   }
+// }
 if (!function_exists ('form_radio')) {
   function form_radio ($name, $value, $text, $checked, $attrs = array ()) {
     $input_attrs = array_filter (array ('type' => 'radio', 'name' => $name, 'value' => $value));
@@ -55,7 +75,7 @@ if (!function_exists ('form_checkbox')) {
 }
 
 if (!function_exists ('form_switch')) {
-  function form_switch ($name, $value, $checked, $attrs = array ()) {
+  function form_switch ($name, $value, $text, $checked, $attrs = array ()) {
     $input_attrs = array_filter (array ('type' => 'checkbox', 'name' => $name, 'value' => $value));
     $input_attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($input_attrs), array_values ($input_attrs)));
 
@@ -65,6 +85,7 @@ if (!function_exists ('form_switch')) {
     return '<label' . $attrs . '>' .
               '<input ' . $input_attrs . ($checked ? ' checked' : '') . '/>' .
               '<span></span>' .
+              $text .
             '</label>';
   }
 }

@@ -1,15 +1,15 @@
 <?php
 
-namespace AdminLib;
-
-defined ('OACI') || exit ('此檔案不允許讀取。');
-
 /**
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2013 - 2018, OACI
  * @license     http://opensource.org/licenses/MIT  MIT License
  * @link        https://www.ioa.tw/
  */
+
+namespace AdminLib\Index;
+
+defined ('OACI') || exit ('此檔案不允許讀取。');
 
 class Order {
   const KEY = '_o';
@@ -305,7 +305,7 @@ class Column {
   }
 
   public function setSwitch ($checked, $attrs = array ()) {
-    return form_switch ('', '', $checked, $attrs);
+    return form_switch ('', '', '', $checked, $attrs);
   }
 
   public function setTitle ($title) {
