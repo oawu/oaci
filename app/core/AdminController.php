@@ -44,6 +44,12 @@ abstract class AdminController extends Controller {
     $this->layout = View::create ('admin.php')
                         ->with ('flash', $flash)
                         ->with ('asset', $this->asset);
+$flash['params'] = array (
+        'sources' => array (
+            array ('title' => 'ccccc', 'user' => 1),
+            array ('title' => 'aaaaaaa', 'user' => array ())
+            )
+    );
 
     get_flash_params ($flash['params']);
 

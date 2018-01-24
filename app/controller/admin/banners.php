@@ -1,7 +1,9 @@
 <?php defined ('OACI') || exit ('此檔案不允許讀取。');
 
-use AdminLib\Index as Index;
-use AdminLib\Form  as Form;
+use AdminLib\Index          as Index;
+use AdminLib\Form           as Form;
+use AdminLib\Form\Row       as Row;
+use AdminLib\Form\Row\Multi as Multi;
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
@@ -52,16 +54,26 @@ class banners extends AdminRestfulController {
 
   public function add () {
     $form = Form\Form::create (
-              Form\RowSwitch::create ('是否啟用')->setName ('status')->setValue (Banner::STATUS_OFF)->appendItem (Form\RowItem::create (Banner::STATUS_ON)),
-              Form\RowText::create ('標題')->setName ('title')->setValue ('')->setLength (1, 255)->isAutofocus (true),
-              Form\RowLatLng::create ('位置')->setTip ('請點選地圖選擇位置')->setLat ('lat', '')->setLng ('lng', '')->isNeed (true)
+              Row\Switchers::create ('是否啟用')->setName ('status')->setValue (Banner::STATUS_OFF)->appendItem (Row\Switcher::create (Banner::STATUS_ON)),
+              Row\Text::create ('標題')->setName ('title')->setValue ('')->setLength (1, 255)->isAutofocus (true),
+              // Row\LatLng::create ('位置')->setTip ('請點選地圖選擇位置')->setLat ('lat', '')->setLng ('lng', '')->isNeed (true)
+
+              // Row\Multi::create ('參考鏈結')->setName ('sources')->setTip ('參考鏈結')->isNeed (true)->setColumns (
+              //     Multi\Text::create ('標題')->setName ('title')->setValue ('')->setLength (1, 255),
+              //     // Multi\Text::create ('標題')->setName ('link')->setValue ('')->setLength (1, 255)
+              //     Multi\Select::create ('選擇')->setName ('user')->setValue ('')->appendCombine (Row\Option::combine (array (1, 2), array ('OA', 'OB'))),
+              //     Multi\Checkboxs::create ('選擇')->setName ('user')->setValue ('')->appendCombine (Row\Checkbox::combine (array (1, 2), array ('OA', 'OB')))
+              //   )
 
               // Form\RowImage::create ('封面')->setTip ('預覽僅示意，未按比例')->setName ('cover')->setValue ('')->isNeed (true),
               // Form\RowImages::create ('封面')->setTip ('預覽僅示意，未按比例')->setName ('cover')->isNeed (true),
 
               // Form\RowCkeditor::create ('內容')->setName ('content')->setValue (''),
               // Form\RowText::create ('鏈結')->setName ('link')->setValue ('')->setLength (0, 255),
-              // Form\RowRadios::create ('鏈結開啟方式')->setTip ('此設定要有設定鏈結才有用')->setName ('link_action')->setValue (Banner::LINK_ACTION_TARGET)->appendItems (Form\RowItem::combine (array_keys (Banner::$linkActionTexts), array_values (Banner::$linkActionTexts)))
+              Row\Radios::create ('鏈結開啟方式')->setTip ('此設定要有設定鏈結才有用')->setName ('link_action')->isNeed (true)->setValue ('')->appendCombine (Row\Radio::combine (array_keys (Banner::$linkActionTexts), array_values (Banner::$linkActionTexts)))
+              // Row\Radios::create ('鏈結開啟方式')->setTip ('此設定要有設定鏈結才有用')->setName ('link_action')->setValue (Banner::LINK_ACTION_TARGET)->appendCombine (Row\Radio::combine (array_keys (Banner::$linkActionTexts), array_values (Banner::$linkActionTexts))),
+              // Row\Select::create ('鏈結開啟方式')->setTip ('此設定要有設定鏈結才有用')->isNeed (true)->setName ('link_action')->setValue (Banner::LINK_ACTION_TARGET)->appendCombine (Row\Option::combine (array_keys (Banner::$linkActionTexts), array_values (Banner::$linkActionTexts)))
+              // Row\Checkboxs::create ('鏈結開啟方式')->setTip ('此設定要有設定鏈結才有用')->setName ('link_action')->setValue (Banner::LINK_ACTION_TARGET)->appendCombine (Row\Checkbox::combine (array_keys (Banner::$linkActionTexts), array_values (Banner::$linkActionTexts)))
               );
 
     return $this->view->setPath ('admin/banners/add.php')
@@ -87,7 +99,9 @@ class banners extends AdminRestfulController {
     $posts['sort'] = Banner::count ();
     $posts['content'] = Input::post ('content', false);
     $files = Input::file ();
-
+echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" /><pre>';
+var_dump ($posts);
+exit ();
       return refresh (RestfulUrl::add (), 'flash', array ('type' => 'failure', 'msg' => '失敗！' . '', 'params' => $posts));
 
     if ($error = Validation::form ($validation, $posts, $files))

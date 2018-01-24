@@ -175,6 +175,13 @@ form.form .multi-datas {
 
   }
   .datas {
+    &.demo {
+      display: none;
+      + .datas {
+        margin-top: 0;
+        border-top: 0;
+      }
+    }
     > a {
       position: absolute;
       top: calc(50% - 32px / 2);
@@ -272,6 +279,12 @@ form.form .multi-datas {
       margin-top: 14px;
       padding-top: 14px;
       border-top: 1px dashed rgba(222, 222, 222, 1);
+      &:after {
+        top: 12px + 14px;
+      }
+      > a {
+        top: calc(50% - 32px / 2 + 14px);
+      }
     }
   }
   .btns {

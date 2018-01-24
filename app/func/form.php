@@ -30,9 +30,9 @@ if (!function_exists ('get_flash_params')) {
 //              }, $items))
 //            '</select>';
 //     // $input_attrs = array_filter (array ('type' => 'radio', 'name' => $name, 'value' => $value));
-//     // $input_attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($input_attrs), array_values ($input_attrs)));
+//     // $input_attrs = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($input_attrs), array_values ($input_attrs)));
 
-//     // $attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($attrs), array_values ($attrs)));
+//     // $attrs = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($attrs), array_values ($attrs)));
 //     // $attrs && $attrs = ' ' . $attrs;
 
 //     // return '<label' . $attrs . '>' .
@@ -43,15 +43,18 @@ if (!function_exists ('get_flash_params')) {
 //   }
 // }
 if (!function_exists ('form_radio')) {
-  function form_radio ($name, $value, $text, $checked, $attrs = array ()) {
+  function form_radio ($name, $value, $text, $checked, $attrs = array (), $attrs2 = array ()) {
     $input_attrs = array_filter (array ('type' => 'radio', 'name' => $name, 'value' => $value));
-    $input_attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($input_attrs), array_values ($input_attrs)));
+    $input_attrs = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($input_attrs), array_values ($input_attrs)));
 
-    $attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($attrs), array_values ($attrs)));
+    $attrs = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($attrs), array_values ($attrs)));
     $attrs && $attrs = ' ' . $attrs;
 
+    $attrs2 = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($attrs2), array_values ($attrs2)));
+    $attrs2 && $attrs2 = ' ' . $attrs2;
+
     return '<label' . $attrs . '>' .
-             '<input ' . $input_attrs . ($checked ? ' checked' : '') . '/>' .
+             '<input' . $attrs2 . ' ' . $input_attrs . ($checked ? ' checked' : '') . '/>' .
              '<span></span>' .
              $text .
            '</label>';
@@ -59,15 +62,18 @@ if (!function_exists ('form_radio')) {
 }
 
 if (!function_exists ('form_checkbox')) {
-  function form_checkbox ($name, $value, $text, $checked, $attrs = array ()) {
+  function form_checkbox ($name, $value, $text, $checked, $attrs = array (), $attrs2 = array ()) {
     $input_attrs = array_filter (array ('type' => 'checkbox', 'name' => $name, 'value' => $value));
-    $input_attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($input_attrs), array_values ($input_attrs)));
+    $input_attrs = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($input_attrs), array_values ($input_attrs)));
 
-    $attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($attrs), array_values ($attrs)));
+    $attrs = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($attrs), array_values ($attrs)));
     $attrs && $attrs = ' ' . $attrs;
 
+    $attrs2 = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($attrs2), array_values ($attrs2)));
+    $attrs2 && $attrs2 = ' ' . $attrs2;
+
     return '<label' . $attrs . '>' .
-              '<input ' . $input_attrs . ($checked ? ' checked' : '') . '/>' .
+              '<input' . $attrs2 . ' ' . $input_attrs . ($checked ? ' checked' : '') . '/>' .
               '<span></span>' .
               $text .
             '</label>';
@@ -77,9 +83,9 @@ if (!function_exists ('form_checkbox')) {
 if (!function_exists ('form_switch')) {
   function form_switch ($name, $value, $text, $checked, $attrs = array ()) {
     $input_attrs = array_filter (array ('type' => 'checkbox', 'name' => $name, 'value' => $value));
-    $input_attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($input_attrs), array_values ($input_attrs)));
+    $input_attrs = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($input_attrs), array_values ($input_attrs)));
 
-    $attrs = implode (' ', array_map (function ($key, $value) { return $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"'; }, array_keys ($attrs), array_values ($attrs)));
+    $attrs = implode (' ', array_map (function ($key, $value) { return $value !== null ? $key . '="' . (is_array ($value) ? json_encode ($value) : $value) . '"' : $key; }, array_keys ($attrs), array_values ($attrs)));
     $attrs && $attrs = ' ' . $attrs;
 
     return '<label' . $attrs . '>' .

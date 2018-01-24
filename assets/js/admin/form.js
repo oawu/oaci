@@ -69,6 +69,33 @@ $(function () {
     mutiImg ($('.multi-drop-imgs'));
   }
 
+  $('.multi-datas').each (function () {
+    var $that = $(this);
+    $that.find ('.datas:not(.demo) .del').click (function () { $(this).parents ('.datas').remove (); });
+
+    var $demo = $that.find ('.demo');
+    
+    if (!$demo.length)
+      return;
+    $demo.find ('[required]').each (function () {
+      $(this).attr ('data-required', true).removeAttr ('required');
+    });
+
+    var $btns = $that.find ('.btns');
+    
+    $btns.find ('.add').click (function () {
+      var index = parseInt ($that.attr ('data-index'), 10);
+      var $new = $demo.clone ().removeClass ('demo');
+      
+      $new.find ('.del').click (function () { $(this).parents ('.datas').remove (); });
+      $new.find ('[data-prefix][data-name]').each (function () { $(this).attr ('name', $(this).data ('prefix') + '[' + index + ']' + $(this).data ('name')).removeAttr ('data-prefix').removeAttr ('data-name'); });
+      $new.find ('[data-required]').each (function () { if ($(this).attr ('data-required')) $(this).prop ('required',  true).removeAttr ('data-required'); });
+      $new.insertBefore ($(this));
+
+      $that.attr ('data-index', index + 1);
+    }.bind ($btns));
+  });
+
   window.oaGmap = {
     keys: [],
     funcs: [],
