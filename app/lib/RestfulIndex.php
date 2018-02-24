@@ -1,4 +1,6 @@
-<?php defined ('OACI') || exit ('此檔案不允許讀取。');
+<?php
+
+namespace Restful;
 
 /**
  * @author      OA Wu <comdan66@gmail.com>
@@ -6,6 +8,8 @@
  * @license     http://opensource.org/licenses/MIT  MIT License
  * @link        https://www.ioa.tw/
  */
+
+defined ('OACI') || exit ('此檔案不允許讀取。');
 
 class Order {
   const KEY = '_o';
@@ -93,8 +97,6 @@ class Order {
   }
 }
 
-// ========================
-
 class Search {
   const KEY = '_q';
 
@@ -103,6 +105,12 @@ class Search {
   private $where = array ();
   private $searches = array ();
 
+  private $objs = array ();
+  private $total = 0;
+  private $addUrl = '';
+  private $sortUrl = '';
+  private $table = null;
+  
   public function __construct (&$where = null) {
     $where !== null || $where = Where::create ();
 
@@ -110,6 +118,12 @@ class Search {
     $this->counter = 0;
     $this->titles = array ();
     $this->searches = array ();
+
+    $this->total = 0;
+    $this->addUrl = '';
+    $this->sortUrl = '';
+    $this->objs = array ();
+    $this->table = Table::create ();
   }
 
   private function add ($key) {
@@ -226,10 +240,49 @@ class Search {
 
     return $return;
   }
+  public function setSortUrl ($sortUrl) {
+    $this->sortUrl = $sortUrl;
+    $this->table->setSortUrl ($this->sortUrl);
 
-  public function renderForm ($total, $add = '', Table $sortKey) {
-    if ($sortKey->isUseSort ()) {
-      $gets = \Input::get ();
+    return $this;
+  }
+  public function setAddUrl ($addUrl) {
+    $this->addUrl = $addUrl;
+    return $this;
+  }
+  public function setTotal ($total) {
+    $this->total = $total;
+    return $this;
+  }
+  public function setObjs (array $objs) {
+    $this->objs = $objs;
+    $this->table || $this->table = Table::create ();
+    $this->table->setObjs ($this->objs);
+    return $this;
+  }
+  public function setTable (Table $table) {
+    $this->table = $table;
+    $this->sortUrl && $this->table->setSortUrl ($this->sortUrl);
+    return $this;
+  }
+  public function setTableClomuns () {
+    $args = func_get_args ();
+    foreach ($args as $arg)
+      $this->table->appendClomun ($arg);
+    return $this->table;
+  }
+  public function getTable () {
+    return $this->table;
+  }
+  public function __toString () {
+    return $this->toString ();
+  }
+
+  public function toString () {
+    $sortKey = '';
+
+    if ($this->table->isUseSort ()) {
+      $gets = Input::get ();
 
       if (isset ($gets[Order::KEY]))
         unset ($gets[Order::KEY]);
@@ -249,16 +302,14 @@ class Search {
       $gets = http_build_query ($gets);
       $gets && $gets = '?' . $gets;
       $sortKey = \URL::current () . $gets;
-    } else {
-      $sortKey = '';
     }
 
     $return = '<form class="search" action="' . \RestfulUrl::index () . '" method="get">';
       $return .= '<div class="info' . ($this->titles ? ' show' : '') . '">';
         $return .= '<a class="icon-13 conditions-btn"></a>';
 
-        $return .= '<span>' . ($add ? '<a href="' . $add . '" class="icon-07">新增</a>' : '') . ($sortKey ? '<a href="' . $sortKey . '" class="icon-' . ($ing ? '41' : '18') . '">' . ($ing ? '排序' : '完成') . '</a>' : '') . '</span>';
-        $return .= '<span>' . ($this->titles ? '您針對' . implode ('、', array_map (function ($title) { return '「' . $title . '」'; }, $this->titles)) . '搜尋，結果' : '目前全部') . '共有 <b>' . number_format ($total) . '</b> 筆。' . '</span>';
+        $return .= '<span>' . ($this->addUrl ? '<a href="' . $this->addUrl . '" class="icon-07">新增</a>' : '') . ($sortKey ? '<a href="' . $sortKey . '" class="icon-' . ($ing ? '41' : '18') . '">' . ($ing ? '排序' : '完成') . '</a>' : '') . '</span>';
+        $return .= '<span>' . ($this->titles ? '您針對' . implode ('、', array_map (function ($title) { return '「' . $title . '」'; }, $this->titles)) . '搜尋，結果' : '目前全部') . '共有 <b>' . number_format ($this->total) . '</b> 筆。' . '</span>';
       $return .= '</div>';
       $return .= $this->conditions ();
     $return .= '</form>';
@@ -269,8 +320,6 @@ class Search {
     return new Search ($where);
   }
 }
-
-// ========================
 
 class Column {
   protected $sort, $class, $width, $title;

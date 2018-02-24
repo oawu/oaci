@@ -8,8 +8,8 @@
  */
 
 abstract class AdminController extends Controller {
-  public $layout, $view, $asset;
-  
+  public $layout, $view, $asset, $form;
+
   public function __construct () {
     parent::__construct ();
 
@@ -44,12 +44,14 @@ abstract class AdminController extends Controller {
     $this->layout = View::create ('admin.php')
                         ->with ('flash', $flash)
                         ->with ('asset', $this->asset);
-$flash['params'] = array (
-        'sources' => array (
-            array ('title' => 'ccccc', 'user' => 1),
-            array ('title' => 'aaaaaaa', 'user' => array ())
-            )
-    );
+// $flash['params'] = array (
+//         'sources' => array (
+//             array ('title' => 'ccccc', 'user' => 1),
+//             array ('title' => 'aaaaaaa', 'user' => array ())
+//             )
+//     );
+// $flash['params']['name'] = 'asd';
+// $flash['params']['color'] = '#aaa000';
 
     get_flash_params ($flash['params']);
 

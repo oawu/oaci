@@ -24,12 +24,13 @@ abstract class AdminRestfulController extends AdminController implements AdminRe
 
   public function __construct () {
     parent::__construct ();
+
+    Load::lib ('RestfulIndex.php');
+    Load::lib ('RestfulForm.php');
+    $this->form = Restful\Form::create ();
   }
 
   public function _remap ($name, $params) {
-    // if (!in_array ($name, array ('index', 'add', 'create', 'edit', 'update', 'destroy', 'show')))
-    //   return call_user_func_array (array ($this, $name), $params);
-
     Router::$router || gg ('請設定正確的 Router RestfulUrl.');
 
     $this->parents = array_filter (array_map (function ($param) {
@@ -51,14 +52,16 @@ abstract class AdminRestfulController extends AdminController implements AdminRe
 
     count (Router::$router['params']) == count ($this->parents) || gg ('不明原因錯誤！');
 
+    if (!in_array ($name, array ('index', 'add', 'create', 'sorts')))
+      $this->obj = array_pop ($this->parents);
+
     if (in_array ($name, array ('index'))) {
-      Load::lib ('AdminLib/Index.php');
       $this->asset->addCSS ('/assets/css/admin/list.css')
                   ->addJS ('/assets/js/admin/list.js');
     }
-      
+
     if (in_array ($name, array ('add', 'edit'))) {
-      Load::lib ('AdminLib/Form.php');
+      $this->view->with ('form', $this->form->setObj ($name == 'edit' ? $this->obj : null));
       $this->asset->addCSS ('/assets/css/admin/form.css')
                   ->addJS ('/assets/js/admin/form.js');
     }
@@ -66,9 +69,6 @@ abstract class AdminRestfulController extends AdminController implements AdminRe
     if (in_array ($name, array ('show')))
       $this->asset->addCSS ('/assets/css/admin/show.css')
                   ->addJS ('/assets/js/admin/show.js');
-
-    if (!in_array ($name, array ('index', 'add', 'create', 'sorts')))
-      $this->obj = array_pop ($this->parents);
 
     RestfulUrl::setUrls (implode('/', Router::$router['group']), $this->parents);
 
