@@ -55,7 +55,7 @@ class RestfulUrl {
 
   public static function __callStatic ($name, $arguments) {
     
-    if (in_array ($name, array ('index', 'add', 'create')))
+    if (in_array ($name, array ('index', 'add', 'create', 'sorts')))
       if (isset (self::$urls[$name]))
         return self::$urls[$name];
       else

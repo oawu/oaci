@@ -48,11 +48,11 @@
 
       <div id='menu-main'>
         <div>
-          <span class='icon-14' data-cnt='199' data-cntlabel='aaa'>管理區</span>
+          <span class='icon-14' data-cnt='<?php echo $acnt = Article::count (Where::create ('status = ?', Article::STATUS_OFF));?>' data-cntlabel='article'>管理區</span>
           <div>
-            <a href="" class='icon-21' data-cnt='199'>後台首頁</a>
-            <a href="<?php echo $url = RestfulUrl::url ('admin/banners@index');?>" class='icon-20<?php echo isset ($current_url) && $url === $current_url ? ' active' : '';?>' data-cnt='20'>Banner 上稿</a>
-            <a href="" class='icon-22'>文章 上稿</a>
+            <a href="" class='icon-21'>後台首頁</a>
+            <a href="<?php echo $url = RestfulUrl::url ('admin/tags@index');?>" class='icon-42<?php echo isset ($current_url) && $url === $current_url ? ' active' : '';?>'>標籤</a>
+            <a data-cnt='<?php echo $acnt;?>' data-cntlabel='article' href="<?php echo $url = RestfulUrl::url ('admin/articles@index');?>" class='icon-22<?php echo isset ($current_url) && $url === $current_url ? ' active' : '';?>'>文章</a>
           </div>
         </div>
 

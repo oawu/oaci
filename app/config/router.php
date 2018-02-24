@@ -16,10 +16,9 @@ Router::post ('login', 'main@ac_signin');
 Router::dir ('admin', function () {
   Router::get ('', 'main');
 
-  Router::restful ('banners', 'banners', array (
-    array ('model' => 'Banner')));
-
+  Router::restful ('tags', 'tags', array (
+    array ('model' => 'Tag')));
+  
+  Router::restful ('articles', 'articles', array (
+    array ('model' => 'Article')));
 });
-
-// print (json_encode(Router::$routers));
-// exit ();

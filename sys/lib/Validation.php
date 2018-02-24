@@ -34,14 +34,62 @@ class Validation {
     $extensions = array_unique (array_map ('trim', func_get_args ()));
 
     $this->isUploadFile ();
+    function_exists ('get_extension_by_mime') || Load::sysFunc ('file.php');
 
-    if (!$extension = pathinfo ($this->val['name'], PATHINFO_EXTENSION)) {
-      function_exists ('get_extension_by_mime') || Load::sysFunc ('file.php');
-      $extension = get_extension_by_mime ($this->val['type']);
-    }
-    
+    $extension = pathinfo ($this->val['name'], PATHINFO_EXTENSION);
+    $extension || $extension = get_extension_by_mime ($this->val['type']);
     $extension || Validation::error ($this->title . '格式錯誤或不明');
     in_array ($extension, $extensions) || Validation::error ($this->title . '格式不符合');
+  }
+
+  private function _eachFormats () {
+    $extensions = array_unique (array_map ('trim', func_get_args ()));
+    
+    $this->eachIsUploadFiles ();
+    function_exists ('get_extension_by_mime') || Load::sysFunc ('file.php');
+
+    foreach ($this->val as $val) {
+      $extension = pathinfo ($val['name'], PATHINFO_EXTENSION);
+      $extension || $extension = get_extension_by_mime ($val['type']);
+      $extension || Validation::error ($this->title . '有格式錯誤或不明');
+      in_array ($extension, $extensions) || Validation::error ($this->title . '有格式不符合');
+    }
+  }
+  private function _filterFormats () {
+    $extensions = array_unique (array_map ('trim', func_get_args ()));
+    
+    $this->fileterIsUploadFiles ();
+    function_exists ('get_extension_by_mime') || Load::sysFunc ('file.php');
+
+    $this->val = array_filter ($this->val, function ($val) use ($extensions) {
+      $extension = pathinfo ($val['name'], PATHINFO_EXTENSION);
+      $extension || $extension = get_extension_by_mime ($val['type']);
+      return $extension && in_array ($extension, $extensions);
+    });
+  }
+  // Byte
+  private function _eachSize ($min, $max = null) {
+    $this->eachIsUploadFiles ();
+
+    function_exists ('byte_format') || Load::sysFunc ('number.php');
+
+    foreach ($this->val as $val) {
+      $s = (int)$val['size'];
+      $s >= $min || Validation::error ($this->title . '有檔案未大於等於 ' . byte_format ($min));
+      $max === null || $s <= $max || Validation::error ($this->title . '有檔案未小於等於 ' . byte_format ($max));
+    }
+  }
+  // Byte
+  private function _filterSize ($min, $max = null) {
+    $this->fileterIsUploadFiles ();
+
+    function_exists ('byte_format') || Load::sysFunc ('number.php');
+
+    $this->val = array_filter ($this->val, function ($val) use ($min, $max) {
+      $s = (int)$val['size'];
+      
+      return $s >= $min && ($max === null || $s <= $max);
+    });
   }
 
   // ===================================================
@@ -56,9 +104,20 @@ class Validation {
     $this->val = array_values ($this->val);
   }
 
-  private function _doArrayFilter ($callback = null) {
+  private function _doArrayFilter ($callback = null, $arr = null) {
     $this->isArray ();
-    $this->val = is_callable ($callback) ? array_filter ($this->val, $callback) : array_filter ($this->val);
+    // if (!is_callable ($callback))
+      // return;
+
+    if ($arr === null)
+      $this->val = is_callable ($callback) ? array_filter ($this->val, $callback) : array_filter ($this->val);
+    else {
+      $tmp = array ();
+      foreach ($this->val as $val) 
+        if ($callback ($val, $arr))
+        array_push ($tmp, $val);
+      $this->val = $tmp;
+    }
   }
 
   private function _inArray (array $array) {
@@ -71,6 +130,18 @@ class Validation {
     $c >= $min || Validation::error ($this->title . '數量需要大於等於 ' . $min);
     $max === null || $c <= $max || Validation::error ($this->title . '數量需要小於等於 ' . $max);
   }
+
+  private function _eachIsUploadFiles ($msg = null) {
+    $this->isArray ();
+
+    foreach ($this->val as $val)
+      is_array ($val) && count ($val) == 5 && isset ($val['name'], $val['type'], $val['tmp_name'], $val['error'], $val['size']) || Validation::error ($this->title . ($msg ? $msg : '格式必須是上傳檔案'));
+  }
+  private function _fileterIsUploadFiles ($msg = null) {
+    $this->isArray ();
+    $this->val = array_filter ($this->val, function ($val) { return is_array ($val) && count ($val) == 5 && isset ($val['name'], $val['type'], $val['tmp_name'], $val['error'], $val['size']); });
+  }
+
 
   // ===================================================
   // ==
@@ -123,7 +194,7 @@ class Validation {
 
   // ===================================================
 
-  private function _doRemoveHtmloTags ($allowable_tags = null) {
+  private function _doRemoveHtmlTags ($allowable_tags = null) {
     $this->isStringOrNumber ();
     $this->val = $allowable_tags === null ? strip_tags ($this->val) : strip_tags ($this->val, $allowable_tags);
   }
