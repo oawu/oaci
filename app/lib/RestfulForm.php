@@ -60,14 +60,31 @@ class Form {
 abstract class Row {
   protected $title, $tip, $need, $obj;
 
+  public function __construct () {
+    $this->title = null;
+    $this->obj = null;
+    $this->tip = '';
+    $this->need = false;
+  }
+
   public function __toString () {
-    return $this->toString ();
+    return $this->title === null ? '' : $this->toString ();
   }
 
   public function setObj ($obj) { $this->obj = $obj; return $this; }
   public function setTitle ($title) { $title && is_string ($title) && $this->title = $title; return $this; }
   public function setTip ($tip) { $tip && is_string ($tip) && $this->tip = $tip; return $this; }
   public function setNeed ($need) { is_bool ($need) && $this->need = $need; return $this; }
+  public function getValue ($name, $value, $column = null) {
+    if ($value || !$this->obj) return $value;
+
+    $this->obj && $this->obj->{$name} && $v = $this->obj->{$name};
+    $v instanceof \Uploader && $v = $v->url ();
+    $v instanceof ActiveRecord\DateTime && ($v = $v->format ($this instanceof \Date ? 'Y-m-d' : 'Y-m-d H:i:s'));
+    is_object ($v) && $v = (string)$v;
+
+    return $column ? array_orm_column ($v, $column) : $v;
+  }
 
   protected static function attrs ($arr) {
     return $arr ? ' ' . implode (' ', $arr) : '';
@@ -84,14 +101,12 @@ abstract class Input extends Row {
   protected $name, $value, $autofocus, $placeholder, $type, $min, $max;
 
   public function __construct () {
-    $this->title = null;
-    $this->name = null;
+    parent::__construct ();
 
+    $this->name = null;
     $this->value = '';
-    $this->need = false;
     $this->autofocus = false;
     $this->placeholder = '';
-    $this->tip = '';
     $this->type = null;
     $this->min = 0;
     $this->max = null;
@@ -104,7 +119,7 @@ abstract class Input extends Row {
   protected function setType ($type) { $type && is_string ($type) && in_array ($type, array ('text', 'color', 'number', 'date', 'email')) && $this->type = $type; return $this; }
 
   public function setName ($name) { $name && is_string ($name) && $this->name = $name; return $this; }
-  public function setValue ($value) { is_string ($value) && $this->value = $value; return $this; }
+  public function setValue ($value) { (is_string ($value) || is_numeric ($value)) && $this->value = $value; return $this; }
 
   public function setAutofocus ($autofocus) { is_bool ($autofocus) && $this->autofocus = $autofocus; return $this; }
   public function setPlaceholder ($placeholder) { is_string ($placeholder) && $this->placeholder = $placeholder; return $this; }
@@ -113,22 +128,18 @@ abstract class Input extends Row {
   public function setMaxLength ($max) { is_numeric ($max) && $max >= $this->min && $this->max = $max; return $this; }
   public function setLength ($min, $max) { return $this->setMinLength ($min)->setMaxLength ($max); }
 
-
   public function toString () {
     $return = '';
 
-    if ($this->title === null || $this->name === null || $this->type === null)
+    if ($this->name === null || $this->type === null)
       return $return;
     
     $this->placeholder || $this->setPlaceholder ('請填寫「' . $this->title . '」');
 
-    $v = get_flash_params ($this->name, $this->value);
-    $this->obj && isset ($this->obj->{$this->name}) && $v = $this->obj->{$this->name};
-    $v instanceof \Uploader && $v = $v->url ();
-    $v instanceof ActiveRecord\DateTime && ($v = $v->format ($this instanceof \Date ? 'Y-m-d' : 'Y-m-d H:i:s'));
-    is_object ($v) && $v = (string)$v;
+    $value = get_flash_params ($this->name, '_oa_null_');
+    $value = $value === '_oa_null_' ? $this->getValue ($this->name, $this->value) : $value;
 
-    $attrs = array ('type="' . $this->type . '"', 'name="' . $this->name . '"', 'value="' . $v . '"');
+    $attrs = array ('type="' . $this->type . '"', 'name="' . $this->name . '"', 'value="' . $value . '"');
     $this->need        && array_push ($attrs, 'minlength="' . $this->min . '"');
     $this->max         && array_push ($attrs, 'maxlength="' . $this->max . '"');
     $this->placeholder && array_push ($attrs, 'placeholder="' . $this->placeholder . '"');
@@ -143,7 +154,6 @@ abstract class Input extends Row {
     return $return;
   }
 }
-
 class Text extends Input {
   public function __construct () {
     parent::__construct ();
@@ -175,277 +185,412 @@ class Email extends Input {
   }
 }
 
+abstract class TextArea extends Row {
+  protected $name, $value, $type, $autofocus, $placeholder;
 
+  public function __construct () {
+    parent::__construct ();
+    $this->type = null;
+    $this->name = null;
+    $this->value = '';
+    $this->autofocus = false;
+    $this->placeholder = '';
+  }
 
+  protected function setType ($type) { $type && is_string ($type) && in_array ($type, array ('ckeditor', 'pure')) && $this->type = $type; return $this; }
 
+  public static function create ($title, $name, $value = '') { return (new static ())->setTitle ($title)->setName ($name)->setValue ($value); }
+  public static function need ($title, $name, $value = '') { return self::create ($title, $name, $value)->setNeed (true); }
+  public static function maybe ($title, $name, $value = '') { return self::create ($title, $name, $value)->setNeed (false); }
+  
+  public function setName ($name) { $name && is_string ($name) && $this->name = $name; return $this; }
+  public function setValue ($value) { (is_string ($value) || is_numeric ($value)) && $this->value = $value; return $this; }
+  public function setAutofocus ($autofocus) { is_bool ($autofocus) && $this->autofocus = $autofocus; return $this; }
+  public function setPlaceholder ($placeholder) { is_string ($placeholder) && $this->placeholder = $placeholder; return $this; }
 
+  public function toString () {
+    $return = '';
 
+    if ($this->name === null || $this->type === null)
+      return $return;
 
+    $this->placeholder || $this->setPlaceholder ('請填寫「' . $this->title . '」');
 
+    $value = get_flash_params ($this->name, '_oa_null_');
+    $value = $value === '_oa_null_' ? $this->getValue ($this->name, $this->value) : $value;
 
+    $attrs = array ('class="' . $this->type . '"', 'name="' . $this->name . '"');
+    $this->placeholder && array_push ($attrs, 'placeholder="' . $this->placeholder . '"');
+    $this->autofocus   && array_push ($attrs, 'autofocus');
+    $this->need        && array_push ($attrs, 'required');
 
-// abstract class TextArea extends Input {
-//   public function __construct ($title = '') {
-//     parent::__construct ($title);
-//   }
+    if ($this instanceof PureText) {
+      $this->need        && array_push ($attrs, 'minlength="' . $this->min . '"');
+      $this->max         && array_push ($attrs, 'maxlength="' . $this->max . '"');
+    }
 
-//   public function toString () {
-//     $return = '';
+    $return .= '<label class="row">';
+      $return .= $this->b ();
+      $return .= '<textarea' . self::attrs ($attrs) .'>' . $value . '</textarea>';
+    $return .= '</label>';
+
+    return $return;
+  }
+}
+class PureText extends TextArea {
+  protected $name, $value, $type, $autofocus, $placeholder;
+
+  public function __construct () {
+    parent::__construct ();
+
+    $this->setType ('pure');
+    $this->min = 0;
+    $this->max = null;
+  }
+
+  public function setMinLength ($min) { is_numeric ($min) && ($this->need ? $min > 0 : $min >= 0) && $this->min = $min; return $this; }
+  public function setMaxLength ($max) { is_numeric ($max) && $max >= $this->min && $this->max = $max; return $this; }
+  public function setLength ($min, $max) { return $this->setMinLength ($min)->setMaxLength ($max); }
+}
+class Ckeditor extends TextArea {
+  public function __construct () {
+    parent::__construct ();
+    $this->setType ('ckeditor');
+  }
+}
+
+class Image extends Row {
+  protected $name, $accept;
+
+  public function __construct () {
+    parent::__construct ();
+    $this->name = null;
+    $this->accept = 'image/*';
+  }
+
+  public static function create ($title, $name) { return (new static ())->setTitle ($title)->setName ($name); }
+  public static function need ($title, $name) { return self::create ($title, $name)->setNeed (true); }
+  public static function maybe ($title, $name) { return self::create ($title, $name)->setNeed (false); }
+  
+  public function setName ($name) { $name && is_string ($name) && $this->name = $name; return $this; }
+  public function setAccept ($accept) { is_string ($accept) && $this->accept = $accept; return $this; }
+
+  public function toString () {
+    $return = '';
+
+    if ($this->name === null)
+      return $return;
+
+    $value = $this->getValue ($this->name, '');
+
+    $attrs = array ('type="file"', 'name="' . $this->name . '"');
+    $this->accept && array_push ($attrs, 'accept="' . $this->accept . '"');
+
+    $return .= '<div class="row">';
+      $return .= $this->b ();
+      $return .= '<div class="drop-img">';
+        $return .= '<img src="' . $value . '" />';
+        $return .= '<input' . self::attrs ($attrs) .'/>';
+      $return .= '</div>';
+    $return .= '</div>';
+
+    return $return;
+  }
+}
+class Images extends Row {
+  protected $name, $accept, $columnName, $many;
+
+  public function __construct () {
+    parent::__construct ();
+    $this->name = null;
+    $this->accept = 'image/*';
+    $this->columnName = null;
+    $this->many = null;
+  }
+
+  public static function create ($title, $name) { return (new static ())->setTitle ($title)->setName ($name); }
+  public static function need ($title, $name) { return self::create ($title, $name)->setNeed (true); }
+  public static function maybe ($title, $name) { return self::create ($title, $name)->setNeed (false); }
+  
+  public function setName ($name) { $name && is_string ($name) && $this->name = $name; return $this; }
+  public function setAccept ($accept) { is_string ($accept) && $this->accept = $accept; return $this; }
+  public function setMany ($many) { is_string ($many) && $this->many = $many; return $this; }
+  public function setColumnName ($columnName) { is_string ($columnName) && $this->columnName = $columnName; return $this; }
+
+  public function toString () {
+    $return = '';
+
+    if ($this->name === null)
+      return $return;
+
+    $value = $this->obj && ($columnName = $this->columnName) && $this->obj->{$this->many} ? array_filter (array_map (function ($t) use ($columnName) { return $t->$columnName instanceof \Uploader ? $t->$columnName->url () : null; }, $this->obj->{$this->many})) : array ();
+
+    $attrs = array ('type="file"', 'name="' . $this->name . '[]' . '"');
+    $this->accept && array_push ($attrs, 'accept="' . $this->accept . '"');
+
+    $return .= '<div class="row">';
+      $return .= $this->b ();
+      $return .= '<div class="multi-drop-imgs">';
+      $return .= implode ('', array_map (function ($value) use ($attrs) {
+
+        $return = '<div class="drop-img">';
+          $return .= '<img src="' . $value . '" />';
+          $return .= '<input' . self::attrs ($attrs) .'/>';
+          $return .= '<a class="icon-04"></a>';
+        $return .= '</div>';
+        return $return;
+      }, array_unique ($value ? $value : array (''))));
+      $return .= '</div>';
+    $return .= '</div>';
+
+    return $return;
+  }
+}
+
+class Selecter extends Row {
+  protected $name, $value, $items;
+
+  public function __construct () {
+    parent::__construct ();
+    $this->name = null;
+    $this->value = '';
+    $this->items = array ();
+  }
+
+  public static function create ($title, $name, $value = '') { return (new static ())->setTitle ($title)->setName ($name)->setValue ($value); }
+  public static function need ($title, $name, $value = '') { return self::create ($title, $name, $value)->setNeed (true); }
+  public static function maybe ($title, $name, $value = '') { return self::create ($title, $name, $value)->setNeed (false); }
+
+  public function setName ($name) { $name && is_string ($name) && $this->name = $name; return $this; }
+  public function setValue ($value) { (is_string ($value) || is_numeric ($value)) && $this->value = $value; return $this; }
+
+  public function setItemKVs ($arr) { foreach ($arr as $key => $value) array_push ($this->items, array ('value' => $key, 'text' => $value)); return $this; }
+  public function setItemObjs ($arr, $key = null, $val = null) { $this->items = $key !== null && $val !== null ? array_values (array_filter (array_map (function ($t) use ($key, $val) { return isset ($t->$key, $t->$val) ? array ('value' => $t->$key, 'text' => $t->$val) : null; }, $arr))) : $arr; return $this; }
+
+  public function toString () {
+    $return = '';
+
+    if ($this->name === null)
+      return $return;
+
+    $value = get_flash_params ($this->name, '_oa_null_');
+    $value = $value === '_oa_null_' ? $this->getValue ($this->name, $this->value) : $value;
+
+    $attrs = array ('name="' . $this->name . '"');
+    $this->need && array_push ($attrs, 'required');
+
+    $return .= '<div class="row">';
+      $return .= $this->b ();
+      $return .= '<select' . self::attrs ($attrs) .'>';
+        $return .= '<option value=""' . (get_flash_params ($this->name, $value, '') ? ' selected' : '') . '>請選擇' . $this->title . '</option>';
+        foreach ($this->items as $item)
+          $return .= '<option value="' . $item['value'] . '"' . (get_flash_params ($this->name, $value, $item['value']) ? ' selected' : '') . '>' . $item['text'] . '</option>';
+      $return .= '</select>';
+    $return .= '</div>';
+
+    return $return;
+  }
+}
+
+class Checkboxs extends Row {
+  protected $name, $values, $items, $columnName, $many;
+
+  public function __construct () {
+    parent::__construct ();
+    $this->name = null;
+    $this->values = array ();
+    $this->items = array ();
+    $this->many = null;
+    $this->columnName = null;
+  }
+
+  public static function create ($title, $name, $values = array ()) { return (new static ())->setTitle ($title)->setName ($name)->setValues ($values); }
+  public static function need ($title, $name, $values = array ()) { return self::create ($title, $name, $values)->setNeed (true); }
+  public static function maybe ($title, $name, $values = array ()) { return self::create ($title, $name, $values)->setNeed (false); }
+
+  public function setName ($name) { $name && is_string ($name) && $this->name = $name; return $this; }
+  public function setValues ($values) { is_array ($values) && $this->values = $values; return $this; }
+  public function setMany ($many) { is_string ($many) && $this->many = $many; return $this; }
+  public function setColumnName ($columnName) { is_string ($columnName) && $this->columnName = $columnName; return $this; }
+  
+  public function setItemKVs ($arr) { foreach ($arr as $key => $value) array_push ($this->items, array ('value' => $key, 'text' => $value)); return $this; }
+  public function setItemObjs ($arr, $key = null, $val = null) { $this->items = $key !== null && $val !== null ? array_values (array_filter (array_map (function ($t) use ($key, $val) { return isset ($t->$key, $t->$val) ? array ('value' => $t->$key, 'text' => $t->$val) : null; }, $arr))) : $arr; return $this; }
+
+  public function toString () {
+    $return = '';
+
+    if ($this->name === null)
+      return $return;
+
+    if (!$this->items)
+      return $return;
+
+    $values = get_flash_params ($this->name . '[]', '_oa_null_');
+    $values = $values === '_oa_null_' ? $this->getValue ($this->many, $this->values, $this->columnName) : $values;
+
+    $attrs = array ('name="' . $this->name . '"');
+    $this->need && array_push ($attrs, 'required');
+
+    $return .= '<div class="row">';
+      $return .= $this->b ();
+      $return .= '<div class="checkboxs">';
+
+      foreach ($this->items as $item)
+        $return .= form_checkbox ($this->name . '[]', $item['value'], $item['text'], $values && in_array ($item['value'], $values));
+
+      $return .= '</div>';
+    $return .= '</div>';
+
+    return $return;
+  }
+}
+
+class Radior extends Row {
+  protected $name, $value, $items;
+
+  public function __construct () {
+    parent::__construct ();
+    $this->name = null;
+    $this->value = null;
+    $this->items = array ();
+  }
+  
+  public static function create ($title, $name, $value = null) { return (new static ())->setTitle ($title)->setName ($name)->setValue ($value); }
+  public static function need ($title, $name, $value = null) { return self::create ($title, $name, $value)->setNeed (true); }
+  public static function maybe ($title, $name, $value = null) { return self::create ($title, $name, $value)->setNeed (false); }
+
+  public function setName ($name) { $name && is_string ($name) && $this->name = $name; return $this; }
+  public function setValue ($value) { (is_string ($value) || is_numeric ($value)) && $this->value = $value; return $this; }
+
+  public function setItemKVs ($arr) { foreach ($arr as $key => $value) array_push ($this->items, array ('value' => $key, 'text' => $value)); return $this; }
+  public function setItemObjs ($arr, $key = null, $val = null) { $this->items = $key !== null && $val !== null ? array_values (array_filter (array_map (function ($t) use ($key, $val) { return isset ($t->$key, $t->$val) ? array ('value' => $t->$key, 'text' => $t->$val) : null; }, $arr))) : $arr; return $this; }
+
+  public function toString () {
+    $return = '';
+
+    if ($this->name === null)
+      return $return;
+
+    if (!$this->items)
+      return $return;
+
+    $value = get_flash_params ($this->name, '_oa_null_');
+    $value = $value === '_oa_null_' ? $this->getValue ($this->name, $this->value) : $value;
     
-//     if (!($this->title && $this->type && $this->name && $this->value !== null))
-//       return $return;
+    $return .= '<div class="row">';
+      $return .= $this->b ();
+      $return .= '<div class="radios">';
+        foreach ($this->items as $item)
+          $return .= form_radio ($this->name, $item['value'], $item['text'], $value !== null && $value == $item['value'], array (), $this->need ? array ('required' => null) : array ());
+      $return .= '</div>';
+    $return .= '</div>';
 
-//     $return .= '<div class="row">';
-//     $return .= '<b' . ($this->need ? ' class="need"' : '') .'' . ($this->tip ? ' data-tip="' . $this->tip . '"' : '') . '>' . $this->title . '</b>';
-//     $return .= '<textarea class="' . $this->type . '" name="' . $this->name . '">' . get_flash_params ($this->name, $this->value) . '</textarea>';
-//     $return .= '</div>';
+    return $return;
+  }
+}
 
-//     return $return;
-//   }
-// }
-// class PureText extends TextArea {
-//   public function __construct ($title = '') {
-//     parent::__construct ($title);
-//     $this->setType ('pure');
-//   }
-// }
-// class Ckeditor extends TextArea {
-//   public function __construct ($title = '') {
-//     parent::__construct ($title);
-//     $this->setType ('ckeditor');
-//   }
-// }
+class Switcher extends Row {
+  protected $name, $value, $checkedValue;
 
-
-// class Images extends General {
-//   protected $srcs = array ();
-//   private $accept = 'image/*';
-
-//   public function __construct ($title = '') {
-//     parent::__construct ($title);
-//     $this->appendSrc ('');
-//   }
-
-//   public function appendSrcs ($srcs) {
-//     foreach ($srcs as $src)
-//       $this->appendSrc ($src);
-//     return $this;
-//   }
-
-//   public function appendSrc ($src) {
-//     is_string ($src) && array_push ($this->srcs, $src);
-//     return $this;
-//   }
-
-//   public function toString () {
-//     $return = '';
-
-//     if (!($this->title && $this->name))
-//       return $return;
-
-//     $accept = $this->accept;
-//     $name = $this->name . '[]';
-
-//     $return .= '<div class="row">';
-//       $return .= '<b' . ($this->need ? ' class="need"' : '') .'' . ($this->tip ? ' data-tip="' . $this->tip . '"' : '') . '>' . $this->title . '</b>';
-//       $return .= '<div class="multi-drop-imgs">';
-//       $return .= implode ('', array_map (function ($src) use ($name, $accept) {
-//         $return = '<div class="drop-img">';
-//           $return .= '<img src="' . $src . '" />';
-//           $return .= '<input type="file" name="' . $name . '" accept="' . $accept . '" />';
-//           $return .= '<a class="icon-04"></a>';
-//         $return .= '</div>';
-//         return $return;
-//       }, array_unique ($this->srcs)));
-//       $return .= '</div>';
-//     $return .= '</div>';
-
-//     return $return;
-//   }
-// }
-// class Image extends General {
-//   private $accept = 'image/*';
-
-//   public function setAccept ($accept) {
-//     $this->accept = $accept;
-//     return $this;
-//   }
-
-//   public function toString () {
-//     $return = '';
-
-//     if (!($this->title && $this->name && $this->value !== null))
-//       return $return;
-
-//     $return .= '<div class="row">';
-//       $return .= '<b' . ($this->need ? ' class="need"' : '') .'' . ($this->tip ? ' data-tip="' . $this->tip . '"' : '') . '>' . $this->title . '</b>';
-//       $return .= '<div class="drop-img">';
-//         $return .= '<img src="' . ($this->value ? '' . $this->value . '' : '') . '" />';
-//         $return .= '<input type="file" name="' . $this->name . '" accept="' . $this->accept . '" />';
-//       $return .= '</div>';
-//     $return .= '</div>';
-
-//     return $return;
-//   }
-// }
-
-// abstract class ChoiceItem {
-//   private $text, $value;
-
-//   public function __construct ($value, $text = '') {
-//     $this->setValue ($value)
-//          ->setText ($text);
-//   }
+  public function __construct () {
+    parent::__construct ();
+    $this->name = null;
+    $this->value = null;
+    $this->checkedValue = null;
+  }
   
-//   public function setText ($text) {
-//     is_string ($text) && $this->text = $text;
-//     return $this;
-//   }
+  public static function create ($title, $name, $value = null) { return (new static ())->setTitle ($title)->setName ($name)->setValue ($value); }
+  public static function need ($title, $name, $value = null) { return self::create ($title, $name, $value)->setNeed (true); }
+  public static function maybe ($title, $name, $value = null) { return self::create ($title, $name, $value)->setNeed (false); }
+
+  public function setName ($name) { $name && is_string ($name) && $this->name = $name; return $this; }
+  public function setValue ($value) { (is_string ($value) || is_numeric ($value)) && $this->value = $value; return $this; }
+  public function setCheckedValue ($value) { (is_string ($value) || is_numeric ($value)) && $this->checkedValue = $value; return $this; }
+
+  public function toString () {
+    $return = '';
+
+    if ($this->name === null)
+      return $return;
+
+    if ($this->checkedValue === null)
+      return $return;
+
+    $value = get_flash_params ($this->name, '_oa_null_');
+    $value = $value === '_oa_null_' ? $this->getValue ($this->name, $this->value) : $value;
+
+    $return .= '<div class="row">';
+      $return .= $this->b ();
+      $return .= '<div class="switches">';
+      $return .= form_switch ($this->name, $this->checkedValue, '', $value === $this->checkedValue);
+      $return .= '</div>';
+    $return .= '</div>';
+
+    return $return;
+  }
+}
+
+class LatLng extends Row {
+  protected $lat_name, $lng_name, $lat_value, $lng_value;
+
+  public function __construct () {
+    parent::__construct ();
+    $this->lat_name = null;
+    $this->lng_name = null;
+    $this->lat_value = null;
+    $this->lng_value = null;
+  }
   
-//   public function setValue ($value) {
-//     $this->value = $value;
-//     return $this;
-//   }
+  public static function create ($title, $lat_name, $lng_name, $lat_value = null, $lng_value = null) { return (new static ())->setTitle ($title)->setLatName ($lat_name)->setLngName ($lng_name)->setLatValue ($lat_value)->setLngValue ($lng_value); }
+  public static function need ($title, $lat_name, $lng_name, $lat_value = null, $lng_value = null) { return self::create ($title, $lat_name, $lng_name, $lat_value, $lng_value)->setNeed (true); }
+  public static function maybe ($title, $lat_name, $lng_name, $lat_value = null, $lng_value = null) { return self::create ($title, $lat_name, $lng_name, $lat_value, $lng_value)->setNeed (false); }
 
-//   public function getText () {
-//     return $this->text;
-//   }
+  public function setLatName ($name) { $name && is_string ($name) && $this->lat_name = $name; return $this; }
+  public function setLatValue ($value) { is_numeric ($value) &&  $value > -85 && $value < 85 && $this->lat_value = $value; return $this; }
   
-//   public function getValue () {
-//     return $this->value;
-//   }
-  
-//   public static function create ($value, $text = '') {
-//     return new static ($value, $text);
-//   }
+  public function setLngName ($name) { $name && is_string ($name) && $this->lng_name = $name; return $this; }
+  public function setLngValue ($value) { is_numeric ($value) && $value > -180 && $value < 180 && $this->lng_value = $value; return $this; }
 
-//   public static function combine ($values, $texts) {
-//     if (count ($values) != count ($texts))
-//       return array ();
+  public function toString () {
+    $return = '';
 
-//     return array_map (function ($value, $text) { return static::create ($value, $text); }, $values, $texts);
-//   }
-// }
-// class Option extends ChoiceItem {}
-// class Radio extends ChoiceItem {}
-// class Checkbox extends ChoiceItem {}
-// class Switcher extends ChoiceItem {}
+    if ($this->lat_name === null || $this->lng_name === null)
+      return $return;
 
-// interface ChoicerInterface {
-//   public function appendItem ($item);
-// }
+    $lat_value = get_flash_params ($this->lat_name, '_oa_null_');
+    $lat_value = $lat_value === '_oa_null_' ? $this->getValue ($this->lat_name, $this->lat_value) : $lat_value;
 
-// abstract class Choicer extends General implements ChoicerInterface {
-//   protected $items = array ();
+    $lng_value = get_flash_params ($this->lng_name, '_oa_null_');
+    $lng_value = $lng_value === '_oa_null_' ? $this->getValue ($this->lng_name, $this->lng_value) : $lng_value;
 
-//   public function appendCombine ($items) {
-//     foreach ($items as $item)
-//       $this->appendItem ($item);
-//     return $this;
-//   }
-// }
+    $lat_attrs = array ('type="number"', 'name="' . $this->lat_name . '"', 'value="' . $lat_value . '"');
+    $lng_attrs = array ('type="number"', 'name="' . $this->lng_name . '"', 'value="' . $lng_value . '"');
 
-// class Select extends Choicer {
+    $return .= '<div class="row">';
+      $return .= $this->b ();
 
-//   public function appendItem ($item) {
-//     $item instanceof Option && array_push ($this->items, $item);
-//     return $this;
-//   }
+      $return .= '<div class="map-edit">';
+        $return .= '<input' . self::attrs ($lat_attrs) .'/>';
+        $return .= '<input' . self::attrs ($lng_attrs) .'/>';
+      $return .= '</div>';
+    $return .= '</div>';
 
-//   public function toString () {
-//     $return = '';
+    return $return;
+  }
+}
 
-//     if (!($this->title && $this->name && $this->value !== null))
-//       return $return;
 
-//     $return .= '<div class="row">';
-//       $return .= '<b' . ($this->need ? ' class="need"' : '') .'' . ($this->tip ? ' data-tip="' . $this->tip . '"' : '') . '>' . $this->title . '</b>';
-//       $return .= '<select name="' . $this->name . '"' . ($this->need ? ' required' : '') .'>';
-//         $return .= '<option value=""' . (get_flash_params ($this->name, $this->value, '') ? ' selected' : '') . '>請選擇' . $this->title . '</option>';
-//       foreach ($this->items as $item)
-//         $return .= '<option value="' . $item->getValue () . '"' . (get_flash_params ($this->name, $this->value, $item->getValue ()) ? ' selected' : '') . '>' . $item->getText () . '</option>';
-//       $return .= '</select>';
-//     $return .= '</div>';
 
-//     return $return;
-//   }
-// }
 
-// class Radios extends Choicer {
-  
-//   public function appendItem ($item) {
-//     $item instanceof Radio && array_push ($this->items, $item);
-//     return $this;
-//   }
 
-//   public function toString () {
-//     $return = '';
 
-//     if (!($this->title && $this->name && $this->value !== null))
-//       return $return;
 
-//     $return .= '<div class="row">';
-//       $return .= '<b' . ($this->need ? ' class="need"' : '') .'' . ($this->tip ? ' data-tip="' . $this->tip . '"' : '') . '>' . $this->title . '</b>';
-//       $return .= '<div class="radios">';
-//       // ' . $this->name . '"' . ($this->need ? ' required' : '') .
-//       foreach ($this->items as $item)
-//         $return .= form_radio ($this->name, $item->getValue (), $item->getText (), get_flash_params ($this->name, $this->value, $item->getValue ()), array (), $this->need ? array ('required' => null) : array ());
-//       $return .= '</div>';
-//     $return .= '</div>';
 
-//     return $return;
-//   }
-// }
 
-// class Checkboxs extends Choicer {
-//   public function appendItem ($item) {
-//     $item instanceof Checkbox && array_push ($this->items, $item);
-//     return $this;
-//   }
-//   public function toString () {
-//     $return = '';
 
-//     if (!($this->title && $this->name && $this->value !== null))
-//       return $return;
 
-//     $return .= '<div class="row">';
-//       $return .= '<b' . ($this->need ? ' class="need"' : '') .'' . ($this->tip ? ' data-tip="' . $this->tip . '"' : '') . '>' . $this->title . '</b>';
-//       $return .= '<div class="checkboxs">';
 
-//       foreach ($this->items as $item)
-//         $return .= form_checkbox ($this->name . '[]', $item->getValue (), $item->getText (), get_flash_params ($this->name, $this->value, $item->getValue ()));
-      
-//       $return .= '</div>';
-//     $return .= '</div>';
 
-//     return $return;
-//   }
-// }
-
-// class Switchers extends Choicer {
-//   public function appendItem ($item) {
-//     $item instanceof Switcher && array_push ($this->items, $item);
-//     return $this;
-//   }
-//   public function toString () {
-//     $return = '';
-
-//     if (!($this->title && $this->name && $this->value !== null))
-//       return $return;
-
-//     $return .= '<div class="row min">';
-//       $return .= '<b' . ($this->need ? ' class="need"' : '') .'' . ($this->tip ? ' data-tip="' . $this->tip . '"' : '') . '>' . $this->title . '</b>' . ' ';
-//       $return .= '<div class="switches">';
-
-//       foreach ($this->items as $item)
-//         $return .= form_switch ($this->name, $item->getValue (), '', get_flash_params ($this->name, $this->value, $item->getValue ()));
-      
-//       $return .= '</div>';
-//     $return .= '</div>';
-
-//     return $return;
-//   }
-// }
 
 // class LatLng extends Row {
 //   private $latName = 'latitude';

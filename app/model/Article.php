@@ -14,7 +14,8 @@ class Article extends Model {
   );
 
   static $has_many = array (
-    array ('images',  'class_name' => 'ArticleImage')
+    array ('images',  'class_name' => 'ArticleImage'),
+    array ('tag_maps',  'class_name' => 'ArticleTagMapping')
 
   );
 

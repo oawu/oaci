@@ -137,6 +137,7 @@ class Validation {
     foreach ($this->val as $val)
       is_array ($val) && count ($val) == 5 && isset ($val['name'], $val['type'], $val['tmp_name'], $val['error'], $val['size']) || Validation::error ($this->title . ($msg ? $msg : '格式必須是上傳檔案'));
   }
+  
   private function _fileterIsUploadFiles ($msg = null) {
     $this->isArray ();
     $this->val = array_filter ($this->val, function ($val) { return is_array ($val) && count ($val) == 5 && isset ($val['name'], $val['type'], $val['tmp_name'], $val['error'], $val['size']); });

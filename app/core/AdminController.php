@@ -51,7 +51,10 @@ abstract class AdminController extends Controller {
 //             )
 //     );
 // $flash['params']['name'] = 'asd';
-// $flash['params']['color'] = '#aaa000';
+// $flash['params']['user_id'] = '';
+// $flash['params']['tag_ids[]'] = array ();
+// $flash['params']['action'] = Article::ACTION_SELF;
+$flash['params']['status'] = Article::STATUS_ON;
 
     get_flash_params ($flash['params']);
 

@@ -44,6 +44,9 @@ if (!function_exists ('use_model')) {
             $this->$column = $value;
         return true;
       }
+      public static function getArray ($column, $option = array ()) {
+        return array_orm_column (self::find ('all', array_merge ($option, array ('select' => $column))), $column);
+      }
       public static function getTransactionError ($closure, &...$args) {
         if (!is_callable ($closure))
           return false;

@@ -1,10 +1,5 @@
 <?php defined ('OACI') || exit ('此檔案不允許讀取。');
 
-// use AdminLib\Index          as Index;
-// use AdminLib\Form           as Form;
-// use AdminLib\Form\Row       as Row;
-// use AdminLib\Form\Row\Multi as Multi;
-
 /**
  * @author      OA Wu <comdan66@gmail.com>
  * @copyright   Copyright (c) 2013 - 2018, OACI
