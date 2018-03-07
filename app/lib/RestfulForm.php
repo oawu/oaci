@@ -78,7 +78,7 @@ abstract class Row {
   public function getValue ($name, $value, $column = null) {
     if ($value || !$this->obj) return $value;
 
-    $this->obj && $this->obj->{$name} && $v = $this->obj->{$name};
+    $this->obj && $this->obj->{$name} !== null && $v = $this->obj->{$name};
     $v instanceof \Uploader && $v = $v->url ();
     $v instanceof ActiveRecord\DateTime && ($v = $v->format ($this instanceof \Date ? 'Y-m-d' : 'Y-m-d H:i:s'));
     is_object ($v) && $v = (string)$v;

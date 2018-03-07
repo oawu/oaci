@@ -132,7 +132,7 @@ class Search {
     if ($value === null || $value === '' || (is_array ($value) && !count ($value)) || empty ($this->searches[$key]['sql']))
       return $this;
     
-    is_callable ($this->searches[$key]['sql']) && $this->searches[$key]['sql'] = $this->searches[$key]['sql']($value);
+    is_callable ($this->searches[$key]['sql']) && $this->where->and ($this->searches[$key]['sql']($value));
     
     is_string ($this->searches[$key]['sql']) && $this->where->and ($this->searches[$key]['sql'], strpos (strtolower ($this->searches[$key]['sql']), ' like ') !== false ? '%' . $value . '%' : $value);
     is_object ($this->searches[$key]['sql']) && $this->searches[$key]['sql'] instanceof Where && $this->where->and ($this->searches[$key]['sql']);
@@ -180,7 +180,7 @@ class Search {
 
             $return .= '<label class="row">';
             $return .= '<b>依據' . $condition['title'] . '搜尋</b>';
-            $return .= '<input name="' . $key . '" type="' . (isset ($condition['type']) ? $condition['type'] : 'text') . '" placeholder="依據' . $condition['title'] . '關鍵字搜尋" value="' . (empty ($condition['value']) ? '' : $condition['value']) . '" />';
+            $return .= '<input name="' . $key . '" type="' . (isset ($condition['type']) ? $condition['type'] : 'text') . '" placeholder="依據' . $condition['title'] . '搜尋" value="' . (empty ($condition['value']) ? '' : $condition['value']) . '" />';
             $return .= '</label>';
             break;
           
@@ -282,7 +282,7 @@ class Search {
     $sortKey = '';
 
     if ($this->table->isUseSort ()) {
-      $gets = Input::get ();
+      $gets = \Input::get ();
 
       if (isset ($gets[Order::KEY]))
         unset ($gets[Order::KEY]);
