@@ -11,9 +11,12 @@ class Cache {
 		if (!class_exists ('\Cache'))
 			return static::$adapter = null;
 
+		$prefix && static::$prefix = $prefix;
+		$expire && static::$expire = $expire;
+		
 		static::$adapter = \Cache::initialize ($driver, array (
-				'prefix' => $prefix ? $prefix : static::$prefix,
-				'expire' => $expire ? $expire : static::$expire
+				'prefix' => $prefix,
+				'expire' => $expire
 			));
 	}
 
